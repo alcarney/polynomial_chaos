@@ -1,0 +1,52 @@
+\documentclass{report}
+
+% ----------------------------------------------------------------------------
+% Preamble
+% ----------------------------------------------------------------------------
+
+% These are some lazy packages to get a good looking page layout
+\usepackage{fullpage}
+\usepackage[parfill]{parskip}
+
+\usepackage{setspace}
+\onehalfspacing
+
+% A package to include graphics files (jpg, png, eps, pdf etc...)
+\usepackage{graphicx}
+
+% Some basic packages that are almost standad
+\usepackage{amssymb}
+
+% Package to be able to draw tikz images
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+% Package to get hyperrlinks
+\usepackage{hyperref}
+
+% Package to be able to compile standalone tikz packages
+\usepackage{standalone}
+
+% A package that gives more control for bibliographies than the default
+\usepackage[backend=biber, backref=true, firstinits=true, url=true, isbn=true]{biblatex}
+\addbibresource{bibliography.bib}
+
+% ----------------------------------------------------------------------------
+% The actual report
+% ----------------------------------------------------------------------------
+
+\begin{document}
+    \include{frontcover}
+    \include{acknowledgments}
+
+    \tableofcontents
+    \listoffigures
+
+    % The actual content:
+    \include{chapters/chapter1}
+    \include{chapters/chapter2}
+    \include{chapters/chapter3}
+
+    % The bibliography:
+    \printbibliography
+\end{document}
