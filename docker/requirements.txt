@@ -1,0 +1,10 @@
+cython
+scipy
+matplotlib
+tables
+sympy
+scikit-umfpack
+https://bitbucket.org/dalcinl/igakit/get/default.tar.gz
+csc-pysparse
+ipython
+mpi4py

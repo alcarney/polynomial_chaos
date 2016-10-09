@@ -1,0 +1,4 @@
+https://bitbucket.org/dalcinl/igakit/get/default.tar.gz
+pysparse
+ipython
+
