@@ -6,5 +6,9 @@ sympy
 scikit-umfpack
 https://bitbucket.org/dalcinl/igakit/get/default.tar.gz
 csc-pysparse
-ipython
+jupyter
 mpi4py
+pymetis
+mayavi
+https://bitbucket.org/petsc/petsc4py/downloads/petsc4py-3.4.tar.gz
+wxPython
