@@ -3,3 +3,4 @@ sfepy
 *.pdf
 *.log
 *.aux
+.ipynb_checkpoints
