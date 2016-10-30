@@ -4,3 +4,5 @@ sfepy
 *.log
 *.aux
 .ipynb_checkpoints
+__pycache__
+.cache
