@@ -6,3 +6,4 @@ sfepy
 .ipynb_checkpoints
 __pycache__
 .cache
+.coverage

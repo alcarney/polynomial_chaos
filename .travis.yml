@@ -5,7 +5,10 @@ python:
 install:
     - cd src/
     - pip install -r requirements.txt
+    - pip install coveralls
 
 script:
-    - python -m pytest -v --ignore=env/
+    - coverage run --source=obj -m pytest -v --ignore=env
+
+after_success: coveralls
 
