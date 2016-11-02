@@ -1,7 +1,7 @@
 from hypothesis import given
 from hypothesis.strategies import integers, floats
 
-from obj.parser import *
+from obj.parser import parse_face, parse_vertex, parse_obj
 
 # Set the type of data that I want hypothesis to generate
 coord = floats(min_value=10**-6, max_value=10**6)
@@ -30,7 +30,7 @@ def test_parse_face(f1, f2, f3):
 
 def test_simple_plane():
 
-    obj = parse_obj('obj/tests/simple_plane.obj')
+    obj = parse_obj('tests/simple_plane.obj')
 
     assert len(obj['vertices']) == 4
     assert len(obj['faces']) == 2

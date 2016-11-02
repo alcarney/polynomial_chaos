@@ -1,5 +1,4 @@
 
-
 def parse_vertex(vertex_string):
     """
     Parses a vertex definition from an .obj file and returns the tuple
