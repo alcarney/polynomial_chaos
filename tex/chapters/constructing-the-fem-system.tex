@@ -1,0 +1,20 @@
+\section{Deriving the Weak Formulation}
+
+Considering the general form of Laplace's equation:
+
+\begin{align}\label{eq:general_laplace}
+    \generalLaplaceEqn \text{, in } \Omega \\
+    u &= 0 \text{, on } \delta\Omega = \Gamma
+\end{align}
+
+In order to discretise the domain, we first need the weak formulation. To do
+this we multiply (\ref{eq:general_laplace}) through with an appropriate test
+function from the test space and integrate over the domain.
+
+So for $v \in V$:
+
+\[
+    \int_{\Omega}{v(\nabla\cdot(a\nabla{u}))}\,d\Omega +
+    \int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega +
+    \int_{\Omega}cuv\,d\Omega
+\]

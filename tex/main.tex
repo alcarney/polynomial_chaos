@@ -12,10 +12,12 @@
 \onehalfspacing
 
 % A package to include graphics files (jpg, png, eps, pdf etc...)
+%\usepackage{epstopdf}
 \usepackage{graphicx}
 
 % Some basic packages that are almost standad
 \usepackage{amssymb}
+\usepackage{amsmath}
 
 % Package to be able to draw tikz images
 \usepackage{tikz}
@@ -32,6 +34,13 @@
 \addbibresource{bibliography.bib}
 
 % ----------------------------------------------------------------------------
+% Some useful definitions
+% ----------------------------------------------------------------------------
+
+\renewcommand{\v}[1]{\mathbf{#1}}
+\newcommand{\generalLaplaceEqn}{-\nabla\cdot(a\nabla{u}) + \v{b}\cdot\nabla{u} + cu &= f}
+
+% ----------------------------------------------------------------------------
 % The actual report
 % ----------------------------------------------------------------------------
 
@@ -43,7 +52,7 @@
     \listoffigures
 
     % The actual content:
-    \include{chapters/chapter1}
+    \include{chapters/constructing-the-fem-system}
     \include{chapters/chapter2}
     \include{chapters/chapter3}
 
