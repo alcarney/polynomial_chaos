@@ -1,10 +1,14 @@
+\chapter{The Finite Element Method}
+
+\todo[inline]{Give overview of the FEM}
+
 \section{Deriving the Weak Formulation}
 
 Considering the general form of Laplace's equation:
 
 \begin{align}\label{eq:general_laplace}
     \generalLaplaceEqn \text{, in } \Omega \\
-    u &= 0 \text{, on } \delta\Omega = \Gamma
+    u &= 0 \text{, on } \partial\Omega = \Gamma
 \end{align}
 
 In order to discretise the domain, we first need the weak formulation. To do
@@ -16,5 +20,123 @@ So for $v \in V$:
 \[
     \int_{\Omega}{v(\nabla\cdot(a\nabla{u}))}\,d\Omega +
     \int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega +
-    \int_{\Omega}cuv\,d\Omega
+    \int_{\Omega}cuv\,d\Omega = \int_{\Omega}fv\,d\Omega
 \]
+
+Applying Green's first integral identity to the first term we get:
+
+\[
+    \int_{\Omega}a\nabla{v}\cdot\nabla{u}\,d\Omega -
+    \int_{\Gamma}av
+      \underbrace{\frac{\partial{u}}{\partial{n}}}_{=0}
+      \,d\Gamma +
+    \int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega + \int_{\Omega}cuv\,d\Omega =
+    \int_{\Omega}fv\,d\Omega
+\]
+
+As per our boundary conditions $u=0$ on $\Gamma$ which caues the second
+integral to vanish hence:
+
+\[
+    \int_{\Omega}a\nabla{v}\cdot\nabla{u}\,d\Omega +
+    \int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega + \int_{\Omega}cuv\,d\Omega =
+    \int_{\Omega}fv\,d\Omega
+\]
+
+Then if we define our bilinear form to be:
+
+\[
+    a(u,v) =
+    \int_{\Omega}a\nabla{v}\cdot\nabla{u}\,d\Omega +
+    \int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega + \int_{\Omega}cuv\,d\Omega
+\]
+
+and the linear functional to be:
+
+\[
+    l(v) = \int_{\Omega}fv\,d\Omega
+\]
+
+Then we have a weak solution when we can find $u \in V$ such that:
+
+\begin{equation}\label{eq:weak_formulation}
+    a(u,v) = l(v)\, \forall v \in V
+\end{equation}
+
+\section{The Master Triangle}
+
+As we will see it will be useful to introduce a mapping that will let us
+evaluate integrals for arbitrary triangles by considering a single reference
+triangle comprised of the points $(0,0), (0,1), (1,0)$
+
+\todo[inline]{Explain the master triangle, the mapping etc}
+
+\begin{align}\label{eq:master_basis_functions}
+    \psi_1(\zeta, \eta) &= 1 - \zeta - \eta \\
+    \psi_2(\zeta, \eta) &= \zeta \\
+    \psi_3(\zeta, \eta) &= \eta
+\end{align}
+
+It will also be useful to consider the derivatives of these functions:
+
+\begin{align}\label{eq:master_basis_functions_derivative}
+    \psi_1' = \nabla\psi_1(\zeta, \eta) &=
+        \frac{1}{h}\left(\begin{array}{c}-1 \\ -1\end{array}\right) \\
+    \psi_2' = \nabla\psi_2(\zeta, \eta) &=
+        \frac{1}{h}\left(\begin{array}{c}1 \\ 0\end{array}\right) \\
+    \psi_3' = \nabla\psi_3(\zeta, \eta) &=
+        \frac{1}{h}\left(\begin{array}{c}0 \\ 1\end{array}\right)
+\end{align}
+
+\section{The Local Stiffness Matrix}
+
+Each local stiffness matrix will have dimension $3 \times 3$ and will be given
+by:
+
+\begin{align*}
+    A^k_{i,j} &= a_k(\phi_j, \phi_i) \\
+     &= \int_{T_k}a\nabla\phi_i\cdot\nabla\phi_j\,dxdy +
+        \int_{T_k}\v{b}\cdot\phi_j\nabla\phi_i\,dxdy +
+        \int_{T_k}c\phi_i\phi_j\,dxdy
+\end{align*}
+
+To simplify the integrations we will apply our mapping so that we have:
+
+\[
+    A^k_{i,j} = h^2\int_Ta\nabla\psi_i\cdot\nabla\psi_j\,d\zeta d\eta +
+                h^2\int_T\v{b}\psi_j\nabla\psi_i\,d\zeta d\eta +
+                h^2\int_Tc\psi_i\psi_j\,d\zeta d\eta
+\]
+
+For simplicity we will consider each integral in turn:
+
+\[
+    ah^2\int_T\nabla\psi_i\cdot\nabla\psi_j\,d\zeta d\eta =
+    a\int_T\psi'_{i\zeta}\psi'_{j\zeta} +
+        \psi'_{i\eta}\psi'_{i\eta}\,d\zeta d\eta
+\]
+
+We can see from this that the resulting matrix will be symmetric, let's
+consider the case when $i = 1 = j$:
+
+\begin{align*}
+    a\int_T(\psi'_{1\zeta})^2 + (\psi'_{1\eta})^2\,d\zeta d\eta & =
+        a\int_T(-1)^2 + (-1)^2\,d\zeta d\eta \\
+    &= 2a\int_0^1\int_0^\eta\,d\zeta d\eta \\
+    &= 2a\frac{1}{2} \\
+    &= a
+\end{align*}
+
+Following a similar process for each entry we find that this term gives the
+matrix:
+
+\begin{equation}\label{eq:stiffness_term_1}
+    a\left(\begin{array}{c c c}
+        1      & -\half & -\half \\
+        -\half & \half  & 0 \\
+        -\half & 0      & \half
+    \end{array}\right)
+\end{equation}
+
+Finally let's consider the third integral
+

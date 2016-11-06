@@ -29,6 +29,9 @@
 % Package to be able to compile standalone tikz packages
 \usepackage{standalone}
 
+% Notes
+\usepackage{todonotes}
+
 % A package that gives more control for bibliographies than the default
 \usepackage[backend=biber, backref=true, firstinits=true, url=true, isbn=true]{biblatex}
 \addbibresource{bibliography.bib}
@@ -39,6 +42,7 @@
 
 \renewcommand{\v}[1]{\mathbf{#1}}
 \newcommand{\generalLaplaceEqn}{-\nabla\cdot(a\nabla{u}) + \v{b}\cdot\nabla{u} + cu &= f}
+\newcommand{\half}{\frac{1}{2}}
 
 % ----------------------------------------------------------------------------
 % The actual report
@@ -47,6 +51,8 @@
 \begin{document}
     \include{frontcover}
     \include{acknowledgments}
+
+    \listoftodos
 
     \tableofcontents
     \listoffigures
