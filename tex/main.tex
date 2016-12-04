@@ -7,6 +7,7 @@
 % These are some lazy packages to get a good looking page layout
 \usepackage{fullpage}
 \usepackage[parfill]{parskip}
+\usepackage[toc,page]{appendix}
 
 \usepackage{setspace}
 \onehalfspacing
@@ -14,6 +15,7 @@
 % A package to include graphics files (jpg, png, eps, pdf etc...)
 %\usepackage{epstopdf}
 \usepackage{graphicx}
+\usepackage{color}
 
 % Some basic packages that are almost standad
 \usepackage{amssymb}
@@ -32,6 +34,9 @@
 % Notes
 \usepackage{todonotes}
 
+% Code
+\usepackage{listings}
+
 % A package that gives more control for bibliographies than the default
 \usepackage[backend=biber, backref=true, firstinits=true, url=true, isbn=true]{biblatex}
 \addbibresource{bibliography.bib}
@@ -43,6 +48,26 @@
 \renewcommand{\v}[1]{\mathbf{#1}}
 \newcommand{\generalLaplaceEqn}{-\nabla\cdot(a\nabla{u}) + \v{b}\cdot\nabla{u} + cu &= f}
 \newcommand{\half}{\frac{1}{2}}
+
+% ----------------------------------------------------------------------------
+% Code listing settings
+% ----------------------------------------------------------------------------
+\definecolor{commentgreen}{rgb}{0.0, 0.6, 0.0}
+
+\lstset{ %
+    backgroundcolor=\color{white},
+    basicstyle=\footnotesize,
+    breakatwhitespace=true,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{commentgreen},
+    frame=L,
+    keepspaces=true,
+    numbers=left,
+    showspaces=false,
+    tabsize=2,
+    title=\lstname
+}
 
 % ----------------------------------------------------------------------------
 % The actual report
@@ -59,8 +84,12 @@
 
     % The actual content:
     \include{chapters/constructing-the-fem-system}
-    \include{chapters/chapter2}
+    \include{chapters/an-introductory-example}
     \include{chapters/chapter3}
+
+    \begin{appendices}
+        \include{chapters/app-mesh-generation}
+    \end{appendices}
 
     % The bibliography:
     \printbibliography

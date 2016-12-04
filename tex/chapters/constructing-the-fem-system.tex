@@ -138,5 +138,54 @@ matrix:
     \end{array}\right)
 \end{equation}
 
-Finally let's consider the third integral
+Now let's consider the second term, in the case when $i = 2, j = 1$:
 
+\begin{align*}
+    h^2\int_T{\v{b}\psi_1\nabla\psi_2}\, d\zeta d\eta &=
+    -h\int_0^1\int_0^\eta{\zeta b_x + \zeta b_y}\, d\zeta d\eta \\
+    &= -h(b_x + b_y)\int_0^1\int_0^\eta{\zeta}\, d\zeta d\eta \\
+    &= -\frac{h(b_x + b_y)}{6}
+\end{align*}
+
+Repeating this for the other entries we get the matrix:
+
+\begin{equation}\label{eq:stiffness_term_2}
+    h\left(\begin{array}{c c c}
+        \frac{b_x + b_y}{12} & -\frac{(b_x + b_y)}{6} & -\frac{(b_x + b_y)}{6} \\
+        \frac{b_x}{12} & \frac{b_x}{4} & \frac{b_y}{6} \\
+        \frac{b_y}{12} & \frac{b_x}{6} & \frac{b_y}{4}
+    \end{array}\right)
+\end{equation}
+
+Finally let's consider the third integral, in the case where $i = j = 1$:
+
+\begin{align*}
+       ch^2\int_T{\psi_1\psi_1}\,d\zeta d\eta
+       &= ch^2\int_0^1\int_0^\eta{(1 - \zeta - \eta)^2}\, d\zeta d\eta \\
+%
+       &= ch^2\int_0^1\int_0^\eta\, d\zeta d\eta +
+          2ch^2\int_0^1\int_0^\eta{\zeta\eta - \zeta - \eta}\, d\zeta d\eta +
+          ch^2\int_0^1\int_0^\eta{\zeta^2 + \eta^2}\, d\zeta d\eta \\
+%
+       &= \frac{ch^2}{2} - \frac{3ch^2}{4} + \frac{ch^2}{3} \\
+       &= \frac{ch^2}{12}
+\end{align*}
+
+Following a similar argument for the other entries gives us the following
+matrix:
+
+\begin{equation}\label{eq:stiffness_term_3}
+    \frac{ch^2}{2}\left(\begin{array}{c c c}
+          \frac{1}{12} & - \frac{1}{24} & - \frac{1}{24} \\
+        - \frac{1}{24} &   \frac{1}{12} & - \frac{1}{24} \\
+        - \frac{1}{24} & - \frac{1}{24} &   \frac{1}{12}
+    \end{array}\right)
+\end{equation}
+
+Combining (\ref{eq:stiffness_term_1}), (\ref{eq:stiffness_term_2}),
+(\ref{eq:stiffness_term_3}) gives us the local stiffness matrix for the general
+form of the equation (\ref{eq:general_laplace})
+
+\section{The Local Mass Matrix}
+
+The local mass matrix will also have dimension $3 \times 3$
