@@ -8,3 +8,14 @@ __pycache__
 .cache
 .coverage
 .hypothesis
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.out
+*.run.xml
+*.synctex.gz
+*.tdo
+*.toc
