@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 from math import sqrt
 
@@ -5,8 +7,9 @@ from obj.generate import rectangular_domain
 from .construction import construct_global_stiffness_matrix,\
                           construct_global_mass_matrix
 
+logger = logging.getLogger(__name__)
 
-def L2_error(grid, soln, exact):
+def L2_error(N, grid, soln, exact):
     """
     Given the discrete grid, the approximate solution and
     the exact solution, compute the L2 error of the difference
@@ -19,7 +22,7 @@ def L2_error(grid, soln, exact):
         for x in xs:
             err += (soln[x, y] - exact(x, y)) ** 2
 
-    err = (1 / len(xs) ** 2) * sqrt(err)
+    err = (1 / N ** 2) * sqrt(err)
 
     return err
 
@@ -52,6 +55,7 @@ def solve_system(parameters, known_nodes, f, N, exact=None):
 
     # Everything we will return goes here
     results = {}
+    results['N'] = N
 
     # Construct the domain based on our N
     obj = rectangular_domain(N=N)
@@ -103,6 +107,6 @@ def solve_system(parameters, known_nodes, f, N, exact=None):
 
     # Final touch, if we were given the exact solution comute the error
     if exact is not None:
-        results['err'] = L2_error((uniq_x, uniq_y), U, exact)
+        results['err'] = L2_error(N, (uniq_x, uniq_y), U, exact)
 
     return results
