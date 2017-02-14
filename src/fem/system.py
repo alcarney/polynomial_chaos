@@ -18,9 +18,9 @@ def L2_error(N, grid, soln, exact):
     xs, ys = grid
     err = 0
 
-    for y in ys:
-        for x in xs:
-            err += (soln[x, y] - exact(x, y)) ** 2
+    for j in range(len(ys)):
+        for i in range(len(xs)):
+            err += (soln[i, j] - exact(xs[i], ys[j])) ** 2
 
     err = (1 / N ** 2) * sqrt(err)
 
