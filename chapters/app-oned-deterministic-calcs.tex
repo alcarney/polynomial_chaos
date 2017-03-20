@@ -1,0 +1,49 @@
+\chapter{One Dimensional Deterministic Calculations}
+
+\section{Local Stiffness Matrix}
+
+\subsection{The first integral}
+
+These terms give the entries of the part of the local stiffness matrix multiplied 
+by the parameter $a$ in \ref{eq:oned-deterministic-local-discrete}
+In the case where $r = 2, s = 2$
+
+\begin{align*}
+  a\int_{x_k}^{x_{k+1}}\psi_{k,2}'(x)\psi_{k,2}'(x)\, dx 
+    &= a\int_{x+k}^{x_{k+1}}\left(\frac{1}{x_{k+1} - x_k}\right)\, dx \\
+    &= \frac{a}{h_k^2}\int_{x_k}^{x_{k+1}}1\, dx \\
+    &= \frac{a}{h_k^2}(\underbrace{x_{k+1} - x_k}_{h_k}) \\
+    &= \frac{a}{h_k}
+\end{align*}
+
+By symmetry we can see that the cases where $r = 1, s = 2$ and $r = 2, s = 1$ will
+coincide:
+
+\begin{align*}
+	a\int_{x_k}^{x_{k+1}}\psi_{k, 1}'(x)\psi_{k, 2}'(x)\, dx
+      &= a\int_{x_k}^{x_{k+1}}\left(\frac{-1}{x_{k+1} - x_k}\right)
+                              \left(\frac{1}{x_{k+1} - x_k}\right)\, dx \\
+      &= -\frac{a}{h_k^2}\int_{x_k}^{x_{k+1}}1\, dx \\
+      &= -\frac{a}{h_k^2}(\underbrace{x_{k+1} - x_k}_{h_k}) \\
+      &= -\frac{a}{h_k}
+\end{align*}
+
+\subsection{The second integral}
+
+These terms correspond with the entries of the part of the local stiffness matrix
+multiplied by the parameter $b$ in \ref{eq:oned-deterministic-local-discrete}
+
+In the case where $r = 1, s = 1$:
+
+\begin{align*}
+	b\int_{x_k}^{x_{k+1}}\psi_{k,1}'(x)\psi_{k,1}(x)\, dx
+      &= b\int_{x_k}^{x_{k+1}}\left(\frac{-1}{x_{k+1} - x_k}\right)
+                              \left(\frac{x_{k+1} - x}{x_{k+1} - x_k}\right)\, dx \\
+      &= -\frac{b}{h_k^2}\int_{x_k}^{x_{k+1}}(x_{k+1} - x)\, dx \\
+      &= -\frac{b}{h_k^2}\left[x_{k+1}x - \frac{x^2}{2}\right]_{x_k}^{x_{k+1}} \\
+      &= -\frac{b}{h_k^2}\left[\frac{x_k^2}{2} + x_{k+1}^2 -\frac{x_{k+1}^2}{2}
+                               - x_kx_{k+1}\right] \\
+      &= -\frac{b}{h_k^2}
+            [\underbrace{x_{k+1}^2 - 2x_{k+1}x_k + x_k^2}_{(x_{k+1} - x_k)^2 = h_k^2}] \\
+      &= -b
+\end{align*}
