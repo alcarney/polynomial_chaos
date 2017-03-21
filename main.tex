@@ -24,6 +24,7 @@
 % Package to be able to draw tikz images
 \usepackage{tikz}
 \usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathreplacing}
 
 % Package to get hyperrlinks
 \usepackage{hyperref}
@@ -48,6 +49,7 @@
 \renewcommand{\v}[1]{\mathbf{#1}}
 \newcommand{\generalLaplaceEqn}{-\nabla\cdot(a\nabla{u}) + \v{b}\cdot\nabla{u} + cu &= f}
 \newcommand{\half}{\frac{1}{2}}
+\newcommand{\myref}[1]{(\ref{#1})}
 
 % ----------------------------------------------------------------------------
 % Code listing settings
@@ -83,12 +85,15 @@
     \listoffigures
 
     % The actual content:
+    \include{chapters/one-d-deterministic-case}
     \include{chapters/constructing-the-fem-system}
     \include{chapters/an-introductory-example}
     \include{chapters/chapter3}
 
     \begin{appendices}
+    	\include{chapters/app-oned-deterministic-calcs}
         \include{chapters/app-mesh-generation}
+        \include{chapters/app-fem-implementation}
     \end{appendices}
 
     % The bibliography:

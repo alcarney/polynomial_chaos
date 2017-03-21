@@ -1,21 +1,19 @@
-\chapter{The Finite Element Method}
+\chapter{Laplace's Equation}
 
-\todo[inline]{Give overview of the FEM}
+\todo[inline]{Show that classical solutions are not always available}
+\todo[inline]{Show the derivation of the weak form}
+\todo[inline]{Discretise the domain and show how we represent functions there}
+\todo[inline]{Show how to construct the FEM linear system}
 
-\section{Deriving the Weak Formulation}
-
-\todo[inline]{Give more information on what the weak formulation is}
-
-Considering the general form of Laplace's equation:
+Our problem concerns the following partial differential equation:
 
 \begin{align}\label{eq:general_laplace}
     \generalLaplaceEqn \text{, in } \Omega \\
     u &= 0 \text{, on } \partial\Omega = \Gamma
 \end{align}
 
-In order to discretise the domain, we first need the weak formulation. To do
-this we multiply (\ref{eq:general_laplace}) through with an appropriate test
-function from the test space and integrate over the domain.
+In order to apply the finite element method, we need to obtain the weak
+formulation of the above equation.
 
 So for $v \in V$:
 
@@ -65,7 +63,67 @@ Then we have a weak solution when we can find $u \in V$ such that:
     a(u,v) = l(v)\, \forall v \in V
 \end{equation}
 
-\section{The Master Triangle}
+\section{Discretising the domain}
+
+We divide each $[0,1]$ interval into $N$ segments of length $h = \frac{1}{N}$ 
+which we can use to subdivide the domain into a grid. Placing a node $x_{ij}$ at 
+each intersection of the grid lines gives us $(N + 1)^2$ nodes which we can use to
+to approximate functions on this domain with.
+
+In order to approximate functions on this domain we need to choose an appropriate
+basis
+
+From this then  we can construct a uniform triangulation $T_h$ of
+$[0,1] \times [0,1]$, see Figure \ref{fig:example_triangulation} for an example 
+triangulation of the domain.
+
+\begin{figure}\label{fig:example_triangulation}
+\centering
+\begin{tikzpicture}[scale=5]
+
+	\scriptsize
+	% Place each of the nodes in the grid
+	\foreach \x in {0,...,4}
+		\foreach \y in {0,...,4}
+        	{
+               \node[circle,draw=black] 
+                         (\x\y) at (0.25*\x,0.25*\y) {};
+       		}
+            
+    % Draw each horizontal line between the nodes
+    \foreach \y in {0,...,4}
+    	\foreach \x in {0,...,3}
+            {
+                \pgfmathtruncatemacro{\idx}{\x + 1}
+            	\draw (\x\y) -- (\idx\y);
+            }
+            
+    % Draw each vertical line between the nodes
+    \foreach \x in {0,...,4}
+    	\foreach \y in {0,...,3}
+            {
+            	\pgfmathtruncatemacro{\idx}{\y + 1}
+                \draw (\x\y) -- (\x\idx);
+            }
+            
+     % Finally draw each diagonal to complete the triangulation
+     \foreach \y in {1,...,4}
+         \foreach \x in {0,...,3}
+             {
+                \pgfmathtruncatemacro{\xidx}{\x + 1}
+                \pgfmathtruncatemacro{\yidx}{\y - 1}
+          	    \draw (\x\y) -- (\xidx\yidx);
+             }
+             
+      % Illustrate the length of each segment
+      \draw[thick,decoration={brace, mirror}, decorate]
+          (0, -0.051) -- (0.25, -0.05)
+          node[pos=0.5,anchor=north] {$h = \frac{1}{N}$};
+\end{tikzpicture}
+\caption{Example triangulation of $\Omega$ with $N = 4$}
+\end{figure}
+
+
 
 As we will see it will be useful to introduce a mapping that will let us
 evaluate integrals for arbitrary triangles by considering a single reference
@@ -110,7 +168,7 @@ To simplify the integrations we will apply our mapping so that we have:
                 h^2\int_Tc\psi_i\psi_j\,d\zeta d\eta
 \]
 
-For simplicity we will consider each integral in turn:
+Considering each term in isolation:
 
 \[
     ah^2\int_T\nabla\psi_i\cdot\nabla\psi_j\,d\zeta d\eta =
@@ -129,8 +187,8 @@ consider the case when $i = 1 = j$:
     &= a
 \end{align*}
 
-Following a similar process for each entry we find that this term gives the
-matrix:
+Evaluating similar integrals for each entry in the matrix results in the following
+local stiffness matrix associated with the Laplacian term:
 
 \begin{equation}\label{eq:stiffness_term_1}
     a\left(\begin{array}{c c c}
@@ -153,9 +211,9 @@ Repeating this for the other entries we get the matrix:
 
 \begin{equation}\label{eq:stiffness_term_2}
     h\left(\begin{array}{c c c}
-        \frac{b_x + b_y}{12} & -\frac{(b_x + b_y)}{6} & -\frac{(b_x + b_y)}{6} \\
-        \frac{b_x}{12} & \frac{b_x}{4} & \frac{b_y}{6} \\
-        \frac{b_y}{12} & \frac{b_x}{6} & \frac{b_y}{4}
+        -\frac{(b_x + b_y)}{12} & \frac{b_x}{6} & \frac{b_y}{6} \\
+        -\frac{(b_x + b_y)}{12} & \frac{b_x}{6} & \frac{b_y}{6} \\
+        -\frac{(b_x + b_y)}{12} & \frac{b_x}{6} & \frac{b_y}{6}
     \end{array}\right)
 \end{equation}
 
@@ -178,9 +236,9 @@ matrix:
 
 \begin{equation}\label{eq:stiffness_term_3}
     \frac{ch^2}{2}\left(\begin{array}{c c c}
-          \frac{1}{12} & - \frac{1}{24} & - \frac{1}{24} \\
-        - \frac{1}{24} &   \frac{1}{12} & - \frac{1}{24} \\
-        - \frac{1}{24} & - \frac{1}{24} &   \frac{1}{12}
+         \frac{1}{12} &  \frac{1}{24} &  \frac{1}{24} \\
+         \frac{1}{24} &  \frac{1}{12} &  \frac{1}{24} \\
+         \frac{1}{24} &  \frac{1}{24} &  \frac{1}{12}
     \end{array}\right)
 \end{equation}
 
