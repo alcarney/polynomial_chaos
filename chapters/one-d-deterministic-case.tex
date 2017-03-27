@@ -1,15 +1,17 @@
 \chapter{One Dimensional Deterministic Case}
 
 The simplest form of Laplace's Equation we can consider is the one dimensional case where
-the coefficients are deterministic with a zero Dirichlet condition. In this case
-the equation is given by:
+the coefficients are deterministic in which case the equation is given by:
 
 \begin{equation}
-\begin{array}{c c}\label{eq:one-d-deterministic}
-	-au''(x) + bu'(x) + cu(x) = f(x)\, & \text{ in } \Omega = [0, 1] \\
-      u(x) = 0\, & \text{ on } \delta\Omega = \{0, 1\}
-\end{array}
+\begin{aligned}
+	-au''(x) + bu'(x) + cu(x) &= f(x) &\text{ in } \Omega = [0, 1] \\
+                         u(x) &= 0 &\text{ on } \delta\Omega = \{0, 1\}
+\end{aligned}
 \end{equation}
+
+We consider the equation in the interval $[0,1]$ and prescribe a zero Dirichlet condition at the
+endpoints $x = 0$ and $x = 1$.
 
 \todo[inline]{In the deterministic case, we should be able to solve various versions of this
 analyitcally. Include a few such cases and their solutions they will provide us with a few
@@ -36,7 +38,7 @@ Integrating the first term by parts gives us:
     	+ a\int_0^1{u'(x)v'(x)\ dx}
 \end{equation}
 
-Where the underbraced term is zero as $v$ is zero on the boundary of the domain. Hence the
+Where the underbraced term is zero as $v$ is zero at the endpoints of the domain. Hence the
 continuous weak form of \ref{eq:one-d-deterministic} is given by:
 
 \begin{equation}\label{eq:wk-oned-deterministic}
@@ -77,7 +79,7 @@ satisfied $\forall v \in W$
 For a given parameter $N \in \mathbb{N}$ we define $N$ equally spaced nodes $x_i$ 
 $i \in \{1, \ldots, N\} $in the interval $[0,1]$ where $x_0 = 0, x_N = 1$. Then we
 can divide the domain into $N$ subintervals $ I_i = [x_i, x_{i+1}]$,
-$i \in \{1,\ldots,N - 1\}$ of length $h = \frac{1}{N}$. We can then define our 
+$i \in \{0,\ldots,N - 1\}$ of length $h = \frac{1}{N}$. We can then define our 
 discretisation to be:
 
 \[
@@ -89,7 +91,7 @@ Upon such a discretisation we can define suitable finite dimensional subspaces o
 test spaces $V^h \subset V$, $W^h \subset W$.
 
 \begin{align*}
-	V^h = \{v: &v \text{ is linear on } [x_i, x_{i+1}],\ i \in \{1, \ldots, N - 1\}, \\
+	V^h = \{v \in V: &v \text{ is linear on } [x_i, x_{i+1}],\ i \in \{1, \ldots, N - 1\}, \\
                &v \text{ is continuous on } [0, 1],\ v(0) = 0 = v(1)\}
 \end{align*}
 
@@ -110,6 +112,9 @@ also be able to approximate $f(x)$:
 where $f_i = f(x_i)$. By writing the functions $u$ and $f$ in terms of their values at the nodes $x_i$
 then by taking a sufficiently large number of nodes we can approximate them to within an acceptible margin
 of error.
+
+\todo[inline]{Give an estimate for the error of the FEM for this problem - Use the book!!}
+\todo[inline]{Possibily include mention of existence and uniqueness of the solution - Use the book !!}
 
 An appropriate basis would be the so called `hat functions' which we can define for each interior node
 as follows:
@@ -518,4 +523,9 @@ the global mass matrix takes the following form:
         \end{array}\right]
 \end{equation}
 
+\subsection{A Priori Error Estimates}
+
+
 \section{Example Problems and Results}
+
+\todo[inline]{Do this!}

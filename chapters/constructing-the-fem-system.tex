@@ -1,129 +1,221 @@
-\chapter{Laplace's Equation}
+\chapter{Two Dimensional Deterministic Case}
 
-\todo[inline]{Show that classical solutions are not always available}
-\todo[inline]{Show the derivation of the weak form}
-\todo[inline]{Discretise the domain and show how we represent functions there}
-\todo[inline]{Show how to construct the FEM linear system}
+In two dimensions, with deterministic coefficients Laplace's equation takes the following form:
 
-Our problem concerns the following partial differential equation:
+\begin{equation}\label{eq:two-d-deterministic}
+\begin{aligned}
+    -\nabla\cdot(a\nabla u(\v{x})) + \v{b} \cdot \nabla u(\v{x}) + c u(\v{x}) &= f(\v{x}) 
+                               &\text{ in } \Omega = [0,1] \times [0,1] \\
+    u(\v{x}) &= 0 &\text{ on } \partial\Omega = \Gamma
+\end{aligned}
+\end{equation}
 
-\begin{align}\label{eq:general_laplace}
-    \generalLaplaceEqn \text{, in } \Omega \\
-    u &= 0 \text{, on } \partial\Omega = \Gamma
-\end{align}
+Which we will consider in the unit square and prescribe a zero Dirichlet condition on the boundary
+of the domain and is given by $\Gamma = (\{0,1\} \times [0,1]) \cup ([0,1] \times \{0,1\})$
 
-In order to apply the finite element method, we need to obtain the weak
-formulation of the above equation.
+\section{Weak Formulation}
 
-So for $v \in V$:
+\todo[inline]{Give proper definitions of the trial and test spaces}
 
-\[
-    \int_{\Omega}{v(\nabla\cdot(a\nabla{u}))}\,d\Omega +
-    \int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega +
-    \int_{\Omega}cuv\,d\Omega = \int_{\Omega}fv\,d\Omega
-\]
+As with the one dimensional case, the first step in implementing the finite element method for this
+problem is to obtain the weak formulation of the above equation. Which involves multiplying through
+by $v \in W$ and integrating over the domain:
+
+\begin{equation}
+    -\int_{\Omega}{v(\nabla\cdot(a\nabla{u}))}\,d\Omega +
+    -\int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega +
+    c\int_{\Omega}uv\,d\Omega = \int_{\Omega}fv\,d\Omega
+\end{equation}
 
 Applying Green's first integral identity to the first term we get:
 
-\[
-    \int_{\Omega}a\nabla{v}\cdot\nabla{u}\,d\Omega -
-    \int_{\Gamma}av
-      \underbrace{\frac{\partial{u}}{\partial{n}}}_{=0}
-      \,d\Gamma +
-    \int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega + \int_{\Omega}cuv\,d\Omega =
-    \int_{\Omega}fv\,d\Omega
-\]
-
-As per our boundary conditions $u=0$ on $\Gamma$ which caues the second
-integral to vanish hence:
-
-\[
-    \int_{\Omega}a\nabla{v}\cdot\nabla{u}\,d\Omega +
-    \int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega + \int_{\Omega}cuv\,d\Omega =
-    \int_{\Omega}fv\,d\Omega
-\]
-
-Then if we define our bilinear form to be:
-
-\[
-    a(u,v) =
-    \int_{\Omega}a\nabla{v}\cdot\nabla{u}\,d\Omega +
-    \int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega + \int_{\Omega}cuv\,d\Omega
-\]
-
-and the linear functional to be:
-
-\[
-    l(v) = \int_{\Omega}fv\,d\Omega
-\]
-
-Then we have a weak solution when we can find $u \in V$ such that:
-
-\begin{equation}\label{eq:weak_formulation}
-    a(u,v) = l(v)\, \forall v \in V
+\begin{equation}
+	\int_{\Omega}v(\nabla\cdot(a\nabla u))\, d\Omega = 
+    -a\int_{\Gamma}\underbrace{v\frac{\partial{u}}{\partial{n}}}_{ =0} \,d\Gamma 
+    + a\int_{\Omega}\nabla{v}\cdot\nabla{u}\,d\Omega
 \end{equation}
 
-\section{Discretising the domain}
+Where the underbraced integrand is zero on the boundary as by definition $v$ is zero there
+hence the whole term vanishes. Thus we are left with the continuous weak form of the problem:
 
-We divide each $[0,1]$ interval into $N$ segments of length $h = \frac{1}{N}$ 
-which we can use to subdivide the domain into a grid. Placing a node $x_{ij}$ at 
-each intersection of the grid lines gives us $(N + 1)^2$ nodes which we can use to
-to approximate functions on this domain with.
+\begin{equation}\label{eq:wk-twod-deterministic}
+    a\int_{\Omega}\nabla{v}\cdot\nabla{u}\,d\Omega +
+    \int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega + c\int_{\Omega}uv\,d\Omega =
+    \int_{\Omega}fv\,d\Omega
+\end{equation}
 
-In order to approximate functions on this domain we need to choose an appropriate
-basis
+Hence the weak solution is to find a $u \in V$ such that the above holds $\forall v \in W$
 
-From this then  we can construct a uniform triangulation $T_h$ of
-$[0,1] \times [0,1]$, see Figure \ref{fig:example_triangulation} for an example 
-triangulation of the domain.
+\section{Discrete Formulation}
 
-\begin{figure}\label{fig:example_triangulation}
+Moving from the one dimensional case to two dimensions suddenly adds a number of considerations
+since, unlike the one dimensional interval any two dimensional domain can come in a wide
+array of shapes. Therefore the method of discretisation must be chosen with the shape of the domain in mind,
+as what may be suitable for one domain would fail to capture certain features of another.However as
+the focus of this project is not on finding a discretisation for arbitrary domains, we
+have chosen the unit square since a simple uniform triangulation will be sufficient.
+
+Given a parameter $N \in \mathbb{N}$ we start with square grid with spacing $h = 1/N$ then at each
+of the $(N+1)^2$ intersections we place a node $x_i$, $i \in \{1,\ldots,(N+1)^2\}$. Then we
+divide each grid square into 2 triangles by splitting them down the diagonal,
+dividing the domain into triangular elements $T_k$ which we can then use to define the
+discretisation:
+
+\[
+	\mathcal{T}_h = \bigcup_{k=1}^{2N^2} T_k
+\]
+
+Please see Figure \ref{fig:two-d-discretisation} for an example of such a discretisation. 
+
+\begin{figure}
 \centering
 \begin{tikzpicture}[scale=5]
 
 	\scriptsize
 	% Place each of the nodes in the grid
-	\foreach \x in {0,...,4}
-		\foreach \y in {0,...,4}
-        	{
-               \node[circle,draw=black] 
-                         (\x\y) at (0.25*\x,0.25*\y) {};
-       		}
-            
-    % Draw each horizontal line between the nodes
-    \foreach \y in {0,...,4}
-    	\foreach \x in {0,...,3}
-            {
-                \pgfmathtruncatemacro{\idx}{\x + 1}
-            	\draw (\x\y) -- (\idx\y);
-            }
-            
-    % Draw each vertical line between the nodes
+    % First the boundary nodes
     \foreach \x in {0,...,4}
-    	\foreach \y in {0,...,3}
-            {
-            	\pgfmathtruncatemacro{\idx}{\y + 1}
-                \draw (\x\y) -- (\x\idx);
-            }
-            
-     % Finally draw each diagonal to complete the triangulation
-     \foreach \y in {1,...,4}
-         \foreach \x in {0,...,3}
-             {
-                \pgfmathtruncatemacro{\xidx}{\x + 1}
-                \pgfmathtruncatemacro{\yidx}{\y - 1}
-          	    \draw (\x\y) -- (\xidx\yidx);
-             }
-             
-      % Illustrate the length of each segment
-      \draw[thick,decoration={brace, mirror}, decorate]
-          (0, -0.051) -- (0.25, -0.05)
-          node[pos=0.5,anchor=north] {$h = \frac{1}{N}$};
+    	\foreach \y in {0,4}
+    {
+    	\node[circle,draw=black]
+          (\x\y) at (0.25*\x,0.25*\y) {};
+    }
+    
+    \foreach \y in {1,...,3}
+        \foreach \x in {0, 4}
+    {
+    	\node[circle,draw=black]
+          (\x\y) at (0.25*\x,0.25*\y) {};
+    }
+    
+    % Now the interior nodes - plus labels
+   	\foreach \x in {1,...,3}
+		\foreach \y in {1,...,3}
+    {
+         \node[circle,draw=black] 
+            (\x\y) at (0.25*\x,0.25*\y) {$x_{\x\y}$};
+    }
+    
+    % Next, the horizontal grid lines
+    \foreach \y in {0,...,4}
+       \foreach \x in {0,...,3}
+    {
+    	\pgfmathtruncatemacro{\idx}{\x + 1}
+        \draw (\x\y) -- (\idx\y);
+    }
+    
+    % Now for the verticals
+    \foreach \x in {0,...,4}
+        \foreach \y in {0,...,3}
+    {
+    	\pgfmathtruncatemacro{\idx}{\y + 1}
+        \draw(\x\y) -- (\x\idx);
+    }
+    
+    % Finally... the diagonals
+    \foreach \y in {1,...,4}
+        \foreach \x in {0,...,3}
+    {
+    	\pgfmathtruncatemacro{\xidx}{\x + 1}
+        \pgfmathtruncatemacro{\yidx}{\y - 1}
+        \draw (\x\y) -- (\xidx\yidx);
+    }
+    
+    % Bonus round, show the density of the grid
+    \draw[thick,decoration={brace,mirror},decorate]
+      (0,-0.051) -- (0.25, -0.05)
+      node[pos=0.5,anchor=north]{$h=1/N$};
 \end{tikzpicture}
 \caption{Example triangulation of $\Omega$ with $N = 4$}
+\label{fig:two-d-discretisation}
 \end{figure}
 
+Using this triangulation we can now define suitable finite dimensional subspaces
+of our test and trial spaces $V^h \subset V$, $W^h \subset W$:
 
+\begin{align*}
+	V^h = \{v \in V: &v \text{ is linear on } T_k,\ k \in \{1,\ldots,2N^2\}, \\
+                     &v \text{ is continuous on } \Omega\}
+\end{align*}
+
+Then by choosing appropriate basis functions $\phi_i$ for the above subspaces we will be able to approximate
+the solution as follows:
+
+\begin{equation}
+	u^h(\v{x}) = \sum_{j=1}^{(N+1)^2}u_j\phi_j(\v{x})
+\end{equation}
+
+where $u_j$ will be the approximate value of the solution at the node $x_j$. Similarly we can
+approximate $f(\v{x})$:
+
+\begin{equation}
+	f(x) \approx \sum_{j=1}^{(N+1)^2}f_j\phi_j(\v{x})
+\end{equation}
+
+where $f_j = f(\v{x_j})$
+
+\todo[inline]{Give details on errors, convergence etc!}
+
+As in the one dimensional case, an appropriate basis would be the `hat functions' which we can define in
+terms of a reference function $\Phi(\v{x})$ defined with respect to an example domain around $(0,0)$.
+Consider as in Figure \ref{fig:reference-function-domain} the domain where the function has support, 
+then we can write $\Phi(\v{x})$ as follows:
+
+\begin{equation}\label{eq:two-d-ref-basis-fn}
+	\Phi(\v{x}) = \left\{\begin{array}{c c}
+					1 - \frac{(x + y)}{h}, & \text{ in } T_1 \\
+                    1 - \frac{x}{y},       & \text{ in } T_2 \\
+                    1 + \frac{y}{h},       & \text{ in } T_3 \\
+                    1 + \frac{(x + y)}{h}, & \text{ in } T_4 \\
+                    1 + \frac{x}{h},       & \text{ in } T_5 \\
+                    1 - \frac{y}{h},       & \text{ in } T_6 \\
+                    0,                     & \text{ otherwise}
+ 	              \end{array}\right.
+\end{equation}
+
+where $\v{x} = (x, y)$. Then we can write each basis function $\phi_i$ in our discretised domain as
+$\phi_i(\v{x}) = \Phi(\v{x_i} - \v{x})$
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[scale=2.5]
+	\scriptsize
+    
+    % Place the nodes
+    \node[circle,draw=black,label={[anchor=west]$(0,0)$}] (00)  at (0,0)  {};
+    \node[circle,draw=black,label={[anchor=west]$(0,h)$}] (01)  at (0,1) {};
+    \node[circle,draw=black,label={[anchor=west]$(h,0)$}] (10)  at (1,0)  {};
+    \node[circle,draw=black,label={[anchor=west]$(-h,0)$}] (-10) at (-1,0) {};
+    \node[circle,draw=black,label={[anchor=west]$(0,-h)$}] (0-1) at (0,-1) {};
+    \node[circle,draw=black,label={[anchor=west]$(-h,h)$}] (-11) at (-1,1) {};
+    \node[circle,draw=black,label={[anchor=west]$(h,-h)$}] (1-1) at (1,-1) {};
+    
+    % Draw the lines
+    \draw (00) -- (01);
+    \draw (00) -- (10);
+    \draw (01) -- (10);
+    \draw (00) -- (-10);
+    \draw (00) -- (0-1);
+    \draw (-11) -- (01);
+    \draw (-11) -- (00);
+    \draw (-11) -- (-10);
+    \draw (-10) -- (0-1);
+    \draw (0-1) -- (1-1);
+    \draw (1-1) -- (10);
+    \draw (00) -- (1-1);
+    
+    % Finally the T's
+    \node (T1) at (0.35,0.35) {$T_1$};
+    \node (T2) at (0.6, -0.35) {$T_2$};
+    \node (T3) at (0.35, -0.6) {$T_3$};
+    \node (T4) at (-0.35,-0.35) {$T_4$};
+    \node (T5) at (-0.6, 0.35) {$T_5$};
+    \node (T6) at (-0.35, 0.6) {$T_6$};
+  
+\end{tikzpicture}
+\caption{The domain of the reference function $\Phi(\v{x})$}
+\label{fig:reference-function-domain}
+\end{figure}
 
 As we will see it will be useful to introduce a mapping that will let us
 evaluate integrals for arbitrary triangles by considering a single reference
