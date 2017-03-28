@@ -1,9 +1,9 @@
-\chapter{One Dimensional Deterministic Case}
+\chapter{One Dimensional Deterministic Case}\label{chap:oned-deterministic}
 
 The simplest form of Laplace's Equation we can consider is the one dimensional case where
 the coefficients are deterministic in which case the equation is given by:
 
-\begin{equation}
+\begin{equation}\label{eq:oned-deterministic}
 \begin{aligned}
 	-au''(x) + bu'(x) + cu(x) &= f(x) &\text{ in } \Omega = [0, 1] \\
                          u(x) &= 0 &\text{ on } \delta\Omega = \{0, 1\}
@@ -193,9 +193,12 @@ value of our solution $u$ at these nodes, we can move the associated terms over 
 
 In our particular problem we have a zero Dirichlet condition so the linear system reduces quite nicely to:
 
-\begin{equation}
+\begin{equation}\label{eq:oned-deterministic-fem}
 	\sum_{i=1}^{N-1}\sum_{j=1}^{N-1}A_{i,j}u_j = \sum_{i=1}^{N-1}\sum_{j=0}^NM_{i,j}f_j
 \end{equation}
+
+Solving this system for the vector $\v{u}$ will give us the approximate solution to the equation
+\ref{eq:oned-deterministic}
 
 \section{Constructing the Global Linear System}
 
@@ -523,9 +526,112 @@ the global mass matrix takes the following form:
         \end{array}\right]
 \end{equation}
 
-\subsection{A Priori Error Estimates}
+\section{Quantifying the Error}
 
+\todo[inline]{Do it! - Use the book}
 
 \section{Example Problems and Results}
 
-\todo[inline]{Do this!}
+\todo[inline]{Check with Vince how to properly cite the software}
+
+Since obtaining numerical approximations that are reasonably accurate requires rather large linear systems 
+of equations, it is necessary to use a computer to construct and solve these linear systems for us.
+I have chosen to make use of the Python programming language and used the Numpy linear algebra library
+\cite{numpy-array} in order construct and solve the resulting linear system discussed above
+\myref{eq:oned-deterministic-fem} and the results have been visualised using the Matplotlib plotting library
+\cite{matplotlib}.
+
+All problems in this section were run using the following code:
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+from math import sin, pi
+from fem.oned_deterministic import solve_system, L2_error
+
+a, b, c, = # Parameters are set depending on the problem
+
+def u(x):
+	# Exact solution is set depending on the problem
+
+def f(x):
+	# The RHS of the equation is set depending on the problem
+    
+errors = []
+XS = np.linspace(0, 1, 512)
+US = [u(x) for x in XS]
+
+for N in [4,8,16,32,64,128,256,512]:
+	# Solve the system
+	xs, U = solve_system(f, N, a, b, c)
+    
+	# Calculate the error
+	errors.append((N, L2_error(u, U, N)))
+    
+	# Plot one of the results
+	if N == 32:
+		p  = plt.plot(XS, US)         # Plot the exact solution
+		p += plt.plot(xs, U, 'r-o')   # Plot the approximation over the top
+\end{lstlisting}\label{code:oned-deterministic}
+
+For full details on how \incode{solve\_system} and \incode{L2\_error} are implemented please
+see Appendix \ref{app:oned-deterministic-code}
+
+\subsection{Verifying Correctness of the Code}
+
+It is important to verify that any code we write is functioning as we expect it to, so for the first set of examples
+we will choose the solution we want our implementation to converge to and set up various problems with different
+parameters to verify that the code is working as intended. By picking $u(x) = \sin{(\pi x)}$ as our solution and
+various values for our parameters $a,b,c$ we can easily determine the right hand side of the equation to feed into
+the code.
+
+Choosing $a = 1, b = 0, c = 0$ then \myref{eq:oned-deterministic} reduces to:
+
+\begin{align*}
+	-u''(x) &= f \text{,  in } [0,1] \\ 
+    u(0) = 0 &= u(1)
+\end{align*}
+
+Substituting in our expression for $u$ gives:
+
+\begin{align*}
+	-(\sin{(\pi x)})'' &= f(x) \\
+    -(\pi\cos{(\pi x)})' &= f(x) \\
+    f(x) &= \pi^2\sin{(\pi x)} 
+\end{align*}
+
+So by running the code we defined above with the following definitions:
+
+\begin{lstlisting}[language=Python]
+a, b, c = 1, 0, 0
+
+def u(x):
+	return sin(pi*x)
+    
+def f(x):
+	return (pi**2)*sin(pi*x)
+\end{lstlisting}
+
+We obtain the following:
+
+\begin{figure}
+\centering
+\begin{minipage}{.5\textwidth}
+	\centering
+    \begin{tabular}{| c | c |} \hline
+		$N$ & $||\v{u} - \v{u}^h||$ \\ \hline
+        4 & $3.52\times10^{-2}$ \\ 
+        8 & $9.02\times10^{-3}$ \\
+        16 & $2.27\times10^{-3}$ \\ 
+        32 & $5.68\times10^{-4}$ \\ 
+        64 & $1.42\times10^{-4}$ \\ 
+        128 & $3.55\times10^{-5}$ \\ 
+        256 & $8.87\times10^{-6}$ \\ 
+        512 & $2.22\times10^{-6}$ \\ \hline
+    \end{tabular}
+	\captionof{table}{Table of errors for the case $a = 1, b = 0, c = 0$}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+	\centering
+    \captionof{figure}{Plot of the exact and approximate solution for $N = 32$}
+\end{minipage}
+\end{figure}
