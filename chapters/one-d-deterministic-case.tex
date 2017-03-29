@@ -578,9 +578,15 @@ visualised using the Matplotlib plotting library \cite{matplotlib}.
 
 All problems in this section were run using the following code:
 
-\begin{lstlisting}[language=Python]
+
+
+
+\begin{lstlisting}[caption={Setup code for the Finite Element Method
+                            Implementation},
+                   label={code:oned-deterministic},
+                   language=Python]
 import numpy as np
-from math import sin, pi
+from math import sin, cos, pi
 from fem.oned_deterministic import solve_system, L2_error
 
 a, b, c, = # Parameters are set depending on the problem
@@ -606,7 +612,7 @@ for N in [4,8,16,32,64,128,256,512]:
     if N == 32:
         p  = plt.plot(XS, US)         # Plot the exact solution
         p += plt.plot(xs, U, 'r-o')   # Plot the approximation over the top
-\end{lstlisting}\label{code:oned-deterministic}
+\end{lstlisting}
 
 For full details on how \incode{solve\_system} and \incode{L2\_error} are
 implemented please see Appendix \ref{app:oned-deterministic-code}
@@ -620,22 +626,10 @@ parameters to verify that the code is working as intended. By picking $u(x) =
 \sin{(\pi x)}$ as our solution and various values for our parameters $a,b,c$ we
 can easily determine the right hand side of the equation to feed into the code.
 
-Choosing $a = 1, b = 0, c = 0$ then \myref{eq:oned-deterministic} reduces to:
-
-\begin{align*}
-    -u''(x) &= f \text{,  in } [0,1] \\
-    u(0) = 0 &= u(1)
-\end{align*}
-
-Substituting in our expression for $u$ gives:
-
-\begin{align*}
-    -(\sin{(\pi x)})'' &= f(x) \\
-    -(\pi\cos{(\pi x)})' &= f(x) \\
-    f(x) &= \pi^2\sin{(\pi x)}
-\end{align*}
-
-So by running the code we defined above with the following definitions:
+Choosing $a = 1, b = 0, c = 0$ and $u(x) = \sin{(\pi x)}$
+in \myref{eq:oned-deterministic} reduces implies that
+$f(x) = \pi^2\sin{(\pi x)}$. Running the code we defined above in
+Listing \myref{code:oned-deterministic} with the following definitions:
 
 \begin{lstlisting}[language=Python]
 a, b, c = 1, 0, 0
@@ -647,27 +641,63 @@ def f(x):
     return (pi**2)*sin(pi*x)
 \end{lstlisting}
 
-We obtain the following:
+Following a similar procedure for these other cases:
+\begin{itemize}
+    \item $a = 1, b = 0, c = 1$ and
+          $f(x) = \pi^2\sin{(\pi x)} + \sin{(\pi x)}$ \\
+    \item $a = 1, b = 0, c = 10$ and
+          $f(x) = \pi^2\sin{(\pi x)} + 10\sin{(\pi x)}$ \\
+    \item $a = 1, b = 1, c = 0$ and
+          $f(x) = \pi^2\sin{(\pi x)} + \pi\cos{(\pi x)}$
+\end{itemize}
+
+We obtain the following set of results:
+\todo[inline]{Get help with this!}
 
 \begin{figure}
 \centering
-\begin{minipage}{.5\textwidth}
-    \centering
-    \begin{tabular}{| c | c |} \hline
-        $N$ & $||\v{u} - \v{u}^h||$ \\ \hline
-        4 & $3.52\times10^{-2}$ \\
-        8 & $9.02\times10^{-3}$ \\
-        16 & $2.27\times10^{-3}$ \\
-        32 & $5.68\times10^{-4}$ \\
-        64 & $1.42\times10^{-4}$ \\
-        128 & $3.55\times10^{-5}$ \\
-        256 & $8.87\times10^{-6}$ \\
-        512 & $2.22\times10^{-6}$ \\ \hline
-    \end{tabular}
-    \captionof{table}{Table of errors for the case $a = 1, b = 0, c = 0$}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-    \centering
-    \captionof{figure}{Plot of the exact and approximate solution for $N = 32$}
-\end{minipage}
+\begin{tabular}{| c | c |} \hline
+    $N$ & $||\v{u} - \v{u}^h||$ \\ \hline
+    4 & $3.52\times10^{-2}$ \\
+    8 & $9.02\times10^{-3}$ \\
+    16 & $2.27\times10^{-3}$ \\
+    32 & $5.68\times10^{-4}$ \\
+    64 & $1.42\times10^{-4}$ \\
+    128 & $3.55\times10^{-5}$ \\
+    256 & $8.87\times10^{-6}$ \\
+    512 & $2.22\times10^{-6}$ \\ \hline
+\end{tabular}
+\captionof{table}{Table of errors for the case $a = 1, b = 0, c = 0$}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tabular}{| c | c |} \hline
+    $N$ & $|| \v{u} - \v{u}^h||$ \\ \hline
+    4 & $3.21\times10^{-2}$ \\
+    8 & $8.20\times10^{-3}$ \\
+    16 & $2.06\times10^{-3}$ \\
+    32 & $5.15\times10^{-4}$ \\
+    64 & $1.29\times10^{-4}$ \\
+    128 & $3.22\times10^{-5}$ \\
+    256 & $8.06\times10^{-6}$ \\
+    512 & $2.01\times10^{-6}$ \\ \hline
+\end{tabular}
+\captionof{table}{Table of errors for the case $a = 1, b = 0, c = 1$}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tabular}{| c | c |} \hline
+    $N$ & $|| \v{u} - \v{u}^h||$ \\ \hline
+    4 & $1.79\times10^{-2}$ \\
+    8 & $4.51\times10^{-3}$ \\
+    16 & $1.13\times10^{-3}$ \\
+    32 & $2.82\times10^{-4}$ \\
+    64 & $7.05\times10^{-5}$ \\
+    128 & $1.76\times10^{-5}$ \\
+    256 & $4.41\times10^{-6}$ \\
+    512 & $1.10\times10^{-6}$ \\ \hline
+\end{tabular}
+\captionof{table}{Table of errors for the case $a = 1, b = 0, c = 10$}
 \end{figure}
