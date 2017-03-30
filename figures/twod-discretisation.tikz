@@ -1,0 +1,58 @@
+\begin{tikzpicture}[scale=5]
+
+    \scriptsize
+    % Place each of the nodes in the grid
+    % First the boundary nodes
+    \foreach \x in {0,...,4}
+        \foreach \y in {0,4}
+    {
+        \node[circle,draw=black]
+          (\x\y) at (0.25*\x,0.25*\y) {};
+    }
+
+    \foreach \y in {1,...,3}
+        \foreach \x in {0, 4}
+    {
+        \node[circle,draw=black]
+          (\x\y) at (0.25*\x,0.25*\y) {};
+    }
+
+    % Now the interior nodes - plus labels
+    \foreach \x in {1,...,3}
+        \foreach \y in {1,...,3}
+    {
+         \node[circle,draw=black]
+            (\x\y) at (0.25*\x,0.25*\y) {$x_{\x\y}$};
+    }
+
+    % Next, the horizontal grid lines
+    \foreach \y in {0,...,4}
+       \foreach \x in {0,...,3}
+    {
+        \pgfmathtruncatemacro{\idx}{\x + 1}
+        \draw (\x\y) -- (\idx\y);
+    }
+
+    % Now for the verticals
+    \foreach \x in {0,...,4}
+        \foreach \y in {0,...,3}
+    {
+        \pgfmathtruncatemacro{\idx}{\y + 1}
+        \draw(\x\y) -- (\x\idx);
+    }
+
+    % Finally... the diagonals
+    \foreach \y in {1,...,4}
+        \foreach \x in {0,...,3}
+    {
+        \pgfmathtruncatemacro{\xidx}{\x + 1}
+        \pgfmathtruncatemacro{\yidx}{\y - 1}
+        \draw (\x\y) -- (\xidx\yidx);
+    }
+
+    % Bonus round, show the density of the grid
+    \draw[thick,decoration={brace,mirror},decorate]
+      (0,-0.051) -- (0.25, -0.05)
+      node[pos=0.5,anchor=north]{$h=1/N$};
+\end{tikzpicture}
+

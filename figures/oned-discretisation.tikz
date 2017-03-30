@@ -1,0 +1,20 @@
+\begin{tikzpicture}[scale=8]
+    % Draw the 0-1 interval
+    \draw (0,0) -- (1, 0);
+
+    % Draw the 'ticks' along the axis as well as the labels
+    \foreach \x in {0,...,4}
+    {
+        \draw (0.25*\x, 0.01) -- (0.25*\x, -0.01);
+        \node (\x) at (0.25*\x, -0.05) {$x_\x$};
+    }
+
+    % Draw the 0, 1 labels
+    \node () at (0, 0.05) {0};
+    \node () at (1, 0.05) {1};
+
+    % Finally demonstrate the length of the interval
+    \draw[thick, decoration={brace}, decorate] (0, 0.015) -- (0.25, 0.015)
+        node[pos=0.5, anchor=south] {$h = \frac{1}{4}$};
+\end{tikzpicture}
+

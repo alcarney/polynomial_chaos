@@ -1,0 +1,36 @@
+\begin{tikzpicture}[scale=2.5]
+    \scriptsize
+
+    % Place the nodes
+    \node[circle,draw=black,label={[anchor=west]$(0,0)$}] (00)  at (0,0)  {};
+    \node[circle,draw=black,label={[anchor=west]$(0,h)$}] (01)  at (0,1) {};
+    \node[circle,draw=black,label={[anchor=west]$(h,0)$}] (10)  at (1,0)  {};
+    \node[circle,draw=black,label={[anchor=west]$(-h,0)$}] (-10) at (-1,0) {};
+    \node[circle,draw=black,label={[anchor=west]$(0,-h)$}] (0-1) at (0,-1) {};
+    \node[circle,draw=black,label={[anchor=west]$(-h,h)$}] (-11) at (-1,1) {};
+    \node[circle,draw=black,label={[anchor=west]$(h,-h)$}] (1-1) at (1,-1) {};
+
+    % Draw the lines
+    \draw (00) -- (01);
+    \draw (00) -- (10);
+    \draw (01) -- (10);
+    \draw (00) -- (-10);
+    \draw (00) -- (0-1);
+    \draw (-11) -- (01);
+    \draw (-11) -- (00);
+    \draw (-11) -- (-10);
+    \draw (-10) -- (0-1);
+    \draw (0-1) -- (1-1);
+    \draw (1-1) -- (10);
+    \draw (00) -- (1-1);
+
+    % Finally the T's
+    \node (T1) at (0.35,0.35) {$T_1$};
+    \node (T2) at (0.6, -0.35) {$T_2$};
+    \node (T3) at (0.35, -0.6) {$T_3$};
+    \node (T4) at (-0.35,-0.35) {$T_4$};
+    \node (T5) at (-0.6, 0.35) {$T_5$};
+    \node (T6) at (-0.35, 0.6) {$T_6$};
+
+\end{tikzpicture}
+

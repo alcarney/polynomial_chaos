@@ -1,0 +1,24 @@
+\begin{tikzpicture}[scale=3]
+
+    % Place the nodes of T_k
+    \node[circle,draw=blue]  (k1) at (0,0) {\color{blue}$k_1$};
+    \node (Tk) at (0.3, 0.3) {\color{blue}$T_k$};
+
+    % Place the other nodes
+    \node[circle,draw=black] (x0) at (-1,0) {};
+    \node[circle,draw=black] (x1) at (0,-1) {};
+    \node[circle,draw=black] (x2) at (-1,1) {};
+    \node[circle,draw=black] (x3) at (1,-1) {};
+    \node[circle,draw=black] (x4) at (1,0) {};
+    \node[circle,draw=black] (x5) at (0,1) {};
+
+    % Draw the triangle
+    \draw[blue] (k1) -- (x5) -- (x4) --  (k1);
+    \draw[dashed] (x5) -- (x2) -- (x0) -- (x1) -- (x3) -- (x4);
+    \draw[dashed] (k1) -- (x0);
+    \draw[dashed] (k1) -- (x1);
+    \draw[dashed] (k1) -- (x2);
+    \draw[dashed] (k1) -- (x3);
+
+\end{tikzpicture}
+
