@@ -53,6 +53,8 @@ $\forall v \in W$
 
 \section{Discrete Formulation}
 
+\todo[inline]{This probably needs some work, especially when it comes to indices etc.}
+
 Moving from the one dimensional case to two dimensions suddenly adds a number
 of considerations since, unlike the one dimensional interval any two
 dimensional domain can come in a wide array of shapes. Therefore the method of
@@ -183,7 +185,7 @@ support, then we can write $\Phi(\v{x})$ as follows:
 \end{equation}
 
 where $\v{x} = (x, y)$. Then we can write each basis function $\phi_i$ in our
-discretised domain as $\phi_i(\v{x}) = \Phi(\v{x_i} - \v{x})$
+discretised domain as $\phi_i(\v{x}) = \Phi(\v{x} - \v{x_i})$
 
 \begin{figure}
 \centering
@@ -224,6 +226,102 @@ discretised domain as $\phi_i(\v{x}) = \Phi(\v{x_i} - \v{x})$
 \end{tikzpicture}
 \caption{The domain of the reference function $\Phi(\v{x})$}
 \label{fig:reference-function-domain}
+\end{figure}
+
+Since the weak formulation \myref{eq:wk-twod-deterministic} has to hold
+forall $v \in V$, in particular it has to hold for the basis functions
+$\phi_i(\v{x})$, $i \in \{1,\ldots,(N + 1)^2\}$ so by taking
+$v = \sum_{i = 0}^{(N+1)^2}\phi_i(\v{x})$ and substituting our expansions
+for $u$ and $f$ we get:
+
+\begin{align}
+\begin{split}
+	&a\int_{\Omega}\nabla\left(\sum_{i = 0}^{(N+1)^2}\phi_i(\v{x})\right) \cdot
+                  \nabla\left(\sum_{j = 0}^{(N+1)^2}u_j\phi_j(\v{x})\right)\, d\Omega
+    +\int_{\Omega}\v{b}\cdot\left(\sum_{i = 0}^{(N+1)^2}\phi_i(\v{x})\right) \cdot
+                  \nabla\left(\sum_{j = 0}^{(N+1)^2}u_j\phi_j(\v{x})\right)\, d\Omega \\
+    &+c\int_{\Omega}\left(\sum_{i = 0}^{(N + 1)^2}\phi_i(\v{x})\right)
+                    \left(\sum_{j = 0}^{(N + 1)^2}u_j\phi_j(\v{x})\right)\, d\Omega = 
+    \int_{\Omega}\left(\sum_{j = 0}^{(N + 1)^2}f_j\phi_j(\v{x})\right)
+                 \left(\sum_{i = 0}^{(N + 1)^2}\phi_i(\v{x})\right)\, d\Omega
+\end{split}
+\end{align}
+
+Then by the linearity of the integral and the gradient operator this can be
+written as:
+
+\begin{align}\label{eq:twod-deterministic-discrete}
+  \begin{split}
+	\sum_{i=0}^{(N+1)^2}\sum_{j=0}^{(N+1)^2}
+      \underbrace{\left(
+         a\int_{\Omega}\nabla\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, d\Omega
+         + \v{b}\cdot\int_{\Omega}\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, d\Omega
+         +c\int_{\Omega}\phi_i(\v{x})\phi_j(\v{x})\, d\Omega
+      \right)}_{:= A_{i,j}}u_j = \\
+    \sum_{i=0}^{(N + 1)^2}\sum_{j=0}^{(N + 1)^2}
+      \underbrace{\int_{\Omega}\phi_i(\v{x})\phi_j(\v{x})}_{:= M_{i,j}}
+  \end{split}
+\end{align}
+
+Which reduces the weak formulation \myref{eq:wk-twod-deterministic} to a linear
+system $Au^h = Mf$ where as in the one dimensional case $A$ is known as
+the stiffness matrix and $M$ is known as the mass matrix. But due to the Dirichlet
+condition in \myref{eq:two-d-deterministic} we already know the values of $u_j$
+along the boundary so the above reduces to:
+
+\begin{equation}
+	\sum_{i = 1}^{(N-1)^2}\sum_{j=1}^{(N-1)^2}A_{i,j}u_j =
+    \sum_{i=1}^{(N-1)^2}\sum_{j=0}^{(N+1)^2}M_{i,j}f_j
+\end{equation}
+
+Solving this system will give us an approximation to the solution for
+\myref{eq:two-d-deterministic}
+
+\section{Constructing the Global System}
+
+The last thing we need to do in order to implement the finite element method
+for this problem is to determine the entries of the global mass and stiffness
+matrices $M$ and $A$ respectively. Since we have discretised our domain into
+many triangular elements, we can consider the contribution from in each element
+in turn and combine them into the global system.
+
+Consider a triangular element $T_k$, due to the fact that the global basis
+functions $\phi_i$ have compact support,
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{0.30\textwidth}
+\begin{tikzpicture}[scale=3]
+    
+    % Place the nodes of T_k
+    \node[circle,draw=blue]  (k1) at (0,0) {\color{blue}$k_1$};
+    \node (Tk) at (0.3, 0.3) {\color{blue}$T_k$};       
+    
+    % Place the other nodes
+    \node[circle,draw=black] (x0) at (-1,0) {};
+    \node[circle,draw=black] (x1) at (0,-1) {};
+    \node[circle,draw=black] (x2) at (-1,1) {};
+    \node[circle,draw=black] (x3) at (1,-1) {};
+    \node[circle,draw=black] (x4) at (1,0) {};
+    \node[circle,draw=black] (x5) at (0,1) {};
+          
+    % Draw the triangle
+    \draw[blue] (k1) -- (x5) -- (x4) --  (k1);
+    \draw[dashed] (x5) -- (x2) -- (x0) -- (x1) -- (x3) -- (x4);
+    \draw[dashed] (k1) -- (x0);
+    \draw[dashed] (k1) -- (x1);
+    \draw[dashed] (k1) -- (x2);
+    \draw[dashed] (k1) -- (x3);
+    
+\end{tikzpicture}
+\end{subfigure}
+\begin{subfigure}[b]{0.30\textwidth}
+\begin{tikzpicture}[scale=3]
+	\node[circle,draw=green] (k2) at (1,0) {$k_2$};
+\end{tikzpicture}
+\end{subfigure}
+\caption{Local contributions of the global basis functions
+         $\phi_{k_1}, \phi_{k_2}, \phi_{k_3}$.}
 \end{figure}
 
 As we will see it will be useful to introduce a mapping that will let us

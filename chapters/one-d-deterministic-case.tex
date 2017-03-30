@@ -41,7 +41,7 @@ Integrating the first term by parts gives us:
 \end{equation}
 
 Where the underbraced term is zero as $v$ is zero at the endpoints of the
-domain. Hence the continuous weak form of \ref{eq:one-d-deterministic} is given
+domain. Hence the continuous weak form of \ref{eq:oned-deterministic} is given
 by:
 
 \begin{equation}\label{eq:wk-oned-deterministic}
@@ -188,7 +188,7 @@ by taking a sufficiently fine discretisation we can achieve a good
 approximation to the actual solution $u$.
 
 However due to the Dirichlet condition we have in
-\myref{eq:one-d-deterministic} we already know the value of u at the nodes
+\myref{eq:oned-deterministic} we already know the value of u at the nodes
 $x_0$ and $x_N$ so in the cases where $i = 0 = j$ and $i = N = j$ the
 associated terms on the left and right hands sides balance and can therefore be
 removed from the system of equations. Furthermore as we knows the value of our
@@ -285,11 +285,11 @@ follows:
 \end{equation}
 
 Where the index $k$ corresponds with the index of the starting node of the
-interval $x_k$.  This means we can write any function $g \in V^h$ locally in
+interval $x_k$.  This means we can write any function $v \in V^h$ locally in
 the subinterval $[x_k, x_{k+1}]$ as:
 
 \begin{align*}
-    g(x) = g(x_k)\psi_{k,1}(x) + g(x_{k+1})\psi_{k,2}(x)
+    v(x) = v(x_k)\psi_{k,1}(x) + v(x_{k+1})\psi_{k,2}(x)
 \end{align*}
 
 Which means locally we can rewrite \myref{eq:oned-deterministic-discrete} as
@@ -306,10 +306,11 @@ Which means locally we can rewrite \myref{eq:oned-deterministic-discrete} as
   \end{split}
 \end{equation}
 
-Where we now call these $2 \times 2$ matrices, $A^{(k)}_{r,s}$ and
-$M^{(k)}_{r,s}$ the local stiffness and mass matrices respectively. As we can
-see from the above, we will at some stage have to consider the derivatives of
-these local basis functions so I will also include these here now:
+Where we now denote these $2 \times 2$ matrices by $A^{(k)}_{r,s}$ and
+$M^{(k)}_{r,s}$ which are called the local stiffness and mass matrices
+respectively. As we can see from the above, we will at some stage have
+to consider the derivatives of these local basis functions which we will 
+here now:
 
 \begin{equation}
     \psi_{k,1}'(x) = \frac{-1}{x_{k+1} - x_{k}}
@@ -374,6 +375,8 @@ Again taking $r=2$, $s=2$ we can evaluate the third integral in a similar manner
 Proceeding as we have above and evaluating the remaining integrals gives us the
 following form of the local stiffness matrix:
 
+\todo[inline]{Check the entries of $b$}
+
 \begin{equation}\label{eq:oned-determinisitic-local-stiffness}
     A^{(k)} = \frac{a}{h_k}\left[\begin{array}{c c}
                 1 & -1 \\ -1 & 1
@@ -387,7 +390,7 @@ following form of the local stiffness matrix:
 \end{equation}
 
 Where $a,b,c \in \mathbb{R}$ correspond to the parameters in the original
-equation \myref{eq:one-d-deterministic} we are considering.
+equation \myref{eq:oned-deterministic} we are considering.
 
 \subsection{The Local Mass Matrix}
 
@@ -653,6 +656,8 @@ Following a similar procedure for these other cases:
 
 We obtain the following set of results:
 \todo[inline]{Get help with this!}
+\todo[inline]{Don't forget to include the results for the case $b=1$}
+\todo[inline]{Don't forget to include plots!}
 
 \begin{figure}
 \centering
