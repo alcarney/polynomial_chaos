@@ -252,126 +252,157 @@ triangle. Hence by introducing the mapping:
 
 we can map any triangular element $T_k$ in our discretisation onto the reference
 triangle $T$ where $h$ represents the length of the sides of the triangular
-element $T_k$.
-
-Therefore for each element $T_k$ in the discretisation of the domain we can
-locally write \myref{eq:twod-deterministic-discrete} as:
+element $T_k$. Therefore by a change of variables we can for each element $T_k$ in the discretisation of the
+domain locally write \myref{eq:twod-deterministic-discrete} as an integration around the reference
+triangle $T$ as follows:
 
 \begin{align}\label{eq:twod-deterministic-discrete-local}
     \begin{split}
-    \sum_{i=1}^3\sum_{j=1}^3\underbrace{
+    \sum_{r=1}^3\sum_{s=1}^3\underbrace{
       \left(
-        a\int_{T}\nabla\psi_i(\zeta, \eta)\cdot\nabla\psi_j(\zeta, \eta)\ d\zeta d\eta
-        + \v{b} \cdot \int_{T}\psi_i(\zeta,\eta)\cdot\nabla\psi_j(\zeta,\eta)\ d\zeta d\eta
-        + c\int_{T}\psi_i(\zeta,\eta)\psi_j(\zeta,\eta)\ d\zeta d\eta
-      \right)}_{A^{(k)}_{i,j}}u_j = \\
-    \sum_{i=1}^3\sum_{j=1}^3\underbrace{\left(
-        \int_{T_k}\psi_i(\zeta,\eta)\psi_j(\zeta,\eta)\ d\zeta d\eta
-    \right)}_{M^{(k)}_{i,j}}f_j
+        ah^2\int_{T}\nabla\psi_r(\zeta, \eta)\cdot\nabla\psi_s(\zeta, \eta)\ d\zeta d\eta
+        + h^2\v{b} \cdot \int_{T}\psi_r(\zeta,\eta)\cdot\nabla\psi_s(\zeta,\eta)\ d\zeta d\eta
+        + ch^2\int_{T}\psi_r(\zeta,\eta)\psi_s(\zeta,\eta)\ d\zeta d\eta
+      \right)}_{A^{(k)}_{r,s}}u_s = \\
+    \sum_{r=1}^3\sum_{s=1}^3\underbrace{\left(
+        h^2\int_{T_k}\psi_r(\zeta,\eta)\psi_s(\zeta,\eta)\ d\zeta d\eta
+    \right)}_{M^{(k)}_{r,s}}f_s
     \end{split}
 \end{align}
 
-Where $A^{(k)}$ and $M^{(k)}$ are the local stiffness and mass matrices
-respectively.
+Where $A^{(k)}$ and $M^{(k)}$ are the $3 \times 3$ local stiffness and mass matrices
+respectively. Since evaluating their entries will involve derivatives of the local basis
+functions we shall compute these now:
+
+\begin{align}
+	\begin{split}
+		\nabla\psi_1(x, y) &= \left(\begin{array}{c} -1 \\ -1 \end{array}\right) \\ 
+        \nabla\psi_2(x, y) &= \left(\begin{array}{c} 1 \\ 0 \end{array}\right) \\
+        \nabla\psi_3(x, y) &= \left(\begin{array}{c} 0 \\ 1 \end{array}\right)
+	\end{split}
+\end{align}
 
 \subsection{The Local Stiffness Matrix}
 
-Each local stiffness matrix will have dimension $3 \times 3$ and will be given
-by:
+Similar to the one dimensional case, we now have an expression for the entries of the 
+local stiffness matrix, in terms of a number of integrals \myref{eq:twod-deterministic-discrete-local}
+so we will only include a few example cases and then present the results.
+
+If we first consider the integral which gives the contribution from the Laplacian:
+
+\begin{equation*}
+	ah^2\int_T\nabla\psi_r(\zeta,\eta)\cdot\nabla\psi_s(\zeta,\eta)\ d\zeta d\eta =
+    ah^2\int_T\psi_{r\zeta}'\psi_{s\zeta}' + \psi_{r\eta}'\psi_{s\eta}'\ d\zeta d\eta 
+\end{equation*}
+
+and if we take $r = 1$ and $s = 1$ then we get:
 
 \begin{align*}
-    A^k_{i,j} &= a_k(\phi_j, \phi_i) \\
-     &= \int_{T_k}a\nabla\phi_i\cdot\nabla\phi_j\,dxdy +
-        \int_{T_k}\v{b}\cdot\phi_j\nabla\phi_i\,dxdy +
-        \int_{T_k}c\phi_i\phi_j\,dxdy
-\end{align*}
-
-To simplify the integrations we will apply our mapping so that we have:
-
-\[
-    A^k_{i,j} = h^2\int_Ta\nabla\psi_i\cdot\nabla\psi_j\,d\zeta d\eta +
-                h^2\int_T\v{b}\psi_j\nabla\psi_i\,d\zeta d\eta +
-                h^2\int_Tc\psi_i\psi_j\,d\zeta d\eta
-\]
-
-Considering each term in isolation:
-
-\[
-    ah^2\int_T\nabla\psi_i\cdot\nabla\psi_j\,d\zeta d\eta =
-    a\int_T\psi'_{i\zeta}\psi'_{j\zeta} +
-        \psi'_{i\eta}\psi'_{i\eta}\,d\zeta d\eta
-\]
-
-We can see from this that the resulting matrix will be symmetric, let's
-consider the case when $i = 1 = j$:
-
-\begin{align*}
-    a\int_T(\psi'_{1\zeta})^2 + (\psi'_{1\eta})^2\,d\zeta d\eta & =
-        a\int_T(-1)^2 + (-1)^2\,d\zeta d\eta \\
-    &= 2a\int_0^1\int_0^\eta\,d\zeta d\eta \\
+	ah^2\int_T(\psi_{i\zeta}')^2 + (\psi_{1\eta}')^2\ d\zeta d\eta
+    &= ah^2\int_0^1\int_0^{1 - \eta}\frac{1}{h^2}((-1)^2 + (-1)^2)\ d\zeta d\eta \\
+    &= 2a\int_0^1\left[\zeta\right]_0^{1 - \eta} \\
+    &= 2a\left[\eta - \frac{\eta^2}{2}\right]_0^1 \\
     &= 2a\frac{1}{2} \\
     &= a
 \end{align*}
 
-Evaluating similar integrals for each entry in the matrix results in the
-following local stiffness matrix associated with the Laplacian term:
-
-\begin{equation}\label{eq:stiffness_term_1}
-    a\left(\begin{array}{c c c}
-        1      & -\half & -\half \\
-        -\half & \half  & 0 \\
-        -\half & 0      & \half
-    \end{array}\right)
-\end{equation}
-
-Now let's consider the second term, in the case when $i = 2, j = 1$:
+Similarly let's consider the second integral corresponding to the gradient term,
+in the case when $r = 1, s = 3$:
 
 \begin{align*}
-    h^2\int_T{\v{b}\psi_1\nabla\psi_2}\, d\zeta d\eta &=
-    -h\int_0^1\int_0^\eta{\zeta b_x + \zeta b_y}\, d\zeta d\eta \\
-    &= -h(b_x + b_y)\int_0^1\int_0^\eta{\zeta}\, d\zeta d\eta \\
-    &= -\frac{h(b_x + b_y)}{6}
+	h^2\int_T\psi_1(\zeta,\eta)\v{b} \cdot \nabla\psi_3(\zeta,\eta)\ d\zeta d\eta
+     &= h^2\int_0^1\int_0^{1-\eta}\frac{1}{h}(1 - \zeta - \eta)
+           \left(\begin{array}{c} b_1 \\b_2 \end{array}\right) \cdot
+           \left(\begin{array}{c} 0 \\ 1 \end{array}\right)\ d\zeta d\eta \\
+     &= hb_2\int_0^1\int_0^{1-\eta} 1 - \zeta - \eta \ d\zeta d\eta \\ 
+     &= hb_2\int_0^1\left[\zeta - \frac{\zeta^2}{2} - \eta\zeta \right]_0^{1-\eta}\ d\eta \\
+     &= hb_2\int_0^1(1 -\eta) - \eta(1-\eta) - \frac{(1 - \eta)^2}{2}\ d\eta \\
+     &= hb_2\int_0^1\frac{1}{2} -\eta +\frac{\eta^2}{2}\ d\eta \\
+     &= \left[\frac{\eta}{2} - \frac{\eta^2}{2} + \frac{\eta^3}{6}\right]_0^1 \\
+     &= \frac{hb_2}{6}
 \end{align*}
 
-Repeating this for the other entries we get the matrix:
-
-\begin{equation}\label{eq:stiffness_term_2}
-    h\left(\begin{array}{c c c}
-        -\frac{(b_x + b_y)}{12} & \frac{b_x}{6} & \frac{b_y}{6} \\
-        -\frac{(b_x + b_y)}{12} & \frac{b_x}{6} & \frac{b_y}{6} \\
-        -\frac{(b_x + b_y)}{12} & \frac{b_x}{6} & \frac{b_y}{6}
-    \end{array}\right)
-\end{equation}
-
-Finally let's consider the third integral, in the case where $i = j = 1$:
+Now considering third integral, in the case where $r = 3, s = 2$:
 
 \begin{align*}
-       ch^2\int_T{\psi_1\psi_1}\,d\zeta d\eta
-       &= ch^2\int_0^1\int_0^\eta{(1 - \zeta - \eta)^2}\, d\zeta d\eta \\
-%
-       &= ch^2\int_0^1\int_0^\eta\, d\zeta d\eta +
-          2ch^2\int_0^1\int_0^\eta{\zeta\eta - \zeta - \eta}\, d\zeta d\eta +
-          ch^2\int_0^1\int_0^\eta{\zeta^2 + \eta^2}\, d\zeta d\eta \\
-%
-       &= \frac{ch^2}{2} - \frac{3ch^2}{4} + \frac{ch^2}{3} \\
-       &= \frac{ch^2}{12}
+	ch^2\int_T\psi_3(\zeta,\eta)\psi_2(\zeta,\eta)\ d\zeta d\eta
+    &= ch^2\int_0^1\int_0^{1-\eta}\zeta\eta\ d\zeta d\eta \\ 
+    &= ch^2\int_0^1\left[\frac{\zeta^2\eta}{2}\right]_0^{1-\eta}\ d\eta \\
+    &= ch^2\int_0^1\frac{(1-\eta)^2\eta}{2}\ d\eta \\
+    &= \frac{ch^2}{2}\left[\frac{\eta^2}{2} - \frac{2\eta^3}{3} - \frac{\eta^4}{4}\right]_0^1 \\
+    &= \frac{ch^2}{24}
 \end{align*}
 
-Following a similar argument for the other entries gives us the following
-matrix:
+Following a similar process for the rest of the entries gives us the following
+form for the local stiffness matrix:
 
-\begin{equation}\label{eq:stiffness_term_3}
-    \frac{ch^2}{2}\left(\begin{array}{c c c}
-         \frac{1}{12} &  \frac{1}{24} &  \frac{1}{24} \\
-         \frac{1}{24} &  \frac{1}{12} &  \frac{1}{24} \\
-         \frac{1}{24} &  \frac{1}{24} &  \frac{1}{12}
+\begin{equation}\label{eq:twod-local-stiffness}
+ A^{(k)} = 
+    \frac{a}{2}\left(\begin{array}{c c c}
+         2 & -1 & -1 \\
+        -1 &  1 &  0 \\
+        -1 &  0 &  1
     \end{array}\right)
+    + \frac{h}{12} \left(\begin{array}{c c c}
+        -(b_1 + b_2) & 2b_1 & 2b_2 \\
+        -(b_1 + b_2) & 2b_1  & 2b_2 \\
+        -(b_1 + b_2) & 2b_1  & 2b_2
+    \end{array}\right)
+    + \frac{ch^2}{24}\left(\begin{array}{c c c}
+         2 &  1 &  1 \\
+         1 &  2 &  1 \\
+         1 &  1 &  2
+      \end{array}\right)
 \end{equation}
 
-Combining (\ref{eq:stiffness_term_1}), (\ref{eq:stiffness_term_2}),
-(\ref{eq:stiffness_term_3}) gives us the local stiffness matrix for the general
-form of the equation (\ref{eq:general_laplace})
+where $a, c \in \mathbb{R}$ and $\v{b} = (b_1, b_2) \in \mathbb{R}^2$ correspond to the parameters
+which define the original equation \myref{eq:two-d-deterministic} we considered.
 
-\subsection{The Local Mass Matrix}8
+\subsection{The Local Mass Matrix}
 
-The local mass matrix will also have dimension $3 \times 3$
+Following the same procedure, we can also compute the entries of the local mass matrix as defined in
+\myref{eq:twod-deterministic-discrete-local}, in fact the entries of the mass matrix are the same as
+those in those in the third term of the local stiffness matrix so we have already seen the case 
+$r = 3, s = 2$ and by the fact that the matrix is symmetric the case $r = 2, s = 3$. So let's consider 
+the case where $r = 1, s = 2$:
+
+\begin{align*}
+	h^2\int_T\psi_1(\zeta,\eta)\psi_2(\zeta,\eta)\ d\zeta d\eta
+    &=  h^2\int_0^1\int_0^{1-\eta}(1 - \zeta -\eta)\zeta\ d\zeta d\eta \\
+    &= h^2\int_0^1\left[\frac{\zeta^2}{2} -\frac{\zeta^3}{3} 
+                        -\frac{\zeta^2\eta}{2}\right]_0^{1-\eta}\  d\eta \\
+    &= h^2\int_0^1\frac{(1-\eta)^2}{2} - \frac{(1-\eta)^3}{3}- \frac{(1-\eta)^2\eta}{2}\ d\eta \\
+    &= \frac{h^2}{6}\int_0^1(1- \eta)^3\ d\eta \\
+    &= \frac{h^2}{6}\left[\eta -\frac{3\eta}{2} + \eta^3 - \frac{\eta^4}{4}\right]_0^1 \\
+    &= \frac{h^2}{24}
+\end{align*}
+
+and by symmetry this is the same as the case $r = 2, s = 1$. Finally we can consider the case
+$r = 1, s = 3$
+
+\begin{align*}
+	h_2\int_T\psi_1(\zeta, \eta)\psi_3(\zeta, \eta)\ d\zeta d\eta
+    &= h^2\int_0^1\int_0^{1-\eta}(1 - \zeta - \eta)\eta\ d\zeta d\eta \\
+    &= h^2\int_0^1\left[\zeta\eta - \frac{\zeta^2\eta}{2} - \eta^2\zeta\right]_0^{1-\eta}\ d\eta \\
+    &= h^2\int_0^1(1-\eta)\eta - \frac{(1 - \eta)^2\eta}{2} - \eta^2(1 - \eta)\ d\eta \\
+    &= \frac{h^2}{2}\int_0^1(1 - \eta)^2\eta \ d\eta \\
+    &= \frac{h^2}{2}\left[\frac{\eta^2}{2} - \frac{2\eta^3}{2} + \frac{\eta^4}{4}\right]_0^1 \\
+    &= \frac{h^2}{24}
+\end{align*}
+
+which again by symmetry will also give us the case where $r = 3, s = 1$. If we follow the same
+procedure for the remaining diagonal elements we obtain the following form for the local mass matrix:
+
+\begin{equation}\label{eq:twod-local-mass}
+    M^{(k)} = 
+    \frac{h^2}{24}\left(\begin{array}{c c c}
+         2 &  1 &  1 \\
+         1 &  2 &  1 \\
+         1 &  1 &  2
+      \end{array}\right)
+\end{equation}
+
+\subsection{Assembling the Global Stiffness Matrix}
+
+Now that we know the form of local stiffness matrix \myref{eq:twod-local-stiffness} we can start to assemble
+the global stiffness matrix 
