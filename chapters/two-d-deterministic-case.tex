@@ -146,7 +146,7 @@ for $u$ and $f$ we get:
 
 \begin{align}
 \begin{split}
-	&a\int_{\Omega}\nabla\left(\sum_{i = 0}^{(N+1)^2}\phi_i(\v{x})\right) \cdot
+    &a\int_{\Omega}\nabla\left(\sum_{i = 0}^{(N+1)^2}\phi_i(\v{x})\right) \cdot
                   \nabla\left(\sum_{j = 0}^{(N+1)^2}u_j\phi_j(\v{x})\right)\, d\Omega
     +\int_{\Omega}\v{b}\cdot\left(\sum_{i = 0}^{(N+1)^2}\phi_i(\v{x})\right) \cdot
                   \nabla\left(\sum_{j = 0}^{(N+1)^2}u_j\phi_j(\v{x})\right)\, d\Omega \\
@@ -162,7 +162,7 @@ written as:
 
 \begin{align}\label{eq:twod-deterministic-discrete}
   \begin{split}
-	\sum_{i=0}^{(N+1)^2}\sum_{j=0}^{(N+1)^2}
+    \sum_{i=0}^{(N+1)^2}\sum_{j=0}^{(N+1)^2}
       \underbrace{\left(
          a\int_{\Omega}\nabla\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, d\Omega
          + \v{b}\cdot\int_{\Omega}\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, d\Omega
@@ -180,7 +180,7 @@ condition in \myref{eq:two-d-deterministic} we already know the values of $u_j$
 along the boundary so the above reduces to:
 
 \begin{equation}
-	\sum_{i = 1}^{(N-1)^2}\sum_{j=1}^{(N-1)^2}A_{i,j}u_j =
+    \sum_{i = 1}^{(N-1)^2}\sum_{j=1}^{(N-1)^2}A_{i,j}u_j =
     \sum_{i=1}^{(N-1)^2}\sum_{j=0}^{(N+1)^2}M_{i,j}f_j
 \end{equation}
 
@@ -196,21 +196,21 @@ many triangular elements, we can consider the contribution from in each element
 in turn and combine them into the global system.
 
 Consider a triangular element $T$, comprised of the nodes $\v{k_1} = (0,0)$,
-$\v{k_2} = (0,1)$, and $\v{k_3} = (1,0)$ with corresponding global basis functions 
+$\v{k_2} = (0,1)$, and $\v{k_3} = (1,0)$ with corresponding global basis functions
 $\phi_{k_1}, \phi_{k_2}, \phi_{k_3}$. Now if we compare Figure
 \ref{fig:twod-local-basis}, with Figure \ref{fig:reference-function-domain}
 we see that the dashed lines denote the support of each of the basis functions
-and the solid lines denote the subset of the domain which contains the triangular 
-element $T$. 
+and the solid lines denote the subset of the domain which contains the triangular
+element $T$.
 
 Comparing further the two Figures we see that the Triangular element $T$
 corresponds to $T_1$ in the reference function for the basis function $\phi_{k1}$
-and $T_5$ for $\phi_{k_2}$ and $T_3$ for $\phi_{k_3}$. This means locally in the 
+and $T_5$ for $\phi_{k_2}$ and $T_3$ for $\phi_{k_3}$. This means locally in the
 element $T_k$ we can define the following local basis functions:
 
 \begin{align}\label{eq:twod-local-basis}
-	\begin{split}
-    	\psi_1(x, y) = \Phi(\v{x} - \v{k_1})|_{T_1} &= 1 - x - y \\
+    \begin{split}
+        \psi_1(x, y) = \Phi(\v{x} - \v{k_1})|_{T_1} &= 1 - x - y \\
         \psi_2(x, y) = \Phi(\v{x} - \v{k_2})|_{T_5} &= x \\
         \psi_3(x, y) = \Phi(\v{x} - \v{k_3})|_{T_3} &= y
     \end{split}
@@ -232,12 +232,12 @@ element $T_k$ we can define the following local basis functions:
 \end{subfigure}
 \caption{Local contributions of the global basis functions
          $\phi_{k_1}, \phi_{k_2}, \phi_{k_3}$.}
-\label{fig:twod-local-basis} 
+\label{fig:twod-local-basis}
 \end{figure}
 
 This means that any $v \in V^h$ can locally in $T$ be written as:
 \[
-	v(\v{x}) = v(\v{k_1})\psi_1(\v{x}) + v(\v{k_2})\psi_2(\v{x}) + v(\v{k_3})\psi_3(\v{x})
+    v(\v{x}) = v(\v{k_1})\psi_1(\v{x}) + v(\v{k_2})\psi_2(\v{x}) + v(\v{k_3})\psi_3(\v{x})
 \]
 
 Furthermore, since we are using a uniform triangulation all of our triangles
@@ -246,32 +246,32 @@ triangle. Hence by introducing the mapping:
 
 \begin{align*}
  \begin{array}{c c}
-	\zeta = \frac{x}{h} & \eta = \frac{y}{h} 
+    \zeta = \frac{x}{h} & \eta = \frac{y}{h}
  \end{array}
 \end{align*}
 
-we can map any triangular element $T_k$ in our discretisation onto the reference 
-triangle $T$ where $h$ represents the length of the sides of the triangular 
+we can map any triangular element $T_k$ in our discretisation onto the reference
+triangle $T$ where $h$ represents the length of the sides of the triangular
 element $T_k$.
 
-Therefore for each element $T_k$ in the discretisation of the domain we can 
+Therefore for each element $T_k$ in the discretisation of the domain we can
 locally write \myref{eq:twod-deterministic-discrete} as:
 
 \begin{align}\label{eq:twod-deterministic-discrete-local}
-	\begin{split}
-	\sum_{i=1}^3\sum_{j=1}^3\underbrace{
+    \begin{split}
+    \sum_{i=1}^3\sum_{j=1}^3\underbrace{
       \left(
-      	a\int_{T}\nabla\psi_i(\zeta, \eta)\cdot\nabla\psi_j(\zeta, \eta)\ d\zeta d\eta
+        a\int_{T}\nabla\psi_i(\zeta, \eta)\cdot\nabla\psi_j(\zeta, \eta)\ d\zeta d\eta
         + \v{b} \cdot \int_{T}\psi_i(\zeta,\eta)\cdot\nabla\psi_j(\zeta,\eta)\ d\zeta d\eta
         + c\int_{T}\psi_i(\zeta,\eta)\psi_j(\zeta,\eta)\ d\zeta d\eta
-      \right)}_{A^{(k)}_{i,j}}u_j = \\ 
+      \right)}_{A^{(k)}_{i,j}}u_j = \\
     \sum_{i=1}^3\sum_{j=1}^3\underbrace{\left(
-    	\int_{T_k}\psi_i(\zeta,\eta)\psi_j(\zeta,\eta)\ d\zeta d\eta
+        \int_{T_k}\psi_i(\zeta,\eta)\psi_j(\zeta,\eta)\ d\zeta d\eta
     \right)}_{M^{(k)}_{i,j}}f_j
-	\end{split}
+    \end{split}
 \end{align}
 
-Where $A^{(k)}$ and $M^{(k)}$ are the local stiffness and mass matrices 
+Where $A^{(k)}$ and $M^{(k)}$ are the local stiffness and mass matrices
 respectively.
 
 \subsection{The Local Stiffness Matrix}
