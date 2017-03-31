@@ -3,12 +3,12 @@
 
     % Place the nodes
     \node[circle,draw=black,label={[anchor=west]$(0,0)$}] (00)  at (0,0)  {};
-    \node[circle,draw=black,label={[anchor=west]$(0,h)$}] (01)  at (0,1) {};
-    \node[circle,draw=black,label={[anchor=west]$(h,0)$}] (10)  at (1,0)  {};
-    \node[circle,draw=black,label={[anchor=west]$(-h,0)$}] (-10) at (-1,0) {};
-    \node[circle,draw=black,label={[anchor=west]$(0,-h)$}] (0-1) at (0,-1) {};
-    \node[circle,draw=black,label={[anchor=west]$(-h,h)$}] (-11) at (-1,1) {};
-    \node[circle,draw=black,label={[anchor=west]$(h,-h)$}] (1-1) at (1,-1) {};
+    \node[circle,draw=black,label={[anchor=west]$(0,1)$}] (01)  at (0,1) {};
+    \node[circle,draw=black,label={[anchor=west]$(1,0)$}] (10)  at (1,0)  {};
+    \node[circle,draw=black,label={[anchor=west]$(-1,0)$}] (-10) at (-1,0) {};
+    \node[circle,draw=black,label={[anchor=west]$(0,-1)$}] (0-1) at (0,-1) {};
+    \node[circle,draw=black,label={[anchor=west]$(-1,1)$}] (-11) at (-1,1) {};
+    \node[circle,draw=black,label={[anchor=west]$(1,-1)$}] (1-1) at (1,-1) {};
 
     % Draw the lines
     \draw (00) -- (01);

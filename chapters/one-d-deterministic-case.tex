@@ -471,7 +471,7 @@ expression we have for the global mass matrix in
 \myref{eq:oned-deterministic-discrete}:
 
 \[
-    M = \sum_{i=1}^{N-1}\sum_{j=0}^N\int_0^1\phi_i(x)\phi_j(x)\, dx
+    M = \sum_{i=1}^{N-1}\sum_{j=0}^{N+1}\int_0^1\phi_i(x)\phi_j(x)\, dx
 \]
 
 Let's first consider the super diagonal elements of the mass matrix:
@@ -603,7 +603,7 @@ We obtain the following set of results:
 \todo[inline]{Don't forget to include plots!}
 
 \begin{figure}
-\centering
+\centering0
 \begin{tabular}{| c | c |} \hline
     $N$ & $||\v{u} - \v{u}^h||$ \\ \hline
     4 & $3.52\times10^{-2}$ \\

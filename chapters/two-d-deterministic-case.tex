@@ -118,13 +118,13 @@ support, then we can write $\Phi(\v{x})$ as follows:
 
 \begin{equation}\label{eq:two-d-ref-basis-fn}
     \Phi(\v{x}) = \left\{\begin{array}{c c}
-                    1 - \frac{(x + y)}{h}, & \text{ in } T_1 \\
-                    1 - \frac{x}{y},       & \text{ in } T_2 \\
-                    1 + \frac{y}{h},       & \text{ in } T_3 \\
-                    1 + \frac{(x + y)}{h}, & \text{ in } T_4 \\
-                    1 + \frac{x}{h},       & \text{ in } T_5 \\
-                    1 - \frac{y}{h},       & \text{ in } T_6 \\
-                    0,                     & \text{ otherwise}
+                    1 - x - y, & \text{ in } T_1 \\
+                    1 - x,       & \text{ in } T_2 \\
+                    1 + y,       & \text{ in } T_3 \\
+                    1 + x + y,   & \text{ in } T_4 \\
+                    1 + x,       & \text{ in } T_5 \\
+                    1 - y,       & \text{ in } T_6 \\
+                    0,           & \text{ otherwise}
                   \end{array}\right.
 \end{equation}
 
@@ -195,8 +195,26 @@ matrices $M$ and $A$ respectively. Since we have discretised our domain into
 many triangular elements, we can consider the contribution from in each element
 in turn and combine them into the global system.
 
-Consider a triangular element $T_k$, due to the fact that the global basis
-functions $\phi_i$ have compact support,
+Consider a triangular element $T$, comprised of the nodes $\v{k_1} = (0,0)$,
+$\v{k_2} = (0,1)$, and $\v{k_3} = (1,0)$ with corresponding global basis functions 
+$\phi_{k_1}, \phi_{k_2}, \phi_{k_3}$. Now if we compare Figure
+\ref{fig:twod-local-basis}, with Figure \ref{fig:reference-function-domain}
+we see that the dashed lines denote the support of each of the basis functions
+and the solid lines denote the subset of the domain which contains the triangular 
+element $T$. 
+
+Comparing further the two Figures we see that the Triangular element $T$
+corresponds to $T_1$ in the reference function for the basis function $\phi_{k1}$
+and $T_5$ for $\phi_{k_2}$ and $T_3$ for $\phi_{k_3}$. This means locally in the 
+element $T_k$ we can define the following local basis functions:
+
+\begin{align}\label{eq:twod-local-basis}
+	\begin{split}
+    	\psi_1(x, y) = \Phi(\v{x} - \v{k_1})|_{T_1} &= 1 - x - y \\
+        \psi_2(x, y) = \Phi(\v{x} - \v{k_2})|_{T_5} &= x \\
+        \psi_3(x, y) = \Phi(\v{x} - \v{k_3})|_{T_3} &= y
+    \end{split}
+\end{align}
 
 \begin{figure}
 \centering
@@ -214,30 +232,49 @@ functions $\phi_i$ have compact support,
 \end{subfigure}
 \caption{Local contributions of the global basis functions
          $\phi_{k_1}, \phi_{k_2}, \phi_{k_3}$.}
+\label{fig:twod-local-basis} 
 \end{figure}
 
-As we will see it will be useful to introduce a mapping that will let us
-evaluate integrals for arbitrary triangles by considering a single reference
-triangle comprised of the points $(0,0), (0,1), (1,0)$
+This means that any $v \in V^h$ can locally in $T$ be written as:
+\[
+	v(\v{x}) = v(\v{k_1})\psi_1(\v{x}) + v(\v{k_2})\psi_2(\v{x}) + v(\v{k_3})\psi_3(\v{x})
+\]
 
-\begin{align}\label{eq:master_basis_functions}
-    \psi_1(\zeta, \eta) &= 1 - \zeta - \eta \\
-    \psi_2(\zeta, \eta) &= \zeta \\
-    \psi_3(\zeta, \eta) &= \eta
+Furthermore, since we are using a uniform triangulation all of our triangles
+are similar to this triangular element $T$ which we will now call the reference
+triangle. Hence by introducing the mapping:
+
+\begin{align*}
+ \begin{array}{c c}
+	\zeta = \frac{x}{h} & \eta = \frac{y}{h} 
+ \end{array}
+\end{align*}
+
+we can map any triangular element $T_k$ in our discretisation onto the reference 
+triangle $T$ where $h$ represents the length of the sides of the triangular 
+element $T_k$.
+
+Therefore for each element $T_k$ in the discretisation of the domain we can 
+locally write \myref{eq:twod-deterministic-discrete} as:
+
+\begin{align}\label{eq:twod-deterministic-discrete-local}
+	\begin{split}
+	\sum_{i=1}^3\sum_{j=1}^3\underbrace{
+      \left(
+      	a\int_{T}\nabla\psi_i(\zeta, \eta)\cdot\nabla\psi_j(\zeta, \eta)\ d\zeta d\eta
+        + \v{b} \cdot \int_{T}\psi_i(\zeta,\eta)\cdot\nabla\psi_j(\zeta,\eta)\ d\zeta d\eta
+        + c\int_{T}\psi_i(\zeta,\eta)\psi_j(\zeta,\eta)\ d\zeta d\eta
+      \right)}_{A^{(k)}_{i,j}}u_j = \\ 
+    \sum_{i=1}^3\sum_{j=1}^3\underbrace{\left(
+    	\int_{T_k}\psi_i(\zeta,\eta)\psi_j(\zeta,\eta)\ d\zeta d\eta
+    \right)}_{M^{(k)}_{i,j}}f_j
+	\end{split}
 \end{align}
 
-It will also be useful to consider the derivatives of these functions:
+Where $A^{(k)}$ and $M^{(k)}$ are the local stiffness and mass matrices 
+respectively.
 
-\begin{align}\label{eq:master_basis_functions_derivative}
-    \psi_1' = \nabla\psi_1(\zeta, \eta) &=
-        \frac{1}{h}\left(\begin{array}{c}-1 \\ -1\end{array}\right) \\
-    \psi_2' = \nabla\psi_2(\zeta, \eta) &=
-        \frac{1}{h}\left(\begin{array}{c}1 \\ 0\end{array}\right) \\
-    \psi_3' = \nabla\psi_3(\zeta, \eta) &=
-        \frac{1}{h}\left(\begin{array}{c}0 \\ 1\end{array}\right)
-\end{align}
-
-\section{The Local Stiffness Matrix}
+\subsection{The Local Stiffness Matrix}
 
 Each local stiffness matrix will have dimension $3 \times 3$ and will be given
 by:
@@ -335,6 +372,6 @@ Combining (\ref{eq:stiffness_term_1}), (\ref{eq:stiffness_term_2}),
 (\ref{eq:stiffness_term_3}) gives us the local stiffness matrix for the general
 form of the equation (\ref{eq:general_laplace})
 
-\section{The Local Mass Matrix}
+\subsection{The Local Mass Matrix}8
 
 The local mass matrix will also have dimension $3 \times 3$
