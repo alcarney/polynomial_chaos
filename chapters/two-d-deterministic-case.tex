@@ -141,19 +141,19 @@ discretised domain as $\phi_i(\v{x}) = \Phi(\v{x} - \v{x_i})$
 Since the weak formulation \myref{eq:wk-twod-deterministic} has to hold
 forall $v \in V$, in particular it has to hold for the basis functions
 $\phi_i(\v{x})$, $i \in \{1,\ldots,(N + 1)^2\}$ so by taking
-$v = \sum_{i = 0}^{(N+1)^2}\phi_i(\v{x})$ and substituting our expansions
+$v = \sum_{i = 1}^{(N+1)^2}\phi_i(\v{x})$ and substituting our expansions
 for $u$ and $f$ we get:
 
 \begin{align}
 \begin{split}
-    &a\int_{\Omega}\nabla\left(\sum_{i = 0}^{(N+1)^2}\phi_i(\v{x})\right) \cdot
-                  \nabla\left(\sum_{j = 0}^{(N+1)^2}u_j\phi_j(\v{x})\right)\, d\Omega
-    +\int_{\Omega}\v{b}\cdot\left(\sum_{i = 0}^{(N+1)^2}\phi_i(\v{x})\right) \cdot
-                  \nabla\left(\sum_{j = 0}^{(N+1)^2}u_j\phi_j(\v{x})\right)\, d\Omega \\
-    &+c\int_{\Omega}\left(\sum_{i = 0}^{(N + 1)^2}\phi_i(\v{x})\right)
-                    \left(\sum_{j = 0}^{(N + 1)^2}u_j\phi_j(\v{x})\right)\, d\Omega =
-    \int_{\Omega}\left(\sum_{j = 0}^{(N + 1)^2}f_j\phi_j(\v{x})\right)
-                 \left(\sum_{i = 0}^{(N + 1)^2}\phi_i(\v{x})\right)\, d\Omega
+    &a\int_{\Omega}\nabla\left(\sum_{i = 1}^{(N+1)^2}\phi_i(\v{x})\right) \cdot
+                  \nabla\left(\sum_{j = 1}^{(N+1)^2}u_j\phi_j(\v{x})\right)\, d\Omega
+    +\int_{\Omega}\v{b}\cdot\left(\sum_{i = 1}^{(N+1)^2}\phi_i(\v{x})\right) \cdot
+                  \nabla\left(\sum_{j = 1}^{(N+1)^2}u_j\phi_j(\v{x})\right)\, d\Omega \\
+    &+c\int_{\Omega}\left(\sum_{i = 1}^{(N + 1)^2}\phi_i(\v{x})\right)
+                    \left(\sum_{j = 1}^{(N + 1)^2}u_j\phi_j(\v{x})\right)\, d\Omega =
+    \int_{\Omega}\left(\sum_{j = 1}^{(N + 1)^2}f_j\phi_j(\v{x})\right)
+                 \left(\sum_{i = 1}^{(N + 1)^2}\phi_i(\v{x})\right)\, d\Omega
 \end{split}
 \end{align}
 
@@ -162,13 +162,13 @@ written as:
 
 \begin{align}\label{eq:twod-deterministic-discrete}
   \begin{split}
-    \sum_{i=0}^{(N+1)^2}\sum_{j=0}^{(N+1)^2}
+    \sum_{i=1}^{(N+1)^2}\sum_{j=1}^{(N+1)^2}
       \underbrace{\left(
          a\int_{\Omega}\nabla\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, d\Omega
          + \v{b}\cdot\int_{\Omega}\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, d\Omega
          +c\int_{\Omega}\phi_i(\v{x})\phi_j(\v{x})\, d\Omega
       \right)}_{:= A_{i,j}}u_j = \\
-    \sum_{i=0}^{(N + 1)^2}\sum_{j=0}^{(N + 1)^2}
+    \sum_{i=1}^{(N + 1)^2}\sum_{j=1}^{(N + 1)^2}
       \underbrace{\int_{\Omega}\phi_i(\v{x})\phi_j(\v{x})}_{:= M_{i,j}}
   \end{split}
 \end{align}
@@ -270,35 +270,37 @@ triangle $T$ as follows:
     \end{split}
 \end{align}
 
-Where $A^{(k)}$ and $M^{(k)}$ are the $3 \times 3$ local stiffness and mass matrices
-respectively. Since evaluating their entries will involve derivatives of the local basis
-functions we shall compute these now:
+Where $A^{(k)}$ and $M^{(k)}$ are the $3 \times 3$ local stiffness and mass
+matrices respectively. Since evaluating their entries will involve derivatives
+of the local basis functions we shall compute these now:
 
 \begin{align}
-	\begin{split}
-		\nabla\psi_1(x, y) &= \left(\begin{array}{c} -1 \\ -1 \end{array}\right) \\ 
+    \begin{split}
+        \nabla\psi_1(x, y) &= \left(\begin{array}{c} -1 \\ -1 \end{array}\right) \\
         \nabla\psi_2(x, y) &= \left(\begin{array}{c} 1 \\ 0 \end{array}\right) \\
         \nabla\psi_3(x, y) &= \left(\begin{array}{c} 0 \\ 1 \end{array}\right)
-	\end{split}
+    \end{split}
 \end{align}
 
 \subsection{The Local Stiffness Matrix}
 
-Similar to the one dimensional case, we now have an expression for the entries of the 
-local stiffness matrix, in terms of a number of integrals \myref{eq:twod-deterministic-discrete-local}
-so we will only include a few example cases and then present the results.
+Similar to the one dimensional case, we now have an expression for the entries
+of the local stiffness matrix, in terms of a number of integrals
+\myref{eq:twod-deterministic-discrete-local} so we will only include a few
+example cases and then present the results.
 
-If we first consider the integral which gives the contribution from the Laplacian:
+If we first consider the integral which gives the contribution from the
+Laplacian:
 
 \begin{equation*}
-	ah^2\int_T\nabla\psi_r(\zeta,\eta)\cdot\nabla\psi_s(\zeta,\eta)\ d\zeta d\eta =
-    ah^2\int_T\psi_{r\zeta}'\psi_{s\zeta}' + \psi_{r\eta}'\psi_{s\eta}'\ d\zeta d\eta 
+    ah^2\int_T\nabla\psi_r(\zeta,\eta)\cdot\nabla\psi_s(\zeta,\eta)\ d\zeta d\eta =
+    ah^2\int_T\psi_{r\zeta}'\psi_{s\zeta}' + \psi_{r\eta}'\psi_{s\eta}'\ d\zeta d\eta
 \end{equation*}
 
 and if we take $r = 1$ and $s = 1$ then we get:
 
 \begin{align*}
-	ah^2\int_T(\psi_{i\zeta}')^2 + (\psi_{1\eta}')^2\ d\zeta d\eta
+    ah^2\int_T(\psi_{i\zeta}')^2 + (\psi_{1\eta}')^2\ d\zeta d\eta
     &= ah^2\int_0^1\int_0^{1 - \eta}\frac{1}{h^2}((-1)^2 + (-1)^2)\ d\zeta d\eta \\
     &= 2a\int_0^1\left[\zeta\right]_0^{1 - \eta} \\
     &= 2a\left[\eta - \frac{\eta^2}{2}\right]_0^1 \\
@@ -310,11 +312,11 @@ Similarly let's consider the second integral corresponding to the gradient term,
 in the case when $r = 1, s = 3$:
 
 \begin{align*}
-	h^2\int_T\psi_1(\zeta,\eta)\v{b} \cdot \nabla\psi_3(\zeta,\eta)\ d\zeta d\eta
+    h^2\int_T\psi_1(\zeta,\eta)\v{b} \cdot \nabla\psi_3(\zeta,\eta)\ d\zeta d\eta
      &= h^2\int_0^1\int_0^{1-\eta}\frac{1}{h}(1 - \zeta - \eta)
            \left(\begin{array}{c} b_1 \\b_2 \end{array}\right) \cdot
            \left(\begin{array}{c} 0 \\ 1 \end{array}\right)\ d\zeta d\eta \\
-     &= hb_2\int_0^1\int_0^{1-\eta} 1 - \zeta - \eta \ d\zeta d\eta \\ 
+     &= hb_2\int_0^1\int_0^{1-\eta} 1 - \zeta - \eta \ d\zeta d\eta \\
      &= hb_2\int_0^1\left[\zeta - \frac{\zeta^2}{2} - \eta\zeta \right]_0^{1-\eta}\ d\eta \\
      &= hb_2\int_0^1(1 -\eta) - \eta(1-\eta) - \frac{(1 - \eta)^2}{2}\ d\eta \\
      &= hb_2\int_0^1\frac{1}{2} -\eta +\frac{\eta^2}{2}\ d\eta \\
@@ -325,8 +327,8 @@ in the case when $r = 1, s = 3$:
 Now considering third integral, in the case where $r = 3, s = 2$:
 
 \begin{align*}
-	ch^2\int_T\psi_3(\zeta,\eta)\psi_2(\zeta,\eta)\ d\zeta d\eta
-    &= ch^2\int_0^1\int_0^{1-\eta}\zeta\eta\ d\zeta d\eta \\ 
+    ch^2\int_T\psi_3(\zeta,\eta)\psi_2(\zeta,\eta)\ d\zeta d\eta
+    &= ch^2\int_0^1\int_0^{1-\eta}\zeta\eta\ d\zeta d\eta \\
     &= ch^2\int_0^1\left[\frac{\zeta^2\eta}{2}\right]_0^{1-\eta}\ d\eta \\
     &= ch^2\int_0^1\frac{(1-\eta)^2\eta}{2}\ d\eta \\
     &= \frac{ch^2}{2}\left[\frac{\eta^2}{2} - \frac{2\eta^3}{3} - \frac{\eta^4}{4}\right]_0^1 \\
@@ -337,7 +339,7 @@ Following a similar process for the rest of the entries gives us the following
 form for the local stiffness matrix:
 
 \begin{equation}\label{eq:twod-local-stiffness}
- A^{(k)} = 
+ A^{(k)} =
     \frac{a}{2}\left(\begin{array}{c c c}
          2 & -1 & -1 \\
         -1 &  1 &  0 \\
@@ -355,21 +357,23 @@ form for the local stiffness matrix:
       \end{array}\right)
 \end{equation}
 
-where $a, c \in \mathbb{R}$ and $\v{b} = (b_1, b_2) \in \mathbb{R}^2$ correspond to the parameters
-which define the original equation \myref{eq:two-d-deterministic} we considered.
+where $a, c \in \mathbb{R}$ and $\v{b} = (b_1, b_2) \in \mathbb{R}^2$
+correspond to the parameters which define the original equation
+\myref{eq:two-d-deterministic} we considered.
 
 \subsection{The Local Mass Matrix}
 
-Following the same procedure, we can also compute the entries of the local mass matrix as defined in
-\myref{eq:twod-deterministic-discrete-local}, in fact the entries of the mass matrix are the same as
-those in those in the third term of the local stiffness matrix so we have already seen the case 
-$r = 3, s = 2$ and by the fact that the matrix is symmetric the case $r = 2, s = 3$. So let's consider 
-the case where $r = 1, s = 2$:
+Following the same procedure, we can also compute the entries of the local mass
+matrix as defined in \myref{eq:twod-deterministic-discrete-local}, in fact the
+entries of the mass matrix are the same as those in those in the third term of
+the local stiffness matrix so we have already seen the case $r = 3, s = 2$ and
+by the fact that the matrix is symmetric the case $r = 2, s = 3$. So let's
+consider the case where $r = 1, s = 2$:
 
 \begin{align*}
-	h^2\int_T\psi_1(\zeta,\eta)\psi_2(\zeta,\eta)\ d\zeta d\eta
+    h^2\int_T\psi_1(\zeta,\eta)\psi_2(\zeta,\eta)\ d\zeta d\eta
     &=  h^2\int_0^1\int_0^{1-\eta}(1 - \zeta -\eta)\zeta\ d\zeta d\eta \\
-    &= h^2\int_0^1\left[\frac{\zeta^2}{2} -\frac{\zeta^3}{3} 
+    &= h^2\int_0^1\left[\frac{\zeta^2}{2} -\frac{\zeta^3}{3}
                         -\frac{\zeta^2\eta}{2}\right]_0^{1-\eta}\  d\eta \\
     &= h^2\int_0^1\frac{(1-\eta)^2}{2} - \frac{(1-\eta)^3}{3}- \frac{(1-\eta)^2\eta}{2}\ d\eta \\
     &= \frac{h^2}{6}\int_0^1(1- \eta)^3\ d\eta \\
@@ -381,7 +385,7 @@ and by symmetry this is the same as the case $r = 2, s = 1$. Finally we can cons
 $r = 1, s = 3$
 
 \begin{align*}
-	h_2\int_T\psi_1(\zeta, \eta)\psi_3(\zeta, \eta)\ d\zeta d\eta
+    h_2\int_T\psi_1(\zeta, \eta)\psi_3(\zeta, \eta)\ d\zeta d\eta
     &= h^2\int_0^1\int_0^{1-\eta}(1 - \zeta - \eta)\eta\ d\zeta d\eta \\
     &= h^2\int_0^1\left[\zeta\eta - \frac{\zeta^2\eta}{2} - \eta^2\zeta\right]_0^{1-\eta}\ d\eta \\
     &= h^2\int_0^1(1-\eta)\eta - \frac{(1 - \eta)^2\eta}{2} - \eta^2(1 - \eta)\ d\eta \\
@@ -390,11 +394,12 @@ $r = 1, s = 3$
     &= \frac{h^2}{24}
 \end{align*}
 
-which again by symmetry will also give us the case where $r = 3, s = 1$. If we follow the same
-procedure for the remaining diagonal elements we obtain the following form for the local mass matrix:
+which again by symmetry will also give us the case where $r = 3, s = 1$. If we
+follow the same procedure for the remaining diagonal elements we obtain the
+following form for the local mass matrix:
 
 \begin{equation}\label{eq:twod-local-mass}
-    M^{(k)} = 
+    M^{(k)} =
     \frac{h^2}{24}\left(\begin{array}{c c c}
          2 &  1 &  1 \\
          1 &  2 &  1 \\
@@ -404,5 +409,24 @@ procedure for the remaining diagonal elements we obtain the following form for t
 
 \subsection{Assembling the Global Stiffness Matrix}
 
-Now that we know the form of local stiffness matrix \myref{eq:twod-local-stiffness} we can start to assemble
-the global stiffness matrix 
+Now that we know the form of local stiffness matrix
+\myref{eq:twod-local-stiffness} we can start to assemble the global stiffness
+matrix. As in the one dimensional case, we need to take into account the
+contributions each of the elements surrounding a node make to its value. So we
+need to find a way write \myref{eq:twod-deterministic-discrete} in terms of
+\myref{eq:twod-deterministic-discrete-local}.
+
+Let's first consider the diagonal entries of the global stiffness matrix
+$A_{k,k}$ which are given by:
+
+\begin{align*}
+A_{k,k} =
+    a\int_{\Omega}\nabla\phi_k(\v{x}) \cdot \nabla\phi_k(\v{x})\ d\Omega
+    + \int_{\Omega}\phi_k(\v{x})\v{b} \cdot \nabla\phi_k(\v{x})\ d\Omega
+    + c\int_{\Omega}(\phi_k(\v{x}))^2\ d\Omega
+\end{align*}
+
+Now recall how we defined the global basis functions in terms of a reference
+function $\Phi(\v{x})$, this allows us to break up the integral over the entire
+domain $\Omega$ into an integral over the 6 triangular elements which make up
+the domain where the reference function has support.
