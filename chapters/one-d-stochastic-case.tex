@@ -1,0 +1,72 @@
+\chapter{One Dimensional Stochastic Case}
+
+Here we return to the one dimensional version of this equation, but this time
+we introduce some form of uncertainty in the coefficients of the equation:
+
+\begin{equation}\label{eq:oned-stochastic}
+  \begin{aligned}
+    -a(x;\omega)u''(x;\omega) + bu'(x;\omega) + cu(x;\omega)
+                     &= f(x)\, &\text { in } D = [0,1]\, \omega \in \Omega \\
+    u(x;\omega) &= 0 &\text{ on } \partial D = \{0,1\}\, \omega \in \Omega
+  \end{aligned}
+\end{equation}
+
+where $\Omega$ is a probability space. In order to handle this case, we follow a
+similar method to that we used in Chapter \ref{chap:oned-deterministic} however with
+the introduction of the random parameter $\omega$ there is an additional layer of
+complexity to deal with, as well as discretising the physical domain we also need to
+be able to discretise the probability space using a finite dimensional approximation.
+This is where the generalised polynomial chaos comes in.
+
+Using the methodology outlined in \cite{general-poly-chaos} we can use various
+polynomials in the \textit{Askey Scheme} to construct a finite dimensional approximate
+representations of various random processes which when used in conjunction with the
+Finite Element Method we can model the expected behaviour of the solution process
+$u(x;\omega)$
+
+\paragraph{An Example}
+
+\begin{equation}
+  \begin{aligned}
+    -\frac{d}{dx}\left[\kappa(x;\omega)\frac{d}{dx}u(x;\omega)\right] &= f(x)
+        & \text{ in } D\ \omega \in \Omega \\
+     u(x;\omega) &= 0 &\text{ on } \partial D\, \omega \in \Omega
+  \end{aligned}
+\end{equation}
+
+\paragraph{Weak Formulation}
+
+\begin{equation}
+	-\int_{\Omega}\int_D \frac{d}{dx}\left[\kappa(x;\omega)\frac{d}{dx}u(x;\omega)\right]
+           w(x;\omega)\, dx\, dP = \int_{\Omega}\int_D f(x)w(x;\omega)\, dx\, dP
+\end{equation}
+
+Proceeding with integration by parts
+
+\begin{align}
+	-\int_{\Omega}\left(
+      \underbrace{\left[\kappa(x;\omega)\frac{d}{dx}u(x;\omega)w(x;\omega)\right]}_{= 0}
+      - \int_D\kappa(x;\omega)\frac{d}{dx}u(x;\omega)\frac{d}{dx}w(x;\omega)
+     \right)\, dP &= \int_{\Omega}\int_D f(x)w(x;\omega)\, dx\, dP \\
+     \int_{\Omega}\int_D\kappa(x;\omega)
+           \frac{d}{dx}u(x;\omega)\frac{d}{dx}w(x;\omega)\, dx\, dP &=
+     \int_{\Omega}\int_D f(x)w(x;\omega)\, dx\, dP
+\end{align}
+
+Using the Exapansions
+
+\begin{align}
+	u^h(x;\omega) &= \sum_{s=1}^P\sum_{r=1}^Nu_{r,s}\phi_r(x)\chi_s(\omega) \\
+    w^h(x;\omega) &= \sum_{s=1}^P\sum_{r=1}^N\phi_r(x)\chi_s(\omega) \\
+    \kappa(x;\omega) &\approx \mu + \sigma\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(x)\zeta_l(\omega)
+\end{align}
+
+and substituting into the weak formulation we get:
+
+\section{Weak Formulation}
+
+\todo[inline]{Make exact all the functional spaces etc.}
+
+Similarly to the deterministic case we first need to obtain the weak formulation
+of the problem which now involves taking the inner product over the ``joint space''
+of both the physical and random domains:
