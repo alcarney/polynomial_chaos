@@ -1,2 +1,56 @@
 \chapter{Two Dimensional Stochastic Case}
 
+Returning to two dimensions we consider the following stochastic version of
+this equation:
+
+\begin{equation}\label{eq:twod-stochastic}
+  \begin{aligned}
+      -\nabla\cdot\left[\kappa(\v{x};\omega)\cdot\nabla u(\v{x};\omega) \right]
+      &= f(\v{x})\, &\v{x} \in D = [-1,1] \times [-1,1]\, \omega \in \Omega \\
+      u(\v{x};\omega) &= 0\, &\v{x} \in \partial D = \Gamma\, \omega \in \Omega
+  \end{aligned}
+\end{equation}
+
+where $\Gamma = (\{-1,1\} \times [-1,1]) \cup ([-1,1] \times \{-1, 1\})$ and
+$\Omega$ is a probability space. As with the previous stochasitc case in
+Chapter \ref{chap:one-d-stochastic} we will follow a similar process to the
+deterministic case as we saw in Chapter \ref{chap:two-d-deterministic} to
+discretise the physical space while following methods outlined in
+\cite{general-poly-chaos} to construct a finite dimensional approximation to
+the probability space.
+
+\section{Weak Formulation}
+
+\todo[inline]{Give real definitions for $V$ and $W$}
+
+Obtaining the weak forumulation, we multiply through with $w \in W$ and
+integrate over the domain:
+
+\begin{equation}
+    -\int_{\Omega}\int_D(\nabla\cdot\left[
+        \kappa(\v{x};\omega)\cdot\nabla u(\v{x};\omega)\right]
+    w(\v{x};\omega))\, d\v{x}\, d\Omega =
+        \int_{\Omega}\int_Df(\v{x})w(\v{x};\omega)\, d\v{x}\, d\Omega
+\end{equation}
+
+If we apply Green's first integral identity we obtain:
+
+\begin{equation}
+    -\int_{\Omega}\left(\int_{\Gamma}\underbrace{\frac{\partial}{\partial n}
+        \left[\kappa(x;\omega)\cdot\nabla u(x;\omega)\right]}_{=0}\, d\Gamma
+      -\int_D \kappa(x;\omega)\cdot\nabla u(x;\omega)\cdot\nabla w(x;\omega)
+      w(x;\omega)\, d\v{x}
+  \right)\, d\Omega
+\end{equation}
+
+where the integral on $\Gamma$ is zero as elements in $W$ are zero on the
+boundary. Therefore the weak form of the problem is given by:
+
+\begin{equation}\label{eq:wk-twod-stochastic}
+    \int_{\Omega}\int_D\kappa(x;\omega)\cdot\nabla u(x;\omega)\cdot\nabla
+    w(x;\omega)\, d\v{x}\, d\Omega =
+    \int_{\Omega}\int_D f(\v{x})w(x;\omega)\, d\v{x}\, d\Omega
+\end{equation}
+
+where in this sense a solution would be a function $u \in V$ which satisfies
+the the above equation $\forall w \in W$
