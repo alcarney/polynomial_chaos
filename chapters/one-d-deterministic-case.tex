@@ -17,7 +17,7 @@ We consider the equation in the interval $[0,1]$ and prescribe a zero Dirichlet
 condition at the endpoints $x = 0$ and $x = 1$.
 
 \todo[inline]{In the deterministic case, we should be able to solve various
-versions of this analyitcally. Include a few such cases and their solutions
+versions of this analytically. Include a few such cases and their solutions
 they will provide us with a few good examples to compare our numerical
 solutions with}
 
@@ -43,7 +43,7 @@ Integrating the first term by parts gives us:
 \end{equation}
 
 Where the underbraced term is zero as $v$ is zero at the endpoints of the
-domain. Hence the continuous weak form of \ref{eq:oned-deterministic} is given
+domain. Hence the continuous weak form of \myref{eq:oned-deterministic} is given
 by:
 
 \begin{equation}\label{eq:wk-oned-deterministic}
@@ -64,7 +64,7 @@ satisfied $\forall v \in W$
 \end{figure}
 
 For a given parameter $N \in \mathbb{N}$ we define $N$ equally spaced nodes
-$x_i$ $i \in \{1, \ldots, N\} $in the interval $[0,1]$ where
+$x_i$ $i \in \{1, \ldots, N\}$ in the interval $[0,1]$ where
 $x_0 = 0, x_N = 1$. Then we can divide the domain into $N$ subintervals
 $ I_i = [x_i, x_{i+1}]$, $i \in \{0,\ldots,N - 1\}$ of length $h = \frac{1}{N}$.
 We can then define our discretisation to be:
@@ -91,7 +91,7 @@ be able to approximate the solution as such:
     u^h(x) = \sum_{j = 0}^N{u_j\phi_j(x)}
 \end{equation}
 
-Where $u_i$ will be the approximate value of the solution at the node $x_i$. In
+where $u_i$ will be the approximate value of the solution at the node $x_i$. In
 a similar manner we will also be able to approximate $f(x)$:
 
 \begin{equation}
@@ -100,11 +100,11 @@ a similar manner we will also be able to approximate $f(x)$:
 
 where $f_i = f(x_i)$. By writing the functions $u$ and $f$ in terms of their
 values at the nodes $x_i$ then by taking a sufficiently large number of nodes
-we can approximate them to within an acceptible margin of error.
+we can approximate them to within an acceptable margin of error.
 
 \todo[inline]{Give an estimate for the error of the FEM for this problem -
 Use the book!!}
-\todo[inline]{Possibily include mention of existence and uniqueness of the
+\todo[inline]{Possibly include mention of existence and uniqueness of the
 solution - Use the book !!}
 
 An appropriate basis would be the so called `hat functions' which we can define
@@ -135,68 +135,68 @@ the intervals which lie in our domain:
 
 As the weak formulation \myref{eq:wk-oned-deterministic} must be satisfied for
 all $v \in W$ then in particular it must be satisfied for the basis functions
-$\phi_i(x)$. So by taking $v = \sum_{i = 0}^N\phi_i(x)$ and substituting our
-approximations for $u$ and $f$ we obtain:
+$\phi_i(x)$. So by taking $v = \phi_i(x)$ for each $i \in \{1,\ldots,N\}$ and
+substituting our approximations for $u$ and $f$ we obtain:
 
 \begin{align*}
-    a\int_0^1{\left(\sum_{i = 0}^N{u_j\phi_j(x)}\right)'\left(\sum_{i = 0}^N\phi_i(x)\right)'\, dx}
-    +b\int_0^1{\left(\sum_{i = 0}^N{u_j\phi_j(x)}\right)'\left(\sum_{i = 0}^N\phi_i(x)\right)\, dx} \\
-    +c\int_0^1{\left(\sum_{i = 0}^N{u_j\phi_j(x)}\right)\left(\sum_{i = 0}^N\phi_i(x)\right)\, dx} =
-    \int_0^1{\left(\sum_{i = 0}^Nf_j\phi_j(x)\right)\left(\sum_{i = 0}^N\phi_i(x)\right)\, dx}
+    a\int_0^1{\left(\sum_{j = 0}^N{u_j\phi_j(x)}\right)'\phi_i'(x)\, dx}
+    &+b\int_0^1{\left(\sum_{j = 0}^N{u_j\phi_j(x)}\right)'\phi_i(x)\, dx} \\
+    &+c\int_0^1{\left(\sum_{j = 0}^N{u_j\phi_j(x)}\right)\phi_i(x)\, dx} =
+    \int_0^1{\left(\sum_{j = 0}^Nf_j\phi_j(x)\right)\phi_i(x)\, dx}
 \end{align*}
 
 By the linearity of the integrals and derivatives we can write this as:
 
 \begin{align*}
-    a\sum_{i = 0}^N\sum_{j = 0}^Nu_j\int_0^1\phi_i'(x)\phi_j'(x)\, dx
-    +b\sum_{i = 0}^N\sum_{j = 0}^Nu_j\int_0^1\phi_i(x)\phi_j'(x)\, dx \\
-    +c\sum_{i = 0}^N\sum_{j = 0}^Nu_j\int_0^1\phi_i(x)\phi_j(x)\, dx =
-    \sum_{i = 0}^N\sum_{j = 0}^Nf_j\int_0^1\phi_i(x)\phi_j(x)\, dx
+    a\sum_{j = 0}^Nu_j\int_0^1\phi_i'(x)\phi_j'(x)\, dx
+    &+b\sum_{j = 0}^Nu_j\int_0^1\phi_i(x)\phi_j'(x)\, dx \\
+    &+c\sum_{j = 0}^Nu_j\int_0^1\phi_i(x)\phi_j(x)\, dx =
+    \sum_{j = 0}^Nf_j\int_0^1\phi_i(x)\phi_j(x)\, dx
 \end{align*}
 
-Or equivalently:
+for each $i \in \{1,\ldots,N\}$. Or equivalently:
 
 \begin{align}\label{eq:oned-deterministic-discrete}
   \begin{split}
-    \sum_{i = 0}^N\sum_{j = 0}^N\underbrace{\left(a\int_0^1\phi_i'(x)\phi_j'(x)\, dx
+    \sum_{j = 0}^N\underbrace{\left(a\int_0^1\phi_i'(x)\phi_j'(x)\, dx
         + b\int_0^1\phi_i(x)\phi_j'(x)\, dx + c\int_0^1\phi_i(x)\phi_j(x)\, dx\right)}_{:= A_{i,j}}u_j  \\
-    = \sum_{i= 0}^N\sum_{j = 0}^N\underbrace{\int_0^1{\phi_i(x)\phi_j(x)}\, dx}_{:= M_{i,j}}f_j
+    = \sum_{j = 0}^N\underbrace{\int_0^1{\phi_i(x)\phi_j(x)}\, dx}_{:= M_{i,j}}f_j
   \end{split}
 \end{align}
 
 This effectively reduces the weak formulation \myref{eq:wk-oned-deterministic}
 to a linear system $Au^h = Mf$ where $A$ is known as the stiffness matrix and
 $M$ is known as the mass matrix. Being a linear system it is relatively
-striaghtforward to solve solve computationally for the unknown vector $u^h$ and
+straightforward to solve solve computationally for the unknown vector $u^h$ and
 by taking a sufficiently fine discretisation we can achieve a good
 approximation to the actual solution $u$.
 
-However due to the Dirichlet condition we have in
-\myref{eq:oned-deterministic} we already know the value of u at the nodes
-$x_0$ and $x_N$ so in the cases where $i = 0 = j$ and $i = N = j$ the
-associated terms on the left and right hands sides balance and can therefore be
+\begin{equation}
+    \sum_{j=0}^NA_{i,j}u_i = \sum_{j=0}^NM_{i,j}f_i,\ i \in \{0,\ldots,N\}
+\end{equation}
+
+However due to the Dirichlet condition we have in \myref{eq:oned-deterministic}
+we already know the value of $u$ at the nodes $x_0$ and $x_N$ so in the cases
+where $j = 0$ and $j = N$ the associated terms on the left hand side can be
 removed from the system of equations. Furthermore as we knows the value of our
 solution $u$ at these nodes, we can move the associated terms over to the right
 hand side:
 
-\begin{align}
-  \begin{split}
-    \sum_{i=0}^N\sum_{j=0}^NA_{i,j}u_i &= \sum_{i=0}^N\sum_{j=0}^NM_{i,j}f_i \\
-    \sum_{i=1}^{N-1}\sum_{j=1}^{N-1}A_{i,j}u_i &= \sum_{i=1}^{N-1}\sum_{j=1}^{N}M_{i,j}f_j
-                                                - \sum_{i=1}^{N-1}A_{i,0}u(0)
-                                                - \sum_{i=1}^{N-1}A_{i,N}u(1)
-  \end{split}
-\end{align}
+\begin{equation}
+    \sum_{j=1}^{N-1}A_{i,j}u_i =
+        \sum_{j=1}^{N}M_{i,j}f_j - A_{i,0}u(0) - A_{i,N}u(1)
+\end{equation}
 
 In our particular problem we have a zero Dirichlet condition so the linear
 system reduces quite nicely to:
 
 \begin{equation}\label{eq:oned-deterministic-fem}
-    \sum_{i=1}^{N-1}\sum_{j=1}^{N-1}A_{i,j}u_j = \sum_{i=1}^{N-1}\sum_{j=0}^NM_{i,j}f_j
+    \sum_{i=1}^{N-1}\sum_{j=1}^{N-1}A_{i,j}u_j
+        = \sum_{i=1}^{N-1}\sum_{j=0}^NM_{i,j}f_j,\ i \in \{1,\dots,N-1\}
 \end{equation}
 
 Solving this system for the vector $\v{u}$ will give us the approximate
-solution to the equation \ref{eq:oned-deterministic}
+solution to the equation \myref{eq:oned-deterministic}
 
 \section{Constructing the Global Linear System}
 
@@ -229,7 +229,7 @@ follows:
     \psi_{k,2}(x) = \frac{x - x_k}{x_{k+1} - x_k}
 \end{equation}
 
-Where the index $k$ corresponds with the index of the starting node of the
+where the index $k$ corresponds with the index of the starting node of the
 interval $x_k$.  This means we can write any function $v \in V^h$ locally in
 the subinterval $[x_k, x_{k+1}]$ as:
 
@@ -237,7 +237,7 @@ the subinterval $[x_k, x_{k+1}]$ as:
     v(x) = v(x_k)\psi_{k,1}(x) + v(x_{k+1})\psi_{k,2}(x)
 \end{align*}
 
-Which means locally we can rewrite \myref{eq:oned-deterministic-discrete} as
+which means locally we can rewrite \myref{eq:oned-deterministic-discrete} as
 
 \begin{equation}\label{eq:oned-deterministic-local-discrete}
   \begin{split}
@@ -251,11 +251,10 @@ Which means locally we can rewrite \myref{eq:oned-deterministic-discrete} as
   \end{split}
 \end{equation}
 
-Where we now denote these $2 \times 2$ matrices by $A^{(k)}_{r,s}$ and
+where we now denote these $2 \times 2$ matrices by $A^{(k)}_{r,s}$ and
 $M^{(k)}_{r,s}$ which are called the local stiffness and mass matrices
-respectively. As we can see from the above, we will at some stage have
-to consider the derivatives of these local basis functions which we will
-here now:
+respectively. As we can see from the above, we will need the derivatives of
+these local basis functions which are given by:
 
 \begin{align}
   \begin{split}
@@ -333,7 +332,7 @@ following form of the local stiffness matrix:
               \end{array}\right]
 \end{equation}
 
-Where $a,b,c \in \mathbb{R}$ correspond to the parameters in the original
+where $a,b,c \in \mathbb{R}$ correspond to the coefficients in the original
 equation \myref{eq:oned-deterministic} we are considering.
 
 \subsection{The Local Mass Matrix}
@@ -412,9 +411,9 @@ So now if we consider the expression we have for the global stiffness matrix in
 \myref{eq:oned-deterministic-discrete}:
 
 \[
-  A  = \sum_{i=1}^{N+1}\sum_{i=1}^{N+1}\left(a\int_0^1\phi_i'(x)\phi_j'(x)\, dx
-                                           + b\int_0^1\phi_i'(x)\phi_j(x)\, dx
-                                           + c\int_0^1\phi_i(x)\phi_j(x)\, dx\right)
+   A_{i,j} = a\int_0^1\phi_i'(x)\phi_j'(x)\, dx
+             + b\int_0^1\phi_i'(x)\phi_j(x)\, dx
+             + c\int_0^1\phi_i(x)\phi_j(x)\, dx
 \]
 
 and the moment let's just consider the diagonal elements, corresponding to the
@@ -472,7 +471,7 @@ expression we have for the global mass matrix in
 \myref{eq:oned-deterministic-discrete}:
 
 \[
-    M = \sum_{i=1}^{N-1}\sum_{j=0}^{N+1}\int_0^1\phi_i(x)\phi_j(x)\, dx
+    M_{i,j} = \int_0^1\phi_i(x)\phi_j(x)\, dx
 \]
 
 Let's first consider the super diagonal elements of the mass matrix:
