@@ -63,8 +63,8 @@ satisfied $\forall v \in W$
 \label{fig:one-d-discretisation}
 \end{figure}
 
-For a given parameter $N \in \mathbb{N}$ we define $N$ equally spaced nodes
-$x_i$ $i \in \{1, \ldots, N\}$ in the interval $[0,1]$ where
+For a given parameter $N \in \mathbb{N}$ we define $N+1$ equally spaced nodes
+$x_i$ $i \in \{0, \ldots, N\}$ in the interval $[0,1]$ where
 $x_0 = 0, x_N = 1$. Then we can divide the domain into $N$ subintervals
 $ I_i = [x_i, x_{i+1}]$, $i \in \{0,\ldots,N - 1\}$ of length $h = \frac{1}{N}$.
 We can then define our discretisation to be:
@@ -73,15 +73,18 @@ We can then define our discretisation to be:
     D^h = \bigcup_{i=0}^{N - 1} I_i
 \]
 
-Please see Figure \ref{fig:one-d-discretisation} for an example discretisation
+See Figure \ref{fig:one-d-discretisation} for an example discretisation
 when $N=4$.  Upon such a discretisation we can define suitable finite
 dimensional subspaces of our trial and test spaces $V^h \subset V$, $W^h
 \subset W$.
 
 \begin{align*}
-    V^h = \{v \in V: &v \text{ is linear on } [x_i, x_{i+1}],
-          \ i \in \{1, \ldots, N - 1\}, \\
-          &v \text{ is continuous on } [0, 1],\ v(0) = 0 = v(1)\}
+    V^h &= \{v \in V: v \text{ is linear on } I_i,
+          \ i \in \{0, \ldots, N - 1\},
+          v \text{ is continuous on } [0, 1]\} \\
+    W^h &= \{w \in W: w \text{ is linear on } I_i,
+          \ i \in \{0, \ldots, N - 1\},
+          w \text{ is continuous on } [0, 1]\}
 \end{align*}
 
 By choosing appropriate basis functions $\phi_i$ that span the space, we will

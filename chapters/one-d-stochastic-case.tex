@@ -62,9 +62,70 @@ the above is satisfied $\forall w \in W$
 
 \section{Discrete Formulation}
 
-In order to find a
+Constructing a finite dimensional approximation to
+\myref{eq:wk-two-d-stochastic} requires us to discretise both physical and
+probability spaces. For the physical space we can proceed in a similar fashion
+to Chapter \ref{chap:oned-deterministic} taking into account that the domain
+now extends to include the interval $[-1, 0]$
 
-\subsection{KL-Expansion}
+Given a parameter $N \in \mathbb{N}$ we place $N+1$ equally spaced nodes
+$x_i, i \in \{0,\ldots,N\}$ in the interval $[-1,1]$ such that $x_0= -1$,
+$x_N = 1$. This subdivides the interval into $N$ subintervals
+$I_i = [x_i, x_{i+1}]$, for each $i \in \{0,\ldots,N-1\}$. These subintervals
+will have length $h = 1/N$ and we can define our discretisation as follows:
+
+\[
+    D^h = \bigcup_{i=0}^{N - 1}I_i
+\]
+
+Upon which we can define finite dimensional subspaces of $V$ and $W$:
+
+\begin{align*}
+    V^h &= \{v \in V : v \text{ is linear on } I_i,\ i \in \{0,\ldots,N-1\},
+                    \  v \text{ is continuous on } [-1,1]\} \\
+    W^h &= \{w \in W : w \text{ is linear on } I_i,\ i \in \{0,\ldots,N-1\},
+                    \  w \text{ is continuous on } [-1,1]\}
+\end{align*}
+
+Then we can choose the `hat functions' as our basis again which are defined
+just as they were in \ref{eq:one-d-hat-basis} hence we can approximate $f(x)$
+as follows:
+
+\begin{equation}
+    f(x) \approx \sum_{j=0}^Nf_j\phi_i(x)
+\end{equation}
+
+where $f_j = f(x_j)$. This also allows us to write our approximate solution
+process $u^h$ as follows:
+
+\begin{equation}
+    u^h(x;\omega) = \sum_{j=0}^Nu_j(\omega)\phi_j(x)
+\end{equation}
+
+We now have a discrete representation for $u^h$ in the physical space but now
+we need to turn our attention to approximating the diffusion coefficient
+$\kappa(x;\omega)$ and the stochastic parts of the solution process
+$u_j(\omega)$
+
+\subsection{Polynomial Chaos}
+
+Much like the physical case, constructing a finite dimensional approximation to
+a probability space requires choosing a set of orthogonal functions to form a
+basis which spans the space. As shown in \cite{gpc} members from the
+\textit{Askey Scheme} of orthogonal polynomials can be used to construct finite
+dimensional approximations to second order random processes.
+
+Depending on the probability measure of a space a different set of polynomials
+are used. For example if the probability measure is for a
+\textit{Gaussian process} then the \textit{Hermite polynomials} are used or in
+the case of a \textit{Uniform process} the \textit{Legendre polynomials} are
+used. A full table outlining the correspondence of probability measures to
+polynomials can be found in \cite{general-poly-chaos}
+
+Once you have chosen
+
+
+\subsection{The KL-Expansion}
 
 The Karhunen-Loeve (KL) expansion allows us to write any second order
 stochastic process $X(\v{x},\omega)$ in the following way:
@@ -91,9 +152,10 @@ where:
 \end{itemize}
 
 The derivation of this representation is discussed in \cite{stochastic-fem} as
-well as a number of its properties. One such property is that this
-representation is optimal in the sense that when we truncate the series to a
-finite number of terms the mean squared error is minimised.
+well as a number of its properties. One such property which is useful for our
+purposes is that this representation is optimal in the sense that when we
+truncate the series to a finite number of terms the mean squared error is
+minimised.
 
 Of course since this representation requires that we know the correlation
 function of the random process we will only be able to apply this to the terms
