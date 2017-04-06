@@ -51,7 +51,7 @@ Proceeding with integration by parts
 where the underbraced term is zero as the elements of $W$ are zero at the
 endpoints of the domain. Hence the weak form of this equation is given by:
 
-\begin{equation}\label{eq:wk-two-d-stochastic}
+\begin{equation}\label{eq:wk-one-d-stochastic}
     \int_{\Omega}\int_{-1}^1\kappa(x;\omega)
            \frac{d}{dx}u(x;\omega)\frac{d}{dx}w(x;\omega)\, dx\, d\Omega =
            \int_{\Omega}\int_{-1}^1 f(x)w(x;\omega)\, dx\, d\Omega
@@ -91,14 +91,14 @@ Then we can choose the `hat functions' as our basis again which are defined
 just as they were in \ref{eq:one-d-hat-basis} hence we can approximate $f(x)$
 as follows:
 
-\begin{equation}
+\begin{equation}\label{eq:oned-stochastic-f-approx}
     f(x) \approx \sum_{j=0}^Nf_j\phi_i(x)
 \end{equation}
 
 where $f_j = f(x_j)$. This also allows us to write our approximate solution
 process $u^h$ as follows:
 
-\begin{equation}
+\begin{equation}\label{eq:oned-stochastic-uh}
     u^h(x;\omega) = \sum_{j=0}^Nu_j(\omega)\phi_j(x)
 \end{equation}
 
@@ -122,10 +122,44 @@ the case of a \textit{Uniform process} the \textit{Legendre polynomials} are
 used. A full table outlining the correspondence of probability measures to
 polynomials can be found in \cite{general-poly-chaos}
 
-Once you have chosen
+Once the set of polynomials have been determined you can approximate a random
+process as follows:
 
+\begin{equation}
+    \omega(\theta) = \sum_{s=0}^P\omega_s\chi_s(\theta)
+\end{equation}
 
-\subsection{The KL-Expansion}
+where $P = (d + p)!/d!p!$ and $d$ denotes the dimensionality of the
+approximation and $p$ is the highest degree of polynomial used. For example in
+the case of Legendre polynomials and $d=2$, $p=2$ that gives a total of 6
+terms in the expansion. We can then define the following index scheme:
+
+\begin{equation}
+  \begin{array}{c c c }
+    \alpha_1 = (0,0) & \alpha_2 = (1,0) & \alpha_3 = (0,1) \\
+    \alpha_4 = (2,0) & \alpha_5 = (1,1) & \alpha_6 = (0,2)
+  \end{array}
+\end{equation}
+
+Then the set of basis polynomials in this case would be given by:
+
+\begin{equation}
+  \begin{array}{l l l}
+    \chi_{\alpha_1} = 1 & \chi_{\alpha_2} = \xi_1 & \chi_{\alpha_3} = \xi_2 \\
+    \chi_{\alpha_4} = \frac{1}{2}(3\xi_1^2 - 1) &
+    \chi_{\alpha_5} = \xi_1\xi_2 &
+    \chi_{\alpha_6} = \frac{1}{2}(3\xi_2^2 - 1)
+  \end{array}
+\end{equation}
+
+Therefore we may now rewrite our approximation to the solution process
+\myref{eq:oned-stochastic-uh} as follows:
+
+\begin{equation}\label{eq:oned-stochastic-uhp}
+    u^{h,P}(x;\omega) = \sum_{j=0}^N\sum_{s=1}^Pu_{j,s}\chi_s(\omega)\phi_j(x)
+\end{equation}
+
+\subsection{The Karhunen-Loeve Expansion}
 
 The Karhunen-Loeve (KL) expansion allows us to write any second order
 stochastic process $X(\v{x},\omega)$ in the following way:
@@ -158,45 +192,71 @@ truncate the series to a finite number of terms the mean squared error is
 minimised.
 
 Of course since this representation requires that we know the correlation
-function of the random process we will only be able to apply this to the terms
-that we know a priori in the equation.
+function of the random process so this will only be useful for expanding the
+term $\kappa(x;\omega)$ in \myref{eq:oned-stochastic}.
 
-Since the weak formulation \myref{eq:wk-two-d-stochastic} has to be satisifed
-$\forall w \in W$ it must in particular hold for the basis functions. So by
-choosing $w = \sum_{t=1}^P\sum_{j=1}^N\phi_j(x)\chi_t(x)$ and using the
-exapansions
+For the purposes of this project we will assume that $\kappa(x;\omega)$ is
+uniformly distributed between the values $a$ and $b$ with mean $\mu$,
+variance $\sigma^2$ and correlation function given by:
 
-\begin{align}
-    u^h(x;\omega) &= \sum_{s=1}^P\sum_{r=1}^Nu_{r,s}\phi_r(x)\chi_s(\omega) \\
+\begin{equation}
+    C(x, y) = \sigma^2\exp\left(-\frac{|x - y|}{k}\right)
+\end{equation}
+
+where $k$ is the correlation length that for simplicity we set to $1$.
+Therefore to determine $\beta_n, \lambda_n$ we have to solve the following
+integral equation:
+
+\begin{equation}
+    \sigma^2\int_{-1}^1\exp(-|x - y|)\beta_n(y) dy = \lambda_n\beta_n(x)
+\end{equation}
+
+A detailed discussion on finding the eigenvalues/eigenfunctions above can be
+found in \cite{stochastic-fem} but solving this numerically using
+\todo{Have a look at pychebfun or chebpy} PYTHON LIBRARY
+will be sufficient for our purposes.
+
+Therefore we can approximate $\kappa$ as follows:
+
+\begin{align}\label{eq:oned-stochastic-kl-kappa}
     \kappa(x;\omega) &\approx \mu + \sigma\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(x)\xi_l(\omega)
 \end{align}
 
-and substituting them into the weak formulation then we get for each $j \in
-\{1,\ldots,N\}$ and each $t \in \{1,\ldots,P\}$ we get:
+\subsection{Derivation of Global System of Equations}
+
+Since the weak formulation \myref{eq:wk-one-d-stochastic} has to be satisifed
+$\forall w \in W$ it must in particular hold for the basis functions. So by
+using the expansions \myref{eq:oned-stochastic-uhp},
+\myref{eq:oned-stochastic-f-approx} and \myref{eq:oned-stochastic-kl-kappa} and
+choosing $w = \phi_i(x)\chi_t(x)$ for each $i = \{0,\ldots,N\}$ and each $t =
+\{0,\ldots,P\}$ and substituting into \myref{eq:wk-one-d-stochastic} we
+obtain:
 
 \begin{align*}
     \int_{\Omega}\int_{-1}^1
       \left(\mu + \sum_{l=1}^d\sqrt{\lambda_l}\beta_l(x)\xi_l(\omega)\right)
-      \frac{d}{dx}\left(\sum_{s=1}^P\sum_{i=1}^Nu_{s,i}\phi_i(x)\chi(\omega)\right)
-      \phi_j'(x)\chi_t(\omega)\, dx\, d\Omega \\ =
+      \frac{d}{dx}\left(\sum_{j=0}^N\sum_{s=1}^Pu_{s,j}\phi_j(x)\chi(\omega)\right)
+      \phi_i'(x)\chi_t(\omega)\, dx\, d\Omega \\ =
     \int_{\Omega}\int_{-1}^1
-      \left(\sum_{i=1}^Nf_i\phi_i(x)\right)
-      \phi_j(x)\chi_t(\omega)\, dx\, d\Omega
+      \left(\sum_{j=0}^Nf_j\phi_j(x)\right)
+      \phi_i(x)\chi_t(\omega)\, dx\, d\Omega
 \end{align*}
 
 Then by the linearity of the integral and differential operator we may write
 this as:
 
-\begin{align*}
-    \mu\sum_{s=1}^P\sum_{i=1}^Nu_{s,i}&\int_\Omega\int_{-1}^1
-      \phi_i'(x)\phi_j'(x)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega \\+
-    &\sum_{s=1}^P\sum_{i=1}^Nu_{s,i}
+\begin{align}
+  \begin{split}
+    \mu\sum_{j=0}^N\sum_{s=1}^Pu_{s,j}&\int_\Omega\int_{-1}^1
+      \phi_j'(x)\phi_i'(x)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega \\+
+    &\sum_{j=0}^N\sum_{s=1}^Pu_{s,j}
       \left(\sum_{l=1}^d\sqrt{\lambda_l}
-        \int_\Omega\int_{-1}^1\beta_l(x)\phi_i'(x)\phi_j'(x)
+        \int_\Omega\int_{-1}^1\beta_l(x)\phi_j'(x)\phi_i'(x)
         \xi_l(\omega)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega\right) \\
-     &= \sum_{i=1}^Nf_i\int_\Omega\int_{-1}^1
-      \phi_i(x)\phi_j(x)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega
-\end{align*}
+     &= \sum_{j=0}^Nf_j\int_\Omega\int_{-1}^1
+      \phi_j(x)\phi_i(x)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega
+  \end{split}
+\end{align}
 
 for each $j \in \{1,\ldots,N\}$ and each $t \in \{1,\ldots,P\}$. Which defines
 a $NP \times NP$ system of linear equations $A\v{u} = \v{f}$ in which the
