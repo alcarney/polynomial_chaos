@@ -12,7 +12,8 @@ following form:
 \end{equation}
 
 where $a, c \in \mathbb{R}$, $\v{b} \in \mathbb{R}^2$ and $f, g \in L^2(D)$ are
-given.
+given. In our case we will choose $g(\v{x}) = 0$ to impose a Dirichlet boundary
+condition on the problem
 
 \section{Weak Formulation}
 
@@ -24,31 +25,30 @@ equation. Which involves multiplying through by $v \in W$ and integrating over
 the domain:
 
 \begin{equation}
-    -\int_{\Omega}{v(\nabla\cdot(a\nabla{u}))}\,d\Omega +
-    -\int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega +
-    c\int_{\Omega}uv\,d\Omega = \int_{\Omega}fv\,d\Omega
+    -\int_{D}{v(\nabla\cdot(a\nabla{u}))}\,dD +
+    -\int_{D}\v{b}\cdot v\nabla{u}\,dD +
+    c\int_{D}uv\,dD = \int_{D}fv\,dD
 \end{equation}
 
 Applying Green's first integral identity to the first term we get:
 
 \begin{equation}
-    \int_{\Omega}v(\nabla\cdot(a\nabla u))\, d\Omega =
+    \int_{D}v(\nabla\cdot(a\nabla u))\, dD =
     -a\int_{\Gamma}\underbrace{v\frac{\partial{u}}{\partial{n}}}_{ =0} \,d\Gamma
-    + a\int_{\Omega}\nabla{v}\cdot\nabla{u}\,d\Omega
+    + a\int_{D}\nabla{v}\cdot\nabla{u}\,dD
 \end{equation}
 
-Where the underbraced integrand is zero on the boundary as by definition $v$ is
-zero there hence the whole term vanishes. Thus we are left with the continuous
-weak form of the problem:
+where the underbraced integrand is zero on the boundary as $v \in W$ it
+vanishes on the boundary. Thus the continuous weak formulation is given by:
 
 \begin{equation}\label{eq:wk-twod-deterministic}
-    a\int_{\Omega}\nabla{v}\cdot\nabla{u}\,d\Omega +
-    \int_{\Omega}\v{b}\cdot v\nabla{u}\,d\Omega + c\int_{\Omega}uv\,d\Omega =
-    \int_{\Omega}fv\,d\Omega
+    a\int_{D}\nabla{v}\cdot\nabla{u}\,dD +
+    \int_{D}\v{b}\cdot v\nabla{u}\,dD + c\int_{D}uv\,dD =
+    \int_{D}fv\,dD
 \end{equation}
 
-Hence the weak solution is to find a $u \in V$ such that the above holds
-$\forall v \in W$
+where we need to find $u \in V$ such that \myref{eq:wk-twod-deterministic}
+holds $\forall v \in W$
 
 \section{Discrete Formulation}
 
@@ -64,22 +64,22 @@ for arbitrary domains, we have chosen the unit square since a simple uniform
 triangulation will be sufficient.
 
 Given a parameter $N \in \mathbb{N}$ we start with square grid with spacing $h
-= 1/N$ then at each of the $(N+1)^2$ intersections we place a node $x_i$, $i
-\in \{1,\ldots,(N+1)^2\}$. Then we divide each grid square into 2 triangles by
-splitting them down the diagonal, dividing the domain into triangular elements
-$T_k$ which we can then use to define the discretisation:
+= 1/N$ then at each of the $M: = (N+1)^2$ intersections we place a node $x_i$,
+$i \in \{0,\ldots,M\}$. Then we split each grid square into 2 triangles
+using the diagonal of negative slope, dividing the domain into triangular
+elements $T_k$ which we can then use to define the discretisation:
 
 \[
     \mathcal{T}_h = \bigcup_{k=1}^{2N^2} T_k
 \]
 
-Please see Figure \ref{fig:two-d-discretisation} for an example of such a
+See Figure \ref{fig:two-d-discretisation} for an example of such a
 discretisation.
 
 \begin{figure}
 \centering
 \input{figures/twod-discretisation.tikz}
-\caption{Example triangulation of $\Omega$ with $N = 4$}
+\caption{Example triangulation of $D$ with $N = 4$}
 \label{fig:two-d-discretisation}
 \end{figure}
 
@@ -88,21 +88,21 @@ of our test and trial spaces $V^h \subset V$, $W^h \subset W$:
 
 \begin{align*}
     V^h = \{v \in V: &v \text{ is linear on } T_k,\ k \in \{1,\ldots,2N^2\}, \\
-                     &v \text{ is continuous on } \Omega\}
+                     &v \text{ is continuous on } D\}
 \end{align*}
 
 Then by choosing appropriate basis functions $\phi_i$ for the above subspaces
 we will be able to approximate the solution as follows:
 
 \begin{equation}
-    u^h(\v{x}) = \sum_{j=1}^{(N+1)^2}u_j\phi_j(\v{x})
+    u^h(\v{x}) = \sum_{j=0}^Mu_j\phi_j(\v{x})
 \end{equation}
 
 where $u_j$ will be the approximate value of the solution at the node $x_j$.
 Similarly we can approximate $f(\v{x})$:
 
 \begin{equation}
-    f(x) \approx \sum_{j=1}^{(N+1)^2}f_j\phi_j(\v{x})
+    f(x) \approx \sum_{j=0}^Mf_j\phi_j(\v{x})
 \end{equation}
 
 where $f_j = f(\v{x_j})$
@@ -137,61 +137,62 @@ discretised domain as $\phi_i(\v{x}) = \Phi(\v{x} - \v{x_i})$
 \label{fig:reference-function-domain}
 \end{figure}
 
-Since the weak formulation \myref{eq:wk-twod-deterministic} has to hold
-forall $v \in V$, in particular it has to hold for the basis functions
-$\phi_i(\v{x})$, $i \in \{1,\ldots,(N + 1)^2\}$ so by taking
-$v = \sum_{i = 1}^{(N+1)^2}\phi_i(\v{x})$ and substituting our expansions
-for $u$ and $f$ we get:
+Since the weak formulation \myref{eq:wk-twod-deterministic} has to hold forall
+$v \in V$, in particular it has to hold for the basis functions
+$\phi_i(\v{x})$, $i \in \{0,\ldots,M\}$ so by taking $v = \phi_i(\v{x})$ for
+each $i \in \{0, \ldots, M\}$ and substituting our expansions for $u$ and $f$
+we obtain:
 
 \begin{align}
 \begin{split}
-    &a\int_{\Omega}\nabla\left(\sum_{i = 1}^{(N+1)^2}\phi_i(\v{x})\right) \cdot
-                  \nabla\left(\sum_{j = 1}^{(N+1)^2}u_j\phi_j(\v{x})\right)\, d\Omega
-    +\int_{\Omega}\v{b}\cdot\left(\sum_{i = 1}^{(N+1)^2}\phi_i(\v{x})\right) \cdot
-                  \nabla\left(\sum_{j = 1}^{(N+1)^2}u_j\phi_j(\v{x})\right)\, d\Omega \\
-    &+c\int_{\Omega}\left(\sum_{i = 1}^{(N + 1)^2}\phi_i(\v{x})\right)
-                    \left(\sum_{j = 1}^{(N + 1)^2}u_j\phi_j(\v{x})\right)\, d\Omega =
-    \int_{\Omega}\left(\sum_{j = 1}^{(N + 1)^2}f_j\phi_j(\v{x})\right)
-                 \left(\sum_{i = 1}^{(N + 1)^2}\phi_i(\v{x})\right)\, d\Omega
+    &a\int_{D}\nabla\phi_i(\v{x}) \cdot
+                  \nabla\left(\sum_{j = 0}^Mu_j\phi_j(\v{x})\right)\, dD
+    +\int_{D}\v{b}\cdot\phi_i(\v{x})\cdot
+                  \nabla\left(\sum_{j = 0}^Mu_j\phi_j(\v{x})\right)\, dD \\
+    &+c\int_{D}\phi_i(\v{x})
+                    \left(\sum_{j = 0}^Mu_j\phi_j(\v{x})\right)\, dD =
+    \int_{D}\left(\sum_{j = 0}^Mf_j\phi_j(\v{x})\right)
+                 \phi_i(\v{x})\, dD
 \end{split}
 \end{align}
 
-Then by the linearity of the integral and the gradient operator this can be
-written as:
+for each $i \in \{0, \ldots, M\}$ Then by the linearity of the integral and the
+gradient operator this can be written as:
 
 \begin{align}\label{eq:twod-deterministic-discrete}
   \begin{split}
-    \sum_{i=1}^{(N+1)^2}\sum_{j=1}^{(N+1)^2}
+    \sum_{j=0}^M
       \underbrace{\left(
-         a\int_{\Omega}\nabla\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, d\Omega
-         + \v{b}\cdot\int_{\Omega}\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, d\Omega
-         +c\int_{\Omega}\phi_i(\v{x})\phi_j(\v{x})\, d\Omega
+         a\int_{D}\nabla\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, dD
+         + \v{b}\cdot\int_{D}\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, dD
+         +c\int_{D}\phi_i(\v{x})\phi_j(\v{x})\, dD
       \right)}_{:= A_{i,j}}u_j = \\
-    \sum_{i=1}^{(N + 1)^2}\sum_{j=1}^{(N + 1)^2}
-      \underbrace{\int_{\Omega}\phi_i(\v{x})\phi_j(\v{x})}_{:= M_{i,j}}
+    \sum_{j=0}^M
+      \underbrace{\int_{D}\phi_i(\v{x})\phi_j(\v{x})}_{:= M_{i,j}}
   \end{split}
 \end{align}
 
-Which reduces the weak formulation \myref{eq:wk-twod-deterministic} to a linear
-system $Au^h = Mf$ where as in the one dimensional case $A$ is known as
-the stiffness matrix and $M$ is known as the mass matrix. But due to the Dirichlet
-condition in \myref{eq:two-d-deterministic} we already know the values of $u_j$
-along the boundary so the above reduces to:
+for $i \in \{1,\ldots,M\}$. This reduces the weak formulation
+\myref{eq:wk-twod-deterministic} to a linear system $Au^h = Mf$ where as in the
+one dimensional case $A$ is known as the stiffness matrix and $M$ is known as
+the mass matrix. But due to the Dirichlet condition in
+\myref{eq:two-d-deterministic} we already know the values of $u_j$ along the
+boundary so the above reduces to:
 
 \begin{equation}
-    \sum_{i = 1}^{(N-1)^2}\sum_{j=1}^{(N-1)^2}A_{i,j}u_j =
-    \sum_{i=1}^{(N-1)^2}\sum_{j=0}^{(N+1)^2}M_{i,j}f_j
+    \sum_{j=1}^{(N-1)^2}A_{i,j}u_j =
+    \sum_{j=0}^MM_{i,j}f_j
 \end{equation}
 
-Solving this system will give us an approximation to the solution for
-\myref{eq:two-d-deterministic}
+for each $i \in \{1, \ldots, (N-1)^2\}$. Solving this system will give us an
+approximation to the solution for \myref{eq:two-d-deterministic}
 
 \section{Constructing the Global System}
 
 The last thing we need to do in order to implement the finite element method
 for this problem is to determine the entries of the global mass and stiffness
-matrices $M$ and $A$ respectively. Since we have discretised our domain into
-many triangular elements, we can consider the contribution from in each element
+matrices $M$ and $A$, respectively. Since we have discretised our domain into
+many triangular elements, we can consider the contribution from each element
 in turn and combine them into the global system.
 
 Consider a triangular element $T$, comprised of the nodes $\v{k_1} = (0,0)$,
@@ -202,7 +203,7 @@ we see that the dashed lines denote the support of each of the basis functions
 and the solid lines denote the subset of the domain which contains the triangular
 element $T$.
 
-Comparing further the two Figures we see that the Triangular element $T$
+Comparing further the two Figures we see that the triangular element $T$
 corresponds to $T_1$ in the reference function for the basis function $\phi_{k1}$
 and $T_5$ for $\phi_{k_2}$ and $T_3$ for $\phi_{k_3}$. This means locally in the
 element $T_k$ we can define the following local basis functions:
@@ -245,31 +246,31 @@ triangle. Hence by introducing the mapping:
 
 \begin{align*}
  \begin{array}{c c}
-    \zeta = \frac{x}{h} & \eta = \frac{y}{h}
+    \xi = \frac{x}{h} & \eta = \frac{y}{h}
  \end{array}
 \end{align*}
 
-we can map any triangular element $T_k$ in our discretisation onto the reference
-triangle $T$ where $h$ represents the length of the sides of the triangular
-element $T_k$. Therefore by a change of variables we can for each element $T_k$ in the discretisation of the
-domain locally write \myref{eq:twod-deterministic-discrete} as an integration around the reference
-triangle $T$ as follows:
+we can map any triangular element $T_k$ in our discretisation onto the
+reference triangle $T$ where $h$ represents the length of the sides of the
+triangular element $T_k$. Hence we may write the local contribution of $T_k$ to
+\myref{eq:twod-deterministic-discrete} as an integration around the reference
+triangle $T$:
 
 \begin{align}\label{eq:twod-deterministic-discrete-local}
     \begin{split}
     \sum_{r=1}^3\sum_{s=1}^3\underbrace{
       \left(
-        ah^2\int_{T}\nabla\psi_r(\zeta, \eta)\cdot\nabla\psi_s(\zeta, \eta)\ d\zeta d\eta
-        + h^2\v{b} \cdot \int_{T}\psi_r(\zeta,\eta)\cdot\nabla\psi_s(\zeta,\eta)\ d\zeta d\eta
-        + ch^2\int_{T}\psi_r(\zeta,\eta)\psi_s(\zeta,\eta)\ d\zeta d\eta
+        ah^2\int_{T}\nabla\psi_r(\xi, \eta)\cdot\nabla\psi_s(\xi, \eta)\ d\xi d\eta
+        + h^2\v{b} \cdot \int_{T}\psi_r(\xi,\eta)\cdot\nabla\psi_s(\xi,\eta)\ d\xi d\eta
+        + ch^2\int_{T}\psi_r(\xi,\eta)\psi_s(\xi,\eta)\ d\xi d\eta
       \right)}_{A^{(k)}_{r,s}}u_s = \\
     \sum_{r=1}^3\sum_{s=1}^3\underbrace{\left(
-        h^2\int_{T_k}\psi_r(\zeta,\eta)\psi_s(\zeta,\eta)\ d\zeta d\eta
+        h^2\int_{T_k}\psi_r(\xi,\eta)\psi_s(\xi,\eta)\ d\xi d\eta
     \right)}_{M^{(k)}_{r,s}}f_s
     \end{split}
 \end{align}
 
-Where $A^{(k)}$ and $M^{(k)}$ are the $3 \times 3$ local stiffness and mass
+where $A^{(k)}$ and $M^{(k)}$ are the $3 \times 3$ local stiffness and mass
 matrices respectively. Since evaluating their entries will involve derivatives
 of the local basis functions we shall compute these now:
 
@@ -292,16 +293,16 @@ If we first consider the integral which gives the contribution from the
 Laplacian:
 
 \begin{equation*}
-    ah^2\int_T\nabla\psi_r(\zeta,\eta)\cdot\nabla\psi_s(\zeta,\eta)\ d\zeta d\eta =
-    ah^2\int_T\psi_{r\zeta}'\psi_{s\zeta}' + \psi_{r\eta}'\psi_{s\eta}'\ d\zeta d\eta
+    ah^2\int_T\nabla\psi_r(\xi,\eta)\cdot\nabla\psi_s(\xi,\eta)\ d\xi d\eta =
+    ah^2\int_T\psi_{r\xi}'\psi_{s\xi}' + \psi_{r\eta}'\psi_{s\eta}'\ d\xi d\eta
 \end{equation*}
 
 and if we take $r = 1$ and $s = 1$ then we get:
 
 \begin{align*}
-    ah^2\int_T(\psi_{i\zeta}')^2 + (\psi_{1\eta}')^2\ d\zeta d\eta
-    &= ah^2\int_0^1\int_0^{1 - \eta}\frac{1}{h^2}((-1)^2 + (-1)^2)\ d\zeta d\eta \\
-    &= 2a\int_0^1\left[\zeta\right]_0^{1 - \eta} \\
+    ah^2\int_T(\psi_{i\xi}')^2 + (\psi_{1\eta}')^2\ d\xi d\eta
+    &= ah^2\int_0^1\int_0^{1 - \eta}\frac{1}{h^2}((-1)^2 + (-1)^2)\ d\xi d\eta \\
+    &= 2a\int_0^1\left[\xi\right]_0^{1 - \eta} \\
     &= 2a\left[\eta - \frac{\eta^2}{2}\right]_0^1 \\
     &= 2a\frac{1}{2} \\
     &= a
@@ -311,12 +312,12 @@ Similarly let's consider the second integral corresponding to the gradient term,
 in the case when $r = 1, s = 3$:
 
 \begin{align*}
-    h^2\int_T\psi_1(\zeta,\eta)\v{b} \cdot \nabla\psi_3(\zeta,\eta)\ d\zeta d\eta
-     &= h^2\int_0^1\int_0^{1-\eta}\frac{1}{h}(1 - \zeta - \eta)
+    h^2\int_T\psi_1(\xi,\eta)\v{b} \cdot \nabla\psi_3(\xi,\eta)\ d\xi d\eta
+     &= h^2\int_0^1\int_0^{1-\eta}\frac{1}{h}(1 - \xi - \eta)
            \left(\begin{array}{c} b_1 \\b_2 \end{array}\right) \cdot
-           \left(\begin{array}{c} 0 \\ 1 \end{array}\right)\ d\zeta d\eta \\
-     &= hb_2\int_0^1\int_0^{1-\eta} 1 - \zeta - \eta \ d\zeta d\eta \\
-     &= hb_2\int_0^1\left[\zeta - \frac{\zeta^2}{2} - \eta\zeta \right]_0^{1-\eta}\ d\eta \\
+           \left(\begin{array}{c} 0 \\ 1 \end{array}\right)\ d\xi d\eta \\
+     &= hb_2\int_0^1\int_0^{1-\eta} 1 - \xi - \eta \ d\xi d\eta \\
+     &= hb_2\int_0^1\left[\xi - \frac{\xi^2}{2} - \eta\xi \right]_0^{1-\eta}\ d\eta \\
      &= hb_2\int_0^1(1 -\eta) - \eta(1-\eta) - \frac{(1 - \eta)^2}{2}\ d\eta \\
      &= hb_2\int_0^1\frac{1}{2} -\eta +\frac{\eta^2}{2}\ d\eta \\
      &= \left[\frac{\eta}{2} - \frac{\eta^2}{2} + \frac{\eta^3}{6}\right]_0^1 \\
@@ -326,9 +327,9 @@ in the case when $r = 1, s = 3$:
 Now considering third integral, in the case where $r = 3, s = 2$:
 
 \begin{align*}
-    ch^2\int_T\psi_3(\zeta,\eta)\psi_2(\zeta,\eta)\ d\zeta d\eta
-    &= ch^2\int_0^1\int_0^{1-\eta}\zeta\eta\ d\zeta d\eta \\
-    &= ch^2\int_0^1\left[\frac{\zeta^2\eta}{2}\right]_0^{1-\eta}\ d\eta \\
+    ch^2\int_T\psi_3(\xi,\eta)\psi_2(\xi,\eta)\ d\xi d\eta
+    &= ch^2\int_0^1\int_0^{1-\eta}\xi\eta\ d\xi d\eta \\
+    &= ch^2\int_0^1\left[\frac{\xi^2\eta}{2}\right]_0^{1-\eta}\ d\eta \\
     &= ch^2\int_0^1\frac{(1-\eta)^2\eta}{2}\ d\eta \\
     &= \frac{ch^2}{2}\left[\frac{\eta^2}{2} - \frac{2\eta^3}{3} - \frac{\eta^4}{4}\right]_0^1 \\
     &= \frac{ch^2}{24}
@@ -370,10 +371,10 @@ by the fact that the matrix is symmetric the case $r = 2, s = 3$. So let's
 consider the case where $r = 1, s = 2$:
 
 \begin{align*}
-    h^2\int_T\psi_1(\zeta,\eta)\psi_2(\zeta,\eta)\ d\zeta d\eta
-    &=  h^2\int_0^1\int_0^{1-\eta}(1 - \zeta -\eta)\zeta\ d\zeta d\eta \\
-    &= h^2\int_0^1\left[\frac{\zeta^2}{2} -\frac{\zeta^3}{3}
-                        -\frac{\zeta^2\eta}{2}\right]_0^{1-\eta}\  d\eta \\
+    h^2\int_T\psi_1(\xi,\eta)\psi_2(\xi,\eta)\ d\xi d\eta
+    &=  h^2\int_0^1\int_0^{1-\eta}(1 - \xi -\eta)\xi\ d\xi d\eta \\
+    &= h^2\int_0^1\left[\frac{\xi^2}{2} -\frac{\xi^3}{3}
+                        -\frac{\xi^2\eta}{2}\right]_0^{1-\eta}\  d\eta \\
     &= h^2\int_0^1\frac{(1-\eta)^2}{2} - \frac{(1-\eta)^3}{3}- \frac{(1-\eta)^2\eta}{2}\ d\eta \\
     &= \frac{h^2}{6}\int_0^1(1- \eta)^3\ d\eta \\
     &= \frac{h^2}{6}\left[\eta -\frac{3\eta}{2} + \eta^3 - \frac{\eta^4}{4}\right]_0^1 \\
@@ -384,9 +385,9 @@ and by symmetry this is the same as the case $r = 2, s = 1$. Finally we can cons
 $r = 1, s = 3$
 
 \begin{align*}
-    h_2\int_T\psi_1(\zeta, \eta)\psi_3(\zeta, \eta)\ d\zeta d\eta
-    &= h^2\int_0^1\int_0^{1-\eta}(1 - \zeta - \eta)\eta\ d\zeta d\eta \\
-    &= h^2\int_0^1\left[\zeta\eta - \frac{\zeta^2\eta}{2} - \eta^2\zeta\right]_0^{1-\eta}\ d\eta \\
+    h_2\int_T\psi_1(\xi, \eta)\psi_3(\xi, \eta)\ d\xi d\eta
+    &= h^2\int_0^1\int_0^{1-\eta}(1 - \xi - \eta)\eta\ d\xi d\eta \\
+    &= h^2\int_0^1\left[\xi\eta - \frac{\xi^2\eta}{2} - \eta^2\xi\right]_0^{1-\eta}\ d\eta \\
     &= h^2\int_0^1(1-\eta)\eta - \frac{(1 - \eta)^2\eta}{2} - \eta^2(1 - \eta)\ d\eta \\
     &= \frac{h^2}{2}\int_0^1(1 - \eta)^2\eta \ d\eta \\
     &= \frac{h^2}{2}\left[\frac{\eta^2}{2} - \frac{2\eta^3}{2} + \frac{\eta^4}{4}\right]_0^1 \\
@@ -420,12 +421,12 @@ $A_{k,k}$ which are given by:
 
 \begin{align*}
 A_{k,k} =
-    a\int_{\Omega}\nabla\phi_k(\v{x}) \cdot \nabla\phi_k(\v{x})\ d\Omega
-    + \int_{\Omega}\phi_k(\v{x})\v{b} \cdot \nabla\phi_k(\v{x})\ d\Omega
-    + c\int_{\Omega}(\phi_k(\v{x}))^2\ d\Omega
+    a\int_{D}\nabla\phi_k(\v{x}) \cdot \nabla\phi_k(\v{x})\ dD
+    + \int_{D}\phi_k(\v{x})\v{b} \cdot \nabla\phi_k(\v{x})\ dD
+    + c\int_{D}(\phi_k(\v{x}))^2\ dD
 \end{align*}
 
 Now recall how we defined the global basis functions in terms of a reference
 function $\Phi(\v{x})$, this allows us to break up the integral over the entire
-domain $\Omega$ into an integral over the 6 triangular elements which make up
+domain $D$ into an integral over the 6 triangular elements which make up
 the domain where the reference function has support.
