@@ -259,8 +259,8 @@ this as:
 \end{align}
 
 for each $j \in \{1,\ldots,N\}$ and each $t \in \{1,\ldots,P\}$. Which defines
-a $NP \times NP$ system of linear equations $A\v{u} = \v{f}$ in which the
-matrix takes the following form:
+a $NP \times NP$ system of linear equations $A\v{u} = M\v{f}$ in which the
+global stiffness matrix takes the following form:
 
 \begin{equation}
     A = \left[\begin{array}{c c c}
@@ -270,6 +270,47 @@ matrix takes the following form:
         \end{array}\right]
 \end{equation}
 
-where each $A_{i,i}$ are $N \times N$ matrices
+where each $A_{s,t}$ are $N \times N$ matrices
 
 \section{Constructing the Global System}
+
+The final step is to determine the form of each of the matrices $A_{s,t}$ and
+their entries, so first let's consider the matrices on the diagonal:
+
+\begin{equation}
+    A_{s,s} = \sum_{j=0}^N\left(\mu\int_\Omega\int_{-1}^1
+       \phi_j'(x)\phi_i'(x)\chi_s(\omega)\chi_s(\omega)\, dx\, d\Omega
+       + \sum_{l=1}^d\sqrt{\lambda_n}\int_\Omega\int_{-1}^1
+       \beta_l(x)\phi_j'(x)\phi_i'(x)\xi_l(\omega)\chi_s(\omega)\chi_s(\omega)
+       \, dx\, d\Omega  \right)
+\end{equation}
+
+for each $i \in \{0,\ldots,N\}$. By the orthogonality relation
+$\langle\chi_s\chi_t\rangle = \langle\chi_s\rangle^2\delta_{st}$ and the fact
+that $\langle\xi_l\chi_s^2\rangle = 0$ the above reduces to:
+
+\begin{equation}
+    A_{s,s} = \sum_{j=0}^N\left(\mu\int_\Omega\int_{-1}^1
+                \phi_j'(x)\phi_i'(x)\langle\chi_s^2\rangle\, dx\, d\Omega\right)
+\end{equation}
+
+for each $i \in \{0,\ldots,N\}$. Now if we consider the off diagonal matrices:
+
+\begin{equation}
+    A_{s,t} = \sum_{j=0}^N\left(\mu\int_\Omega\int_{-1}^1
+       \phi_j'(x)\phi_i'(x)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega
+       + \sum_{l=1}^d\sqrt{\lambda_n}\int_\Omega\int_{-1}^1
+       \beta_l(x)\phi_j'(x)\phi_i'(x)\xi_l(\omega)\chi_s(\omega)\chi_t(\omega)
+       \, dx\, d\Omega  \right)
+\end{equation}
+
+for each $i \in \{0,\ldots,N\}$. By the orthogonality relation
+$\langle\chi_s\chi_t\rangle = 0$ for $s \neq t$ the above reduces to:
+
+\begin{equation}
+    A_{s,t} = \sum_{j=0}^N
+        \sum_{l=1}^d\sqrt{\lambda_n}\int_\Omega\int_{-1}^1
+       \beta_l(x)\phi_j'(x)\phi_i'(x)\xi_l(\omega)\chi_s(\omega)\chi_t(\omega)
+       \, dx\, d\Omega
+\end{equation}
+
