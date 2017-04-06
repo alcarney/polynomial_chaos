@@ -1,21 +1,18 @@
 \chapter{Two Dimensional Deterministic Case}\label{chap:two-d-deterministic}
 
-\todo[inline]{Change domain notation}
-
 In two dimensions, with deterministic coefficients Laplace's equation takes the
 following form:
 
 \begin{equation}\label{eq:two-d-deterministic}
 \begin{aligned}
     -\nabla\cdot(a\nabla u(\v{x})) + \v{b} \cdot \nabla u(\v{x}) + c u(\v{x}) &= f(\v{x})
-                               &\text{ in } \Omega = [0,1] \times [0,1] \\
-    u(\v{x}) &= 0 &\text{ on } \partial\Omega = \Gamma
+                               &\text{ in } D = [0,1] \times [0,1] \\
+    u(\v{x}) &= g(\v{x}) &\text{ on } \partial D = \Gamma
 \end{aligned}
 \end{equation}
 
-Which we will consider in the unit square and prescribe a zero Dirichlet
-condition on the boundary of the domain and is given by
-$\Gamma = (\{0,1\} \times [0,1]) \cup ([0,1] \times \{0,1\})$
+where $a, c \in \mathbb{R}$, $\v{b} \in \mathbb{R}^2$ and $f, g \in L^2(D)$ are
+given.
 
 \section{Weak Formulation}
 
