@@ -245,22 +245,23 @@ obtain:
 Then by the linearity of the integral and differential operator we may write
 this as:
 
-\begin{align}
+\begin{align}\label{eq:oned-stochastic-discrete}
   \begin{split}
-    \mu\sum_{j=0}^N\sum_{s=1}^Pu_{s,j}&\int_\Omega\int_{-1}^1
-      \phi_j'(x)\phi_i'(x)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega \\+
-    &\sum_{j=0}^N\sum_{s=1}^Pu_{s,j}
-      \left(\sum_{l=1}^d\sqrt{\lambda_l}
-        \int_\Omega\int_{-1}^1\beta_l(x)\phi_j'(x)\phi_i'(x)
-        \xi_l(\omega)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega\right) \\
-     &= \sum_{j=0}^Nf_j\int_\Omega\int_{-1}^1
-      \phi_j(x)\phi_i(x)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega
+      \sum_{j=0}^N\sum_{s=0}^Pu_{s,j}\left[
+        \mu\int_\Omega\int_{-1}^1
+          \phi_j'(x)\phi_i'(x)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega +
+          \sum_{l=1}^d\sqrt{\lambda_l}\left(\int_\Omega\int_{-1}^1
+          \beta_l(x)\phi_j'(x)\phi_i(x)
+      \xi_l(\omega)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega\right)
+      \right]\\ =
+      \sum_{j=0}^N\sum_{s=0}^Pf_j\left(\int_\Omega\int_{-1}^1\phi_j(x)\phi_i(x)
+      \chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega\right)
   \end{split}
 \end{align}
 
 for each $j \in \{1,\ldots,N\}$ and each $t \in \{1,\ldots,P\}$. Which defines
 a $NP \times NP$ system of linear equations $A\v{u} = M\v{f}$ in which the
-global stiffness matrix takes the following form:
+global stiffness matrix $A$ takes the following form:
 
 \begin{equation}
     A = \left[\begin{array}{c c c}
@@ -270,12 +271,33 @@ global stiffness matrix takes the following form:
         \end{array}\right]
 \end{equation}
 
-where each $A_{s,t}$ are $N \times N$ matrices
+where each $A_{s,t}$ are $N \times N$ matrices and the $i$-th, $j-$th component
+of the matrix $A_{s,t}$ is given by the terms contained in square brackets in
+\myref{eq:oned-stochastic-discrete}. Similarly the global mass matrix $M$ takes
+the form:
+
+\begin{equation}
+    M = \left[\begin{array}{c c c}
+            M_{1,1} & \cdots & M_{1,P} \\
+            \vdots & & \vdots \\
+            M_{P,1} & \cdots & M_{P,P}
+        \end{array}\right]
+\end{equation}
+
+where each $M_{s,t}$ are $N \times N$ matrices with the $i$-th, $j$-th
+component of the matrix $M_{s,t}$ is given by the term in parenthesis on the
+second line in \myref{eq:oned-stochastic-discrete}
 
 \section{Constructing the Global System}
 
-The final step is to determine the form of each of the matrices $A_{s,t}$ and
-their entries, so first let's consider the matrices on the diagonal:
+In order to construct the global system of equations we need to determine the
+form of each of the smaller $N \times N$ matrices $A_{s,t}$
+
+\subsection{The Matrices on the Diagonal}
+
+By setting $s=t$ in \myref{eq:oned-stochastic-discrete} we obtain the following
+expression for the entries of the matrices sitting on the diagonal of the
+global stiffness matrix:
 
 \begin{equation}
     A_{s,s} = \sum_{j=0}^N\left(\mu\int_\Omega\int_{-1}^1
@@ -285,27 +307,40 @@ their entries, so first let's consider the matrices on the diagonal:
        \, dx\, d\Omega  \right)
 \end{equation}
 
-for each $i \in \{0,\ldots,N\}$. By the orthogonality relation
-$\langle\chi_s\chi_t\rangle = \langle\chi_s\rangle^2\delta_{st}$ and the fact
-that $\langle\xi_l\chi_s^2\rangle = 0$ the above reduces to:
+for each $i \in \{0,\ldots,N\}$.
 
 \begin{equation}
-    A_{s,s} = \sum_{j=0}^N\left(\mu\int_\Omega\int_{-1}^1
-                \phi_j'(x)\phi_i'(x)\langle\chi_s^2\rangle\, dx\, d\Omega\right)
+    A_{s,s} = \mu\langle\chi_s^2\rangle\sum_{j=0}^N\left(\int_{-1}^1
+                \phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
 
-for each $i \in \{0,\ldots,N\}$. Now if we consider the off diagonal matrices:
+for each $i \in \{0,\ldots,N\}$.
 
-\begin{equation}
+\subsection{The Off-Diagonal Matrices}
+
+Now if we consider the off diagonal matrices:
+
+\begin{equation}\label{eq:oned-stochastic-off-diagonal-stiffness}
     A_{s,t} = \sum_{j=0}^N\left(\mu\int_\Omega\int_{-1}^1
        \phi_j'(x)\phi_i'(x)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega
        + \sum_{l=1}^d\sqrt{\lambda_n}\int_\Omega\int_{-1}^1
-       \beta_l(x)\phi_j'(x)\phi_i'(x)\xi_l(\omega)\chi_s(\omega)\chi_t(\omega)
+    \beta_l(x)\phi_j'(x)\phi_i'(x)\xi_l(\omega)\chi_s(\omega)\chi_t(\omega)
        \, dx\, d\Omega  \right)
 \end{equation}
 
-for each $i \in \{0,\ldots,N\}$. By the orthogonality relation
-$\langle\chi_s\chi_t\rangle = 0$ for $s \neq t$ the above reduces to:
+for each $i \in \{0,\ldots,N\}$. The polynomial bases $\chi_s$ are chosen so
+that with respect to the probability measure for the space, they satisfy the
+following orthogonality relation:
+
+\begin{align*}
+    \langle\chi_s\chi_t\rangle
+      &= \int_\Omega\chi_s(\omega)\chi_t(\omega)\, d\Omega \\
+      &= \langle\chi_s\rangle^2\delta_{st}
+\end{align*}
+
+therefore as $s \neq t$ for matrices off the principal diagonal, the first term
+in \myref{eq:oned-stochastic-off-diagonal-stiffness} vanishes.
+
 
 \begin{equation}
     A_{s,t} = \sum_{j=0}^N
