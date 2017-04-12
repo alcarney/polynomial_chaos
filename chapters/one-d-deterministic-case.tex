@@ -559,8 +559,14 @@ for N in [4,8,16,32,64,128,256,512]:
 
     # Plot one of the results
     if N == 32:
-        p  = plt.plot(XS, US)         # Plot the exact solution
-        p += plt.plot(xs, U, 'r-o')   # Plot the approximation over the top
+        fig, ax = plt.subplots(1)
+        ax.plot(XS, US, c='black', label=r'$u(x) = \sin(\pi x)$')
+        ax.scatter(xs, U, facecolor='red', marker='o', s=50, linewidth=0, label=r'$u^h(x)$', alpha=1)
+        ax.set_xlim(0, 1)
+        ax.set_xlabel(r"$x$", fontsize=18)
+        ax.set_ylim(0, 1.2)
+        ax.set_ylabel(r'$u(x)$', fontsize=18)
+        ax.legend(fontsize=18, loc=0)
 \end{lstlisting}
 
 For full details on how \incode{solve\_system} and \incode{L2\_error} are
@@ -601,11 +607,22 @@ Following a similar procedure for these other cases:
 \end{itemize}
 
 We obtain the following set of results:
-\todo[inline]{Get help with this!}
 \todo[inline]{Don't forget to include the results for the case $b=1$}
-\todo[inline]{Don't forget to include plots!}
+
+%\begin{figure}
+%    \input{figures/oned-error-tables.tex}
+%    \caption{Approximation errors for various cases of of the equation}
+%\end{figure}
 
 \begin{figure}
-    \input{figures/oned-error-tables.tex}
-    \caption{Approximation errors for various cases of of the equation}
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/one-d-deterministic-error.pdf}
+    \caption{A plot showing the convergence of the approximations for the
+             various cases}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{img/oned-deterministic-plot.pdf}
+    \caption{A plot of $u(x)$ and $u^h(x)$ in the case where $a=1, b=0, c=0$}
 \end{figure}

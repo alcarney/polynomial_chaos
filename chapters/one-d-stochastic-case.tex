@@ -156,7 +156,7 @@ Therefore we may now rewrite our approximation to the solution process
 \myref{eq:oned-stochastic-uh} as follows:
 
 \begin{equation}\label{eq:oned-stochastic-uhp}
-    u^{h,P}(x;\omega) = \sum_{j=0}^N\sum_{s=1}^Pu_{j,s}\chi_s(\omega)\phi_j(x)
+    u^{h,P}(x;\omega) = \sum_{j=0}^N\sum_{s=1}^Pu_{j,s}\chi_s(\xi)\phi_j(x)
 \end{equation}
 
 \subsection{The Karhunen-Loeve Expansion}
@@ -259,9 +259,23 @@ this as:
   \end{split}
 \end{align}
 
-for each $j \in \{1,\ldots,N\}$ and each $t \in \{1,\ldots,P\}$. Which defines
-a $NP \times NP$ system of linear equations $A\v{u} = M\v{f}$ in which the
-global stiffness matrix $A$ takes the following form:
+for each $j \in \{0,\ldots,N\}$ and each $t \in \{0,\ldots,P\}$. Just as in
+the deterministic case, we know the solution at the endpoints due to the
+boundary conditions on the problem \myref{eq:oned-stochastic} hence we can
+remove the terms associated with $j = 0$ and $j = N$ from the system of
+equations. Then by defining the $i$-th, $j$-th component of the matrix
+$A_{s,t}$ to be the terms in the square brackets of
+\myref{eq:oned-stochastic-discrete} and the $i$-th, $j$-th component of the
+matrix $M_{s,t}$ we obtain the following:
+
+\begin{equation}
+    \sum_{j=1}^{N - 1}\sum_{s=0}^P(A_{s,t})_{i,j}u_{s,j} =
+    \sum_{j=0}^N\sum_{s=0}^P(M_{s,t})_{i,j}f_j
+\end{equation}
+
+for $i \in \{1,\ldots,N - 1\}$ and $t \in \{0,\ldots,P\}$. Which defines a
+$(N - 1)P \times (N - 1)P$ system of linear equations $A\v{u} = M\v{f}$ in
+which the global stiffness matrix $A$ takes the following form:
 
 \begin{equation}
     A = \left[\begin{array}{c c c}
@@ -271,10 +285,8 @@ global stiffness matrix $A$ takes the following form:
         \end{array}\right]
 \end{equation}
 
-where each $A_{s,t}$ are $N \times N$ matrices and the $i$-th, $j-$th component
-of the matrix $A_{s,t}$ is given by the terms contained in square brackets in
-\myref{eq:oned-stochastic-discrete}. Similarly the global mass matrix $M$ takes
-the form:
+where each $A_{s,t}$ are $(N - 1) \times (N - 1)$ matrices. Similarly the
+global mass matrix $M$ takes the form:
 
 \begin{equation}
     M = \left[\begin{array}{c c c}
@@ -284,14 +296,12 @@ the form:
         \end{array}\right]
 \end{equation}
 
-where each $M_{s,t}$ are $N \times N$ matrices with the $i$-th, $j$-th
-component of the matrix $M_{s,t}$ is given by the term in parenthesis on the
-second line in \myref{eq:oned-stochastic-discrete}
+where each $M_{s,t}$ are $(N - 1) \times (N + 1) $ matrices.
 
 \section{Constructing the Global System}
 
 In order to construct the global system of equations we need to determine the
-form of each of the smaller $N \times N$ matrices $A_{s,t}$
+form of each of the smaller matrices $A_{s,t}$ and $M_{s,t}$
 
 \subsection{The Matrices on the Diagonal}
 
@@ -300,14 +310,14 @@ expression for the entries of the matrices sitting on the diagonal of the
 global stiffness matrix:
 
 \begin{equation}
-    A_{s,s} = \sum_{j=0}^N\left(\mu\int_\Omega\int_{-1}^1
-       \phi_j'(x)\phi_i'(x)\chi_s(\omega)\chi_s(\omega)\, dx\, d\Omega
+    A_{s,s} = \sum_{j=1}^{N-1}\left(\mu\int_\Omega\int_{-1}^1
+       \phi_j'(x)\phi_i'(x)\chi_s(\omega)^2\, dx\, d\Omega
        + \sum_{l=1}^d\sqrt{\lambda_n}\int_\Omega\int_{-1}^1
-       \beta_l(x)\phi_j'(x)\phi_i'(x)\xi_l(\omega)\chi_s(\omega)\chi_s(\omega)
+       \beta_l(x)\phi_j'(x)\phi_i'(x)\xi_l(\omega)\chi_s(\omega)^2
        \, dx\, d\Omega  \right)
 \end{equation}
 
-for each $i \in \{0,\ldots,N\}$.
+for each $i \in \{1,\ldots,N-1\}$.
 
 \begin{equation}
     A_{s,s} = \mu\langle\chi_s^2\rangle\sum_{j=0}^N\left(\int_{-1}^1
