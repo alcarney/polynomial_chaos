@@ -1,6 +1,7 @@
 env
 sfepy
 *.pdf
+!img/*.pdf
 *.log
 *.aux
 .ipynb_checkpoints
