@@ -216,11 +216,33 @@ found in \cite{stochastic-fem} but solving this numerically using
 \todo{Have a look at pychebfun or chebpy} PYTHON LIBRARY
 will be sufficient for our purposes.
 
+\subsection{A Technical Aside}
+
+\cite{chebfun-matlab}
+
+\begin{lstlisting}
+function KLEigs(k)
+    K = @(x, y) exp(-abs(x-y));
+    L = chebop(@(u) fred(K,u));
+    [V,D] = eigs(L, k, 'lm');
+
+    values = diag(D);
+    dlmwrite('expansion-data.csv', transpose(values), ',');
+
+    for i = 1:len(values)
+        dlmwrite('expansion-data.csv', transpose(V{1,i}.points), '-append', 'delimiter', ',');
+        dlmwrite('expansion-data.csv', transpose(V{1,i}.values), '-append', 'delimiter', ',');
+    end
+end
+\end{lstlisting}
+
 Therefore we can approximate $\kappa$ as follows:
 
 \begin{align}\label{eq:oned-stochastic-kl-kappa}
     \kappa(x;\omega) &\approx \mu + \sigma\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(x)\xi_l(\omega)
 \end{align}
+
+
 
 \subsection{Derivation of Global System of Equations}
 
