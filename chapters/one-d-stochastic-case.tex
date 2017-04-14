@@ -63,7 +63,7 @@ the above is satisfied $\forall w \in W$
 \section{Discrete Formulation}
 
 Constructing a finite dimensional approximation to
-\myref{eq:wk-two-d-stochastic} requires us to discretise both physical and
+\myref{eq:wk-one-d-stochastic} requires us to discretise both physical and
 probability spaces. For the physical space we can proceed in a similar fashion
 to Chapter \ref{chap:oned-deterministic} taking into account that the domain
 now extends to include the interval $[-1, 0]$
@@ -115,6 +115,18 @@ basis which spans the space. As shown in \cite{gpc} members from the
 \textit{Askey Scheme} of orthogonal polynomials can be used to construct finite
 dimensional approximations to second order random processes.
 
+By introducing the following notation for the expected value of a quantity:
+
+\begin{equation}\label{eq:oned-stochastic-expect-notation}
+    \langle\cdot\rangle = \int_{\Omega}(\cdot) \,d\omega
+\end{equation}
+
+allows us to express this orthogonality relation as follows:
+
+\begin{equation}\label{oned-stochastic-orthog-relation}
+    \langle\chi_i\chi_j\rangle = \langle\chi_i\rangle^2\delta_{ij}
+\end{equation}
+
 Depending on the probability measure of a space a different set of polynomials
 are used. For example if the probability measure is for a
 \textit{Gaussian process} then the \textit{Hermite polynomials} are used or in
@@ -151,6 +163,7 @@ Then the set of basis polynomials in this case would be given by:
     \chi_{\alpha_6} = \frac{1}{2}(3\xi_2^2 - 1)
   \end{array}
 \end{equation}
+
 
 Therefore we may now rewrite our approximation to the solution process
 \myref{eq:oned-stochastic-uh} as follows:
@@ -207,20 +220,32 @@ where $k$ is the correlation length that for simplicity we set to $1$.
 Therefore to determine $\beta_n, \lambda_n$ we have to solve the following
 integral equation:
 
-\begin{equation}
+\begin{equation}\label{eq:oned-stochastic-kle-eigenvalue-problem}
     \sigma^2\int_{-1}^1\exp(-|x - y|)\beta_n(y) dy = \lambda_n\beta_n(x)
 \end{equation}
 
 A detailed discussion on finding the eigenvalues/eigenfunctions above can be
-found in \cite{stochastic-fem} but solving this numerically using
-\todo{Have a look at pychebfun or chebpy} PYTHON LIBRARY
-will be sufficient for our purposes.
+found in \cite{stochastic-fem} but solving this numerically will be sufficient
+for our purposes. Therefore we will be able to approximate $\kappa(x;\omega)$
+as follows:
 
-\subsection{A Technical Aside}
+\begin{equation}\label{eq:oned-stochastic-kl-kappa}
+    \kappa(x;\omega) \approx
+        \mu + \sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(x)\xi_l(\omega)
+\end{equation}
 
-\cite{chebfun-matlab}
+\subsubsection{Obtaining a Numeric Representation of the KL Expansion}
 
-\begin{lstlisting}
+Unfortunately I was unable to find an existing method to numerically solve
+\myref{eq:oned-stochastic-kle-eigenvalue-problem} using Python however this is
+a relatively easy problem to solve in Matlab once you make use of the
+\textit{Chebfun} numerical computation library \cite{chebfun}. The Matlab code
+which solves this problem can be found in Listing \ref{code:matlab-eigen}.
+
+\begin{lstlisting}[caption={Matlab code which finds the first 5 eigenvalues and
+                            associated eigenfunctions},
+                   label={code:matlab-eigen},
+                   language=Matlab]
 function KLEigs(k)
     K = @(x, y) exp(-abs(x-y));
     L = chebop(@(u) fred(K,u));
@@ -236,13 +261,78 @@ function KLEigs(k)
 end
 \end{lstlisting}
 
-Therefore we can approximate $\kappa$ as follows:
+In order to be able to use the results from Matlab in the remaining Python
+code, we require a brief discussion of how the \textit{Chebfun} library
+represents mathematical functions. As stated in \cite{chebfun-data}, the
+fundamental data structure \incode{chebfun} is a numerical representation of a
+function $f$ using a set of numbers $\{f_0, \ldots, f_N\}$ where $f_j = f(x_j)$
+, $j \in \{0, \ldots, N\}$ where the $x_j$ are particular points in the domain
+called Chebyshev points. When the $f_j$ are used in conjunction with
+\textit{baycentric interpolation} one can achieve a good, fast and stable
+approximation to $f$.
 
-\begin{align}\label{eq:oned-stochastic-kl-kappa}
-    \kappa(x;\omega) &\approx \mu + \sigma\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(x)\xi_l(\omega)
-\end{align}
+Therefore in order to use the Matlab results in our Python we simply need to
+export the $f_j$, $x_j$ of each of the eigenfunctions we find. Then by using
+the \incode{BarycentricInterpolator} that is part of the \textit{scipy} library
+\cite{scipy} we can reconstruct the functions in our Python code. The code
+which performs this reconstruction can be found in Listing
+\ref{code:python-reconstruct-eigen}.
+
+\begin{lstlisting}[caption={Python code which reconstructs the eigenfunctions
+                            we found using Matlab},
+                   label={code:python-reconstruct-eigen},
+                   language=Python]
+import csv
+import scipy.interpolate import BarycentricInterpolator
 
 
+def reconstruct_eigenfunctions(filename):
+    """
+    Given a filename, read the CSV data and reconstruct the eigenfunctions
+    as they are represented by the Matlab code
+    """
+
+    # Read and parse the CSV data
+    with open(filename) as f:
+        reader = csv.reader(f)
+        rows = [row for row in reader]
+
+    # Eigenvalues are given by the first row of data
+    eigenvalues = [float(l) for l in rows[0]]
+
+    data = list()
+
+    for i in range(len(eigenvalues)):
+
+        # The remaining rows alternate between the x_j and f(x_j)
+        # representing the i-th eigenfunction associated with the i-th eigenvalue
+        p = BarycentricInterpolator([float(x) for x in rows[2*i + 1]],
+                                    [float(y) for y in rows[2*i + 2]])
+
+        data.append({'lambda': eigenvalues[i],
+                     'beta': p})
+
+    # Reverse the list so the eigenvalues are sorted from largest - smallest
+    data.reverse()
+
+    return data
+\end{lstlisting}
+
+Finally it is worth considering if this process does indeed give the right
+result, thankfully as this particular correlation function
+\myref{eq:oned-stochastic-kle-eigenvalue-problem} is discussed in
+\cite{stochastic-fem} we can compare results. Hence as Figure
+\ref{fig:kle-eigenfunctions} matches what we see in Figure $2.1$ in
+\textit{Ghanem \& Spanos}, we can be confident that indeed we have obtained the
+correct results.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/kle-eigenfunctions.pdf}
+    \caption{The first 5 eigenfunctions and associated eigenvalues of
+             \myref{eq:oned-stochastic-kle-eigenvalue-problem}}
+    \label{fig:kle-eigenfunctions}
+\end{figure}
 
 \subsection{Derivation of Global System of Equations}
 
@@ -264,20 +354,20 @@ obtain:
       \phi_i(x)\chi_t(\omega)\, dx\, d\Omega
 \end{align*}
 
-Then by the linearity of the integral and differential operator we may write
-this as:
+Then by the linearity of the integral and differential operator and taking
+advantage of our notation for the expectation
+\myref{eq:oned-stochastic-expect-notation} we may write this as:
 
 \begin{align}\label{eq:oned-stochastic-discrete}
   \begin{split}
       \sum_{j=0}^N\sum_{s=0}^Pu_{s,j}\left[
-        \mu\int_\Omega\int_{-1}^1
-          \phi_j'(x)\phi_i'(x)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega +
-          \sum_{l=1}^d\sqrt{\lambda_l}\left(\int_\Omega\int_{-1}^1
-          \beta_l(x)\phi_j'(x)\phi_i(x)
-      \xi_l(\omega)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega\right)
+          \mu\expect{\chi_s\chi_t}
+          \int_{-1}^1\phi_j'(x)\phi_i'(x)\, dx +
+          \sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
+          \left(\int_{-1}^1 \beta_l(x)\phi_j'(x)\phi_i(x)\, dx\right)
       \right]\\ =
-      \sum_{j=0}^N\sum_{s=0}^Pf_j\left(\int_\Omega\int_{-1}^1\phi_j(x)\phi_i(x)
-      \chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega\right)
+      \sum_{j=0}^N\sum_{s=0}^Pf_j\expect{\chi_s\chi_t}
+          \left(\int_{-1}^1\phi_j(x)\phi_i(x)\, dx\right)
   \end{split}
 \end{align}
 
@@ -325,28 +415,34 @@ where each $M_{s,t}$ are $(N - 1) \times (N + 1) $ matrices.
 In order to construct the global system of equations we need to determine the
 form of each of the smaller matrices $A_{s,t}$ and $M_{s,t}$
 
-\subsection{The Matrices on the Diagonal}
+\subsection{The Global Stiffness Matrix}
+
+\subsubsection{Matrices on the Diagonal}
 
 By setting $s=t$ in \myref{eq:oned-stochastic-discrete} we obtain the following
 expression for the entries of the matrices sitting on the diagonal of the
 global stiffness matrix:
 
 \begin{equation}
-    A_{s,s} = \sum_{j=1}^{N-1}\left(\mu\int_\Omega\int_{-1}^1
-       \phi_j'(x)\phi_i'(x)\chi_s(\omega)^2\, dx\, d\Omega
-       + \sum_{l=1}^d\sqrt{\lambda_n}\int_\Omega\int_{-1}^1
-       \beta_l(x)\phi_j'(x)\phi_i'(x)\xi_l(\omega)\chi_s(\omega)^2
-       \, dx\, d\Omega  \right)
+    A_{s,s} = \sum_{j=1}^{N-1}\left(\mu\expect{\chi_s^2}
+        \int_{-1}^1 \phi_j'(x)\phi_i'(x)\, dx
+       + \sum_{l=1}^d\sqrt{\lambda_n}\expect{\xi_l\chi_s^2}
+       \int_{-1}^1 \beta_l(x)\phi_j'(x)\phi_i'(x) \, dx\right)
 \end{equation}
 
-for each $i \in \{1,\ldots,N-1\}$.
+for each $i \in \{1,\ldots,N-1\}$. Now if we consider the quantity
+$\expect{\xi_l\chi_s^2}$ for a moment as the function $\chi_s^2$ is even and
+$\xi_l$ is an odd function their product is odd therefore, as we are integrating
+over a symmetric domain, this quantity vanishes. Hence the above reduces to:
 
 \begin{equation}
-    A_{s,s} = \mu\langle\chi_s^2\rangle\sum_{j=0}^N\left(\int_{-1}^1
+    A_{s,s} = \mu\expect{\chi_s^2}\sum_{j=0}^N\left(\int_{-1}^1
                 \phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
 
-for each $i \in \{0,\ldots,N\}$.
+for each $i \in \{0,\ldots,N\}$. As the quantity $\mu\expect{\chi_s^2}$ is
+fully deterministic and scalar if we compare this with Chapter
+\ref{chap:oned-deterministic} we can treat this similarly.
 
 \subsection{The Off-Diagonal Matrices}
 
