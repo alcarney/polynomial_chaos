@@ -54,3 +54,32 @@ boundary. Therefore the weak form of the problem is given by:
 
 where in this sense a solution would be a function $u \in V$ which satisfies
 the the above equation $\forall w \in W$
+
+\section{Discrete Formulation}
+
+In order to construct a finite dimensional approximation to
+\myref{eq:twod-stochastic} we must discretise both the physical and probability
+spaces. For the physical space, we can proceed just as we did in Chapter
+\ref{chap:two-d-deterministic} and construct a uniform triangulation taking
+into account that the physical domain is now $[-1,1] \times [-1,1]$.
+
+Given a parameter $N \in \mathbb{N}$ we create a
+square grid with spacing $h = 1/N$, then at each of the $M := (N+1)^2$
+intersections we place a node $\v{x}_i$, $i \in \{0,\ldots, M\}$. Finally we
+can split each grid square into 2 triangular elements $T_k$ using the diagonal
+of negative slope. Which we can now use to define the discretisation:
+
+\[
+    \mathcal{T}_h = \bigcup_{k=1}^{2N^2}T_k
+\]
+
+Upon which we can define finite dimensional subspaces of V and W:
+
+\begin{align*}
+    V_h &= \{v \in V: v \text{ is linear on } T_k,\ i \in \{0, \ldots, 2N^2\},
+                      v \text{ is continuous on } D\} \\
+    W_h &= \{w \in W: w \text{ is linear on } T_k,\ i \in \{0, \ldots, 2N^2\},
+                      w \text{ is continuous on } D\}
+\end{align*}
+
+

@@ -88,7 +88,7 @@ Upon which we can define finite dimensional subspaces of $V$ and $W$:
 \end{align*}
 
 Then we can choose the `hat functions' as our basis again which are defined
-just as they were in \ref{eq:one-d-hat-basis} hence we can approximate $f(x)$
+just as they were in \myref{eq:one-d-hat-basis} hence we can approximate $f(x)$
 as follows:
 
 \begin{equation}\label{eq:oned-stochastic-f-approx}
@@ -436,44 +436,96 @@ $\xi_l$ is an odd function their product is odd therefore, as we are integrating
 over a symmetric domain, this quantity vanishes. Hence the above reduces to:
 
 \begin{equation}
-    A_{s,s} = \mu\expect{\chi_s^2}\sum_{j=0}^N\left(\int_{-1}^1
+    A_{s,s} = \mu\expect{\chi_s^2}\sum_{j=1}^{N - 1}\left(\int_{-1}^1
                 \phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
 
-for each $i \in \{0,\ldots,N\}$. As the quantity $\mu\expect{\chi_s^2}$ is
+for each $i \in \{1,\ldots,N-1\}$. As the quantity $\mu\expect{\chi_s^2}$ is
 fully deterministic and scalar if we compare this with Chapter
-\ref{chap:oned-deterministic} we can treat this similarly.
+\ref{chap:oned-deterministic} we can treat this similarly. So by setting $a =
+\mu\expect{\chi_s^2}, b = 0, c = 0$ in \myref{eq:oned-deterministic-discrete}
+and following a similar argument as outlined in Section
+\ref{sec:oned-deterministic-global-construct} we obtain the following form of
+the local stiffness matrix $A_{s,s}^{(k)}$:
 
-\subsection{The Off-Diagonal Matrices}
+\begin{align}\label{eq:oned-stochasic-local-stifness-diag}
+  \begin{split}
+    A_{s,s}^{(k)} &= \frac{\mu\expect{\chi_s^2}}{h_k}\left[\begin{array}{c c}
+                1 & -1 \\ -1 & 1
+              \end{array}\right] \\
+    &= \frac{2\mu}{h_k(2s + 1)}\left[\begin{array}{c c}
+              1 & -1 \\ -1 & 1
+      \end{array}\right]
+  \end{split}
+\end{align}
 
-Now if we consider the off diagonal matrices:
+where $\expect{\chi_s^2} = \frac{2}{2s + 1}$ is the orthogonality relation for
+the \textit{Legendre Polynomials} \cite{poly-bible}. Continuing with the same
+argument as in Section \ref{sec:oned-deterministic-global-construct} we find
+that the matrix $A_{s,s}$ will have the form as shown in
+\myref{eq:oned-deterministic-global-stiffness}.
+
+\subsubsection{The Off-Diagonal Matrices}
+
+Now if we consider the case where $s \neq t$ in
+\myref{eq:oned-stochastic-discrete} we obtain:
 
 \begin{equation}\label{eq:oned-stochastic-off-diagonal-stiffness}
-    A_{s,t} = \sum_{j=0}^N\left(\mu\int_\Omega\int_{-1}^1
-       \phi_j'(x)\phi_i'(x)\chi_s(\omega)\chi_t(\omega)\, dx\, d\Omega
-       + \sum_{l=1}^d\sqrt{\lambda_n}\int_\Omega\int_{-1}^1
-    \beta_l(x)\phi_j'(x)\phi_i'(x)\xi_l(\omega)\chi_s(\omega)\chi_t(\omega)
-       \, dx\, d\Omega  \right)
+    A_{s,t} = \sum_{j=1}^{N - 1}\left(\mu\expect{\chi_s\chi_t}
+        \int_{-1}^1 \phi_j'(x)\phi_i'(x)\, dx
+       + \sum_{l=1}^d\sqrt{\lambda_n}\expect{\xi_l\chi_s\chi_t}
+       \int_{-1}^1 \beta_l(x)\phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
 
-for each $i \in \{0,\ldots,N\}$. The polynomial bases $\chi_s$ are chosen so
-that with respect to the probability measure for the space, they satisfy the
-following orthogonality relation:
-
-\begin{align*}
-    \langle\chi_s\chi_t\rangle
-      &= \int_\Omega\chi_s(\omega)\chi_t(\omega)\, d\Omega \\
-      &= \langle\chi_s\rangle^2\delta_{st}
-\end{align*}
-
-therefore as $s \neq t$ for matrices off the principal diagonal, the first term
-in \myref{eq:oned-stochastic-off-diagonal-stiffness} vanishes.
-
+for each $i \in \{1,\ldots,N-1\}$. By the orthogonality relation
+$\expect{\chi_s\chi_t} = \expect{\chi_s^2}\delta_{st}$, the first term vanishes
+and we are left with:
 
 \begin{equation}
-    A_{s,t} = \sum_{j=0}^N
-        \sum_{l=1}^d\sqrt{\lambda_n}\int_\Omega\int_{-1}^1
-       \beta_l(x)\phi_j'(x)\phi_i'(x)\xi_l(\omega)\chi_s(\omega)\chi_t(\omega)
-       \, dx\, d\Omega
+    A_{s,t} = \sum_{j=1}^{N - 1}\left(
+        \sum_{l=1}^d\sqrt{\lambda_n}\expect{\xi_l\chi_s\chi_t}
+            \int_{-1}^1\beta_l(x)\phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
 
+\subsection{The Global Mass Matrix}
+
+\subsubsection{Matrices on the Diagonal}
+
+As with the global stiffness matrix we will first consider the matrices sat on
+the main diagonal. By setting $s = t$ in \myref{eq:oned-stochastic-discrete} we
+obtain the following expression:
+
+\begin{equation}
+    M_{s,s} = \sum_{j=0}^Nf_j\expect{\chi_s^2}\left(
+        \int_{-1}^1\phi_j(x)\phi_i(x)\, dx\right)
+\end{equation}
+
+for each $i \in \{1,\ldots,N-1\}$. The quantity $f_j\expect{\chi_s^2}$ is now
+fully deterministic and scalar so we can proceed in a similar manner to the
+deterministic case.
+
+\subsubsection{The Off-Diagonal Matrices}
+
+Now when we consider the case where $s \neq t$,
+\myref{eq:oned-stochastic-discrete} redcues to:
+
+\begin{equation}
+    M_{s,t} = \sum_{j=0}^Nf_j\expect{\chi_s\chi_t}\left(
+        \int_{-1}^1\phi_j(x)\phi_i(x)\, dx
+    \right)
+\end{equation}
+
+for each $i \in \{1,\ldots,N - 1\}$By the orthogonality relation
+$\expect{\chi_s\chi_t} = \expect{\chi_s^2}\delta_{st}$ all terms in the off
+diagonal matrices vanish.
+
+Therefore the global mass matrix is of the form:
+
+\begin{equation}
+    M = \left[\begin{array}{c c c c}
+            M_{1,1} & 0 & \cdots & 0 \\
+            0 & M_{2,2} & \cdots & 0 \\
+            \vdots & & & \vdots \\
+            0 & \cdots & 0 & M_{P,P}
+    \end{array}\right]
+\end{equation}
