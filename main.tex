@@ -59,6 +59,7 @@
 \newcommand{\myref}[1]{(\ref{#1})}
 \newcommand{\incode}[1]{\framebox{\textit{#1}}}
 \newcommand{\expect}[1]{\left\langle#1\right\rangle}
+\newcommand{\Ak}[2]{A^{(k)}_{#1,#2}}
 
 % ----------------------------------------------------------------------------
 % Code listing settings
@@ -102,10 +103,10 @@
     \include{chapters/two-d-stochastic-case}
 
     \begin{appendices}
-    %	\include{chapters/app-oned-deterministic-calcs}
+    %   \include{chapters/app-oned-deterministic-calcs}
         \include{chapters/app-oned-deterministic-code}
-        \include{chapters/app-mesh-generation}
-        \include{chapters/app-fem-implementation}
+        \include{chapters/app-twod-deterministic-code}
+        \include{chapters/app-oned-stochastic-code}
     \end{appendices}
 
     % The bibliography:

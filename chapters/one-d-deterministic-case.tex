@@ -266,7 +266,7 @@ these local basis functions which are given by:
   \end{split}
 \end{align}
 
-\subsection{The Local Stiffness Matrix}
+\subsection{The Local Stiffness Matrix}\label{sec:oned-deterministic-local-stiffness}
 
 We are now in a position where we can evaluate each of the entries of the local
 stiffness matrix which involves calculating a large number of integrals so for
@@ -338,7 +338,7 @@ following form of the local stiffness matrix:
 where $a,b,c \in \mathbb{R}$ correspond to the coefficients in the original
 equation \myref{eq:oned-deterministic} we are considering.
 
-\subsection{The Local Mass Matrix}
+\subsection{The Local Mass Matrix}\label{sec:oned-deterministic-local-mass}
 
 In an identical manner we can construct the entries for the local mass matrix,
 as we can see in \myref{eq:oned-deterministic-local-discrete} it has the much
@@ -389,7 +389,7 @@ mass matrix has the following form:
               \end{array}\right]
 \end{equation}
 
-\subsection{Assembling the Global Stiffness Matrix}
+\subsection{Assembling the Global Stiffness Matrix}\label{sec:oned-deterministic-global-stiffness-assembly}
 
 \todo[inline]{Talk about including the BCs on the RHS}
 
@@ -465,7 +465,7 @@ be zero. So the global stiffness matrix will take the following form:
         \end{array}\right]
 \end{equation}
 
-\subsection{Assembling the Global Mass Matrix}
+\subsection{Assembling the Global Mass Matrix}\label{sec:oned-deterministic-global-mass-assembly}
 
 We can follow a very similar process to assembling the global mass matrix as we
 did above, first we note that we can rewrite the global basis functions as we

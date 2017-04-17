@@ -1,4 +1,4 @@
-\chapter{One Dimensional Stochastic Case}\label{chap:one-d-stochastic}
+\chapter{One Dimensional Stochastic Case}\label{chap:oned-stochastic}
 
 Here we return to the one dimensional version of this equation, but this time
 we introduce some form of uncertainty in the coefficients of the equation:
@@ -445,7 +445,7 @@ fully deterministic and scalar if we compare this with Chapter
 \ref{chap:oned-deterministic} we can treat this similarly. So by setting $a =
 \mu\expect{\chi_s^2}, b = 0, c = 0$ in \myref{eq:oned-deterministic-discrete}
 and following a similar argument as outlined in Section
-\ref{sec:oned-deterministic-global-construct} we obtain the following form of
+\ref{sec:oned-deterministic-local-stiffness} we obtain the following form of
 the local stiffness matrix $A_{s,s}^{(k)}$:
 
 \begin{align}\label{eq:oned-stochasic-local-stifness-diag}
@@ -461,8 +461,8 @@ the local stiffness matrix $A_{s,s}^{(k)}$:
 
 where $\expect{\chi_s^2} = \frac{2}{2s + 1}$ is the orthogonality relation for
 the \textit{Legendre Polynomials} \cite{poly-bible}. Continuing with the same
-argument as in Section \ref{sec:oned-deterministic-global-construct} we find
-that the matrix $A_{s,s}$ will have the form as shown in
+argument as in Section \ref{sec:oned-deterministic-global-stiffness-assembly}
+we find that the matrix $A_{s,s}$ will have the form as shown in
 \myref{eq:oned-deterministic-global-stiffness}.
 
 \subsubsection{The Off-Diagonal Matrices}
@@ -501,8 +501,25 @@ obtain the following expression:
 \end{equation}
 
 for each $i \in \{1,\ldots,N-1\}$. The quantity $f_j\expect{\chi_s^2}$ is now
-fully deterministic and scalar so we can proceed in a similar manner to the
-deterministic case.
+fully deterministic and scalar so proceeding with a similar argument as in
+Section \ref{sec:oned-deterministic-local-mass} we find that the local mass
+matrix for the matrix $M_{s,s}$ is given by:
+
+\begin{align}
+  \begin{split}
+    M_{s,s}^{(k)} &= \frac{\expect{\chi_s^2}h_k}{6}\left[\begin{array}{c c}
+                        2 & 1 \\ 1 & 2
+                    \end{array}\right]\\
+                  &= \frac{h_k}{3(2s + 1)}\left[\begin{array}{c c}
+                        2 & 1 \\ 1 & 2
+                    \end{array}\right]
+  \end{split}
+\end{align}
+
+where we again use the orthogonality relation of the \textit{Lengendre
+Polynomials}. Continuing with a similar argument to Section
+\ref{sec:oned-deterministic-global-mass-assembly} we find that the matrix
+$M_{s,s}$ will have the form found in \myref{eq:oned-deterministic-global-mass}
 
 \subsubsection{The Off-Diagonal Matrices}
 

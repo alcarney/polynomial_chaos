@@ -1,4 +1,4 @@
-\chapter{Two Dimensional Deterministic Case}\label{chap:two-d-deterministic}
+\chapter{Two Dimensional Deterministic Case}\label{chap:twod-deterministic}
 
 In two dimensions, with deterministic coefficients Laplace's equation takes the
 following form:
@@ -89,6 +89,8 @@ of our test and trial spaces $V^h \subset V$, $W^h \subset W$:
 \begin{align*}
     V^h &= \{v \in V: v \text{ is linear on } T_k,\ k \in \{1,\ldots,2N^2\},
                      v \text{ is continuous on } D\} \\
+    W^h &= \{w \in W: w \text{ is linear on } T_k,\ k \in \{1,\ldots,2N^2\},
+                     w \text{ is continuous on } D\}
 \end{align*}
 
 Then by choosing appropriate basis functions $\phi_i$ for the above subspaces
@@ -161,13 +163,13 @@ gradient operator this can be written as:
 
 \begin{align}\label{eq:twod-deterministic-discrete}
   \begin{split}
-    \sum_{j=0}^M
+    \sum_{j=0}^Mu_j
       \underbrace{\left(
          a\int_{D}\nabla\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, dD
          + \v{b}\cdot\int_{D}\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, dD
          +c\int_{D}\phi_i(\v{x})\phi_j(\v{x})\, dD
-      \right)}_{:= A_{i,j}}u_j = \\
-    \sum_{j=0}^M
+      \right)}_{:= A_{i,j}} = \\
+    \sum_{j=0}^Mf_j
       \underbrace{\int_{D}\phi_i(\v{x})\phi_j(\v{x})}_{:= M_{i,j}}
   \end{split}
 \end{align}
@@ -185,7 +187,23 @@ boundary so the above reduces to:
 \end{equation}
 
 for each $i \in \{1, \ldots, (N-1)^2\}$. Solving this system will give us an
-approximation to the solution for \myref{eq:two-d-deterministic}
+approximation to the solution for \myref{eq:two-d-deterministic}.
+
+\paragraph{Note:}
+
+For convenience we can define the following \textit{bilinear form}:
+
+\begin{equation}\label{eq:twod-deterministic-bilinear}
+    \alpha(u,v) = a(\nabla u \cdot \nabla v) + u\v{b} \cdot \nabla v
+                 + cuv
+\end{equation}
+
+which allows us to rewrite \myref{eq:twod-deterministic-discrete} as follows:
+
+\begin{equation}
+    \sum_{j = 0}^Mu_j\int_D\alpha(\phi_i,\phi_j)\, dD
+        = \sum_{j = 0}^Mf_j\int_D\phi_i(\v{x})\phi_j(\v{x})\, dD
+\end{equation}
 
 \section{Constructing the Global System}
 
@@ -282,7 +300,7 @@ of the local basis functions we shall compute these now:
     \end{split}
 \end{align}
 
-\subsection{The Local Stiffness Matrix}
+\subsection{The Local Stiffness Matrix}:\label{sec:twod-deterministic-local-stiffness}
 
 Similar to the one dimensional case, we now have an expression for the entries
 of the local stiffness matrix, in terms of a number of integrals
@@ -361,7 +379,7 @@ where $a, c \in \mathbb{R}$ and $\v{b} = (b_1, b_2) \in \mathbb{R}^2$
 correspond to the parameters which define the original equation
 \myref{eq:two-d-deterministic} we considered.
 
-\subsection{The Local Mass Matrix}
+\subsection{The Local Mass Matrix}\label{sec:twod-deterministic-local-mass}
 
 Following the same procedure, we can also compute the entries of the local mass
 matrix as defined in \myref{eq:twod-deterministic-discrete-local}, in fact the
@@ -412,21 +430,128 @@ following form for the local mass matrix:
 Now that we know the form of local stiffness matrix
 \myref{eq:twod-local-stiffness} we can start to assemble the global stiffness
 matrix. As in the one dimensional case, we need to take into account the
-contributions each of the elements surrounding a node make to its value. So we
-need to find a way write \myref{eq:twod-deterministic-discrete} in terms of
-\myref{eq:twod-deterministic-discrete-local}.
+contributions each of the elements surrounding a node make to its value.
 
-Let's first consider the diagonal entries of the global stiffness matrix
-$A_{k,k}$ which are given by:
+However the extra dimension does mean that there are a few more cases that we
+have to consider. Firstly due to the boundary conditions on the problem only
+the interior nodes are unknown - hence the fact that the global stiffness
+matrix has dimension $(N - 1) \times (N - 1)$ it will be useful for us to
+relabel the interior nodes to $X_k$, $k \in \{1, \ldots, (N-1)^2\}$ and let's
+consider the $k$-th row of the global stiffness matrix:
 
-\begin{align*}
-A_{k,k} =
-    a\int_{D}\nabla\phi_k(\v{x}) \cdot \nabla\phi_k(\v{x})\ dD
-    + \int_{D}\phi_k(\v{x})\v{b} \cdot \nabla\phi_k(\v{x})\ dD
-    + c\int_{D}(\phi_k(\v{x}))^2\ dD
-\end{align*}
+\begin{align}
+  \begin{split}
+    A_{k,i} &= a\int_D\nabla\phi_k\cdot\nabla\phi_i\, dD
+            + \v{b} \cdot \int_D\phi_k\cdot\nabla\phi_i\, dD
+            + c\int_D\phi_k\phi_i\, dD \\
+            &= \int_D\alpha(\phi_k,\phi_i)\, dD
+  \end{split}
+\end{align}
 
-Now recall how we defined the global basis functions in terms of a reference
-function $\Phi(\v{x})$, this allows us to break up the integral over the entire
-domain $D$ into an integral over the 6 triangular elements which make up
-the domain where the reference function has support.
+for each $i \in \{1,\ldots,(N-1)^2)\}$ and where we used the \textit{bilinear
+form} we defined in \myref{eq:twod-deterministic-bilinear}. Looking at Figure
+\ref{fig:twod-global-basis-contrib} we can see each of the values of $i$ where
+the corresponding basis function $\phi_i$ has support in at least a subset of
+the support of $\phi_k$. (Assuming that the node $X_k$ is on the interior of
+the interior part of the domain).  This means the non zero entries in the
+$k$-th row of $A$ are given by:
+
+\begin{align}
+  \begin{split}
+      \int_D\alpha(\phi_k,\phi_k)\, dD
+        &= 2\int_T\alpha(\psi_1,\psi_1)\, dT + 2\int_T\alpha(\psi_2,\psi_2)\, dT
+         + 2\int_T\alpha(\psi_3,\psi_3)\, dT \\
+      \int_D\alpha(\phi_k,\phi_{k+1})\, dD
+          &= \int_T\alpha(\psi_1,\psi_2)\, dT + \int_T\alpha(\psi_2,\psi_1)\, dT \\
+      \int_D\alpha(\phi_k,\phi_{k-1})\, dD
+          &= \int_T\alpha(\psi_2,\psi_1)\, dT + \int_T\alpha(\psi_1,\psi_2)\, dT \\
+      \int_D\alpha(\phi_k,\phi_{k+N})\, dD
+          &= \int_T\alpha(\psi_3,\psi_1)\, dT + \int_T\alpha(\psi_1,\psi_3)\, dT \\
+      \int_D\alpha(\phi_k,\phi_{k-N})\, dD
+          &= \int_T\alpha(\psi_1,\psi_3)\, dT + \int_T\alpha(\psi_3,\psi_1)\, dT \\
+      \int_D\alpha(\phi_k,\phi_{(k+1) - N})\, dD
+          &= \int_T\alpha(\psi_2,\psi_3)\, dT + \int_T\alpha(\psi_3,\psi_2)\, dT \\
+      \int_D\alpha(\phi_k,\phi_{(k-1) + N})\, dD
+          &= \int_T\alpha(\psi_3,\psi_2)\, dT + \int_T\alpha(\psi_2,\psi_3)\, dT
+  \end{split}
+\end{align}
+
+where again referring to Figure \ref{fig:twod-global-basis-contrib} you can see
+where these basis functions share support and how they are rewritten locally in
+that region with respect to the reference triangle $T$. Furthermore looking at
+the definition of the local stiffness matrix \myref{eq:twod-local-stiffness}
+and noting the fact that in the case of this problem and chosen discretisation
+the local sitffness matrix takes the same form in each triangular element
+$T_k$. Hence the non zero elements of the $k$-th row of $A$ are given by:
+
+\begin{align}
+  \begin{split}
+    A_{k,k} &= 2\Ak{1}{1} + 2\Ak{2}{2} + 2\Ak{3}{3} \\
+    A_{k,k+1} &= \Ak{1}{2} + \Ak{2}{1} \\
+    A_{k,k-1} &= \Ak{2}{1} + \Ak{1}{2} \\
+    A_{k,k+N} &= \Ak{3}{1} + \Ak{1}{3} \\
+    A_{k,k-N} &= \Ak{1}{3} + \Ak{3}{1} \\
+    A_{k,(k+1)-N} &= \Ak{2}{3} + \Ak{2}{3} \\
+    A_{k,(k-1)+N} &= \Ak{3}{2} + \Ak{2}{3}
+  \end{split}
+\end{align}
+
+\begin{figure}
+    \centering
+    \input{figures/twod-global-matrix-assembly}
+    \caption{The contributions from the surrounding basis functions to the
+        value at the node $x_k$}
+    \label{fig:twod-global-basis-contrib}
+\end{figure}
+
+\paragraph{Note:}
+
+The above only applies to nodes on the interior of the interior region - that
+is nodes that are surrounded by other interior nodes. In the case of nodes on
+the edge of this region their support intersects the support of nodes that are
+known. In the case of these nodes the corresponding entry of the stiffness
+matrix is set to zero and the value of the boundary node is taken to the right
+hand side of the equation.
+
+Let's consider an example, in the case where $N = 4$ - like in Figure
+\ref{fig:two-d-discretisation} and take $a = 1, \v{b} = \v{0}, c = 0$
+then the local stiffness matrix as given in
+\myref{eq:twod-local-stiffness} will be given by:
+
+\begin{equation}
+    A^{(k)} = \frac{1}{2}\left[\begin{array}{c c c}
+            2 & -1 & -1 \\ -1 & 1 & 0 \\ -1 & 0 & 1
+    \end{array}\right]
+\end{equation}
+
+hence the non zero $i$-th entries of the $k$-th row will of the global
+stiffness matrix are given by:
+
+\begin{align}
+  \begin{split}
+    A_{k,k} &= \frac{2}{2}(2 + 1 + 1) = 4 \\
+    A_{k,k+1} &= \frac{1}{2}(-1 -1) = -1 \\
+    A_{k,k-1} &= \frac{1}{2}(-1 -1) = -1  \\
+    A_{k,k+N} &= \frac{1}{2}(-1 -1) = -1 \\
+    A_{k,k-N} &= \frac{1}{2}(-1 -1) = -1 \\
+    A_{k,(k+1)-N} &= \frac{1}{2}(0 + 0) = 0 \\
+    A_{k,(k-1)+N} &= \frac{1}{2}(0 + 0) = 0
+  \end{split}
+\end{align}
+
+Therefore in this case the global sitffness matrix will be
+$9 \times 9$ and take the following form:
+
+\begin{equation}
+    A = \left[\begin{array}{r r r r r r r r r}
+        4 & -1 &  0 & -1 &  0 &  0 &  0 &  0 &  0 \\
+       -1 &  4 & -1 &  0 & -1 &  0 &  0 &  0 &  0 \\
+        0 & -1 &  4 &  0 &  0 & -1 &  0 &  0 &  0 \\
+       -1 &  0 &  0 &  4 & -1 &  0 & -1 &  0 &  0 \\
+        0 & -1 &  0 & -1 &  4 & -1 &  0 & -1 &  0 \\
+        0 &  0 & -1 &  0 & -1 &  4 &  0 &  0 & -1 \\
+        0 &  0 &  0 & -1 &  0 &  0 &  4 & -1 &  0 \\
+        0 &  0 &  0 &  0 & -1 &  0 & -1 &  4 & -1 \\
+        0 &  0 &  0 &  0 &  0 & -1 &  0 & -1 & 4
+    \end{array}\right]
+\end{equation}

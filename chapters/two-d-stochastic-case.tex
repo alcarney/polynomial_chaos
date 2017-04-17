@@ -82,4 +82,36 @@ Upon which we can define finite dimensional subspaces of V and W:
                       w \text{ is continuous on } D\}
 \end{align*}
 
+Just as in the deterministic case we can use the `hat functions' as our basis
+and define each $\phi_i$ associated with a node $\v{x}_i$ in terms of the
+reference function \myref{eq:two-d-ref-basis-fn} as such
+$\phi_i(\v{x}) = \Phi(\v{x} - \v{x}_i)$. Then we can approximate as follows:
 
+\begin{equation}
+    f(\v{x}) \approx \sum_{j=0}^Mf_j\phi_j(\v{x})
+\end{equation}
+
+where $f_j = f(\v{x}_j)$. This also allows us to approximate the solution
+process $u^h$ as follows:
+
+\begin{equation}
+    u^h(\v{x};\omega) = \sum_{j=0}^Mu_j(\omega)\phi_j(\v{x})
+\end{equation}
+
+where we now have a finite dimensional representation for $u$ in the physical
+space but we also need a discrete representation for $u$ in the probability
+space.
+
+As in the one dimensional case in Chapter \ref{chap:one-d-stochastic} we will
+use members from the \textit{Askey Scheme} of Orthogonal Polynomials to form a
+basis which spans the probability space. This then allows us to approximate the
+solution process $u$ as:
+
+\begin{equation}
+    u^{h,P}(\v{x};\omega) = \sum_{j=0}^M\sum_{s=0}^Pu_{j,s}
+        \chi_s(\xi)\phi_j(\v{x})
+\end{equation}
+
+\subsection{Karhumen Loeve Expansion}
+
+\subsection{Derivation of the Global System of Equations}
