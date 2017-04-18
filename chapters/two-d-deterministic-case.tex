@@ -425,7 +425,7 @@ following form for the local mass matrix:
       \end{array}\right)
 \end{equation}
 
-\subsection{Assembling the Global Stiffness Matrix}
+\subsection{Assembling the Global Stiffness Matrix}\label{sec:twod-global-stiffnes-assembly}
 
 Now that we know the form of local stiffness matrix
 \myref{eq:twod-local-stiffness} we can start to assemble the global stiffness
@@ -481,7 +481,7 @@ where these basis functions share support and how they are rewritten locally in
 that region with respect to the reference triangle $T$. Furthermore looking at
 the definition of the local stiffness matrix \myref{eq:twod-local-stiffness}
 and noting the fact that in the case of this problem and chosen discretisation
-the local sitffness matrix takes the same form in each triangular element
+the local stiffness matrix takes the same form in each triangular element
 $T_k$. Hence the non zero elements of the $k$-th row of $A$ are given by:
 
 \begin{align}
@@ -539,7 +539,7 @@ stiffness matrix are given by:
   \end{split}
 \end{align}
 
-Therefore in this case the global sitffness matrix will be
+Therefore in this case the global stiffness matrix will be
 $9 \times 9$ and take the following form:
 
 \begin{equation}
@@ -555,3 +555,181 @@ $9 \times 9$ and take the following form:
         0 &  0 &  0 &  0 &  0 & -1 &  0 & -1 & 4
     \end{array}\right]
 \end{equation}
+
+\subsection{Assembling the Global Mass Matrix}
+
+By following a similar argument to the case for the stiffness matrix and
+considering Figure \ref{fig:two-d-discretisation} we find that the non zero
+$i$-th entries of the $k$-th row are given by:
+
+\begin{align}
+  \begin{split}
+    M_{k,k} &= 2\Mk{1}{1} + 2\Mk{2}{2} + 2\Mk{3}{3} \\
+    M_{k,k+1} &= \Mk{1}{2} + \Mk{2}{1} \\
+    M_{k,k-1} &= \Mk{2}{1} + \Mk{1}{2} \\
+    M_{k,k+N} &= \Mk{3}{1} + \Mk{1}{3} \\
+    M_{k,k-N} &= \Mk{1}{3} + \Mk{3}{1} \\
+    M_{k,(k+1)-N} &= \Mk{2}{3} + \Mk{2}{3} \\
+    M_{k,(k-1)+N} &= \Mk{3}{2} + \Mk{2}{3}
+  \end{split}
+\end{align}
+
+So continuing the example we had in Section
+\ref{sec:twod-global-stiffnes-assembly} with $N = 4 \rightarrow h = 1/4$ and
+$a = 1, \v{b} = 0, c = 0$ then the local mass matrix as defined in
+\myref{eq:twod-local-mass} is given by:
+
+\begin{equation}\label{eq:twod-local-mass}
+    M^{(k)} =
+    \frac{1}{384}\left(\begin{array}{c c c}
+         2 &  1 &  1 \\
+         1 &  2 &  1 \\
+         1 &  1 &  2
+      \end{array}\right)
+\end{equation}
+
+hence the non zero $i$-th entries of the $k$-th row are given by:
+
+\begin{align}
+  \begin{split}
+    M_{k,k} &= \frac{2}{384}(2 + 2 + 2) = \frac{12}{384}\\
+    M_{k,k+1} &= \frac{1}{384}(1 + 1) = \frac{2}{384} \\
+    M_{k,k-1} &= \frac{1}{384}(1 + 1) = \frac{2}{384} \\
+    M_{k,k+N} &= \frac{1}{384}(1 + 1) = \frac{2}{384} \\
+    M_{k,k-N} &= \frac{1}{384}(1 + 1) = \frac{2}{384} \\
+    M_{k,(k+1)-N} &= \frac{1}{384}(1 + 1) = \frac{2}{384} \\
+    M_{k,(k-1)+N} &= \frac{1}{384}(1 + 1) = \frac{2}{384}
+  \end{split}
+\end{align}
+
+Therefore in this case the global mass matrix will be a $9 \times 25$ matrix of
+the following form:
+
+\begin{equation}
+    M = \frac{1}{384}
+        \left[\begin{array}{c c c c c c c c c c c c c c c c c c c c c c c c c}
+    0 & 2 & 2 & 0 & 0 & 2 & 12 & 2 & 0 & 0 & 2 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 2 & 2 & 0 & 0 & 2 & 12 & 2 & 0 & 0 & 2 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 2 & 2 & 0 & 0 & 2 & 12 & 2 & 0 & 0 & 2 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 2 & 2 & 0 & 0 & 2 & 12 & 2 & 0 & 0 & 2 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 2 & 0 & 0 & 2 & 12 & 2 & 0 & 0 & 2 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 2 & 0 & 0 & 2 & 12 & 2 & 0 & 0 & 2 & 2 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 2 & 0 & 0 & 2 & 12 & 2 & 0 & 0 & 2 & 2 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 2 & 0 & 0 & 2 & 12 & 2 & 0 & 0 & 2 & 2 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 2 & 0 & 0 & 2 & 12 & 2 & 0 & 0 & 2 & 2 & 0
+    \end{array}\right]
+\end{equation}
+
+\section{Example Problems and Results}
+
+Just as in Chapter \ref{chap:oned-deterministic} to construct and solve these
+linear systems we will have to make use of a computer. However in this case the
+linear systems as discussed above \myref{eq:twod-deterministic-discrete} grow
+on the order of $O(N^4)$ as opposed to $O(N^2)$ in the one dimensional case. In
+order to handle the much greater computational complexity of these systems the
+use of the Numpy linear algebra library has been replaced with the very similar
+sparse section of the Scipy library \cite{scipy}.
+
+The use of sparse matrices means memory usage and CPU time can be greatly
+reduced allowing the us to handle these larger systems with relative ease. All
+problems in this section have been solved using the code in Listing
+\ref{code:twod-deterministic}. As with the one dimensional case the results
+have been visualised with the Matplotlib library \cite{matplotlib}.
+
+\begin{lstlisting}[language=Python,
+                   caption={Setup code for the 2D Deterministic Finite Element
+                            Method},
+                   label={code:twod-deterministic}]
+import numpy as np
+from math import sin, cos, pi
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_style('whitegrid')
+
+from fem.twod_deterministic import solve_system, L2_error
+
+a, b, c = # Coefficients are set depending on the problem
+
+def u(x,y):
+    # Exact solution is set depending on the problem
+
+def f(x, y):
+    # The RHS of the equation is set depending on the problem
+
+def do_fem(f, a, b, c):
+
+    NS = [4, 8, 16, 32, 64, 128, 256, 512]
+    errors = []
+
+    # For each mesh density
+    for N in NS:
+
+        # Solve the system
+        xs, ys, U = solve_system(f, N, a, b, c)
+
+        # Calculate the error
+        errors.append(L2_error(u, U, N))
+
+        # Plot one of the results
+        if N == 64:
+            fig, ax = plt.subplots(1)
+            p = ax.pcolor(xs, ys, U, cmap='viridis')
+            ax.set_xlabel(r"$x$", fontsize=18)
+            ax.set_ylabel(r"$y$", fontsize=18)
+            fig.colorbar(p)
+            fig.savefig('twod-deterministic-approx.pdf')
+
+    return (NS, errors), fig
+\end{lstlisting}
+
+For full details on the \incode{solve\_system} and \incode{L2\_error} functions
+see Appendix \ref{app:twod-deterministic-code}.
+
+Just as with the one dimensional case it's important that we verify the code
+works as we intended so we in this case choose our solution to be
+$u(\v{x}) = \sin{(\pi x)}\sin{(\pi y)}$ where $\v{x} = (x, y)$. By choosing
+various values for $a, \v{b}$ and $c$ we can easily construct the right hand
+side of the equation and having the solution in hand we can easily see the rate
+of convergence of the finite element method.
+
+Considering the following cases:
+\begin{itemize}
+    \item $a = 1, \v{b} = \v{0}, c = 0$ and
+          $f(\v{x}) = 2\pi^2\sin{(\pi x)}\sin{(\pi y})$ \\
+    \item $a = 1 \v{b} = \v{0}, c = 1$ and
+          $f(\v{x}) = 2\pi^2\sin{(\pi x)}\sin{(\pi y)} +
+                \sin{(\pi x)}\sin{(\pi y)}$ \\
+    \item $a = 1, \v{b} = \v{0}, c = 0$ and
+          $f(\v{x}) = 2\pi^2\sin{(\pi x)}\sin{(\pi y)} +
+                10\sin{(\pi x)}\sin{(\pi y)}$
+\end{itemize}
+
+and recording the $L^2$ norm of the error at each value of $N$ we obtain the
+plot seen in Figure \ref{fig:twod-deterministic-error}. In Figure
+\ref{fig:twod-deterministic-exact-v-approx} we see the exact solution plotted
+against one of our approximations in the case where $a = 1, \v{b} = \v{0}, c =
+0$.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.75\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{figures/twod-deterministic-exact.pdf}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.75\textwidth}
+        \centering
+        \includegraphics[width=1\linewidth]{figures/twod-deterministic-approx.pdf}
+    \end{subfigure}
+    \caption{Heatmap plots of the exact solution $u(\v{x})$ (top) against
+             $u^h(\v{x})$ (bottom) with $N = 64$ in the case
+             $a = 1, \v{b} = \v{0}, c = 0$}
+    \label{fig:twod-deterministic-exact-v-approx}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\linewidth]{figures/twod-deterministic-errors.pdf}
+    \caption{Plot of $|| u - u^h ||_2$ for various values of  $N$}
+    \label{fig:twod-deterministic-error}
+\end{figure}

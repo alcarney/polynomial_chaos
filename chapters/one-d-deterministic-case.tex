@@ -1,30 +1,22 @@
 \chapter{One Dimensional Deterministic Case}\label{chap:oned-deterministic}
 
-\todo[inline]{Change domain notation}
-
 The simplest form of Laplace's Equation we can consider is the one dimensional
 case where the coefficients are deterministic in which case the equation is
 given by:
 
 \begin{equation}\label{eq:oned-deterministic}
 \begin{aligned}
-    -au''(x) + bu'(x) + cu(x) &= f(x) &\text{ in } \Omega = [0, 1] \\
-                         u(x) &= 0 &\text{ on } \delta\Omega = \{0, 1\}
+    -au''(x) + bu'(x) + cu(x) &= f(x) &\text{ in } D = [0, 1] \\
+                         u(x) &= 0 &\text{ on } \delta D = \{0, 1\}
 \end{aligned}
 \end{equation}
 
 We consider the equation in the interval $[0,1]$ and prescribe a zero Dirichlet
 condition at the endpoints $x = 0$ and $x = 1$.
 
-\todo[inline]{In the deterministic case, we should be able to solve various
-versions of this analytically. Include a few such cases and their solutions
-they will provide us with a few good examples to compare our numerical
-solutions with}
-
 \section{Weak Formulation}
 
 \todo[inline]{Give proper definitions of $V$ and $W$}
-\todo[inline]{Justify the necessity of the weak formulation}
 
 The first step in implementing the finite element method is to obtain the weak
 formulation of this problem. To get the continuous weak form of the equation,
@@ -104,11 +96,6 @@ a similar manner we will also be able to approximate $f(x)$:
 where $f_i = f(x_i)$. By writing the functions $u$ and $f$ in terms of their
 values at the nodes $x_i$ then by taking a sufficiently large number of nodes
 we can approximate them to within an acceptable margin of error.
-
-\todo[inline]{Give an estimate for the error of the FEM for this problem -
-Use the book!!}
-\todo[inline]{Possibly include mention of existence and uniqueness of the
-solution - Use the book !!}
 
 An appropriate basis would be the so called `hat functions' which we can define
 for each interior node as follows:
@@ -391,8 +378,6 @@ mass matrix has the following form:
 
 \subsection{Assembling the Global Stiffness Matrix}\label{sec:oned-deterministic-global-stiffness-assembly}
 
-\todo[inline]{Talk about including the BCs on the RHS}
-
 When assembling the Global stiffness matrix we need to take into account the
 fact that the value at each node $x_k$ is dependent on the contributions from
 the subintervals surrounding it. Looking again at Figure
@@ -465,7 +450,8 @@ be zero. So the global stiffness matrix will take the following form:
         \end{array}\right]
 \end{equation}
 
-\subsection{Assembling the Global Mass Matrix}\label{sec:oned-deterministic-global-mass-assembly}
+\subsection{Assembling the Global Mass
+Matrix}\label{sec:oned-deterministic-global-mass-assembly}
 
 We can follow a very similar process to assembling the global mass matrix as we
 did above, first we note that we can rewrite the global basis functions as we
@@ -511,11 +497,9 @@ zero. Hence the global mass matrix takes the following form:
 
 \section{Quantifying the Error}
 
-\todo[inline]{Do it! - Use the book}
+\todo[inline]{Existence and Uniqueness, Quantifying the Error - Use the book}
 
 \section{Example Problems and Results}
-
-\todo[inline]{Check with Vince how to properly cite the software}
 
 Since obtaining numerical approximations that are reasonably accurate requires
 rather large linear systems of equations, it is necessary to use a computer to
@@ -536,6 +520,11 @@ All problems in this section were run using the following code:
                    language=Python]
 import numpy as np
 from math import sin, cos, pi
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_style('whitegrid')
+
 from fem.oned_deterministic import solve_system, L2_error
 
 a, b, c, = # Parameters are set depending on the problem
@@ -572,41 +561,29 @@ for N in [4,8,16,32,64,128,256,512]:
 For full details on how \incode{solve\_system} and \incode{L2\_error} are
 implemented please see Appendix \ref{app:oned-deterministic-code}
 
-\subsection{Verifying Correctness of the Code}
-
 It is important to verify that any code we write is functioning as we expect it
-to, so for the first set of examples we will choose the solution we want our
-implementation to converge to and set up various problems with different
-parameters to verify that the code is working as intended. By picking $u(x) =
+to, so for this set of examples we will choose a particular solution to the
+problem, not only can we verify that the code works as intended we can also
+with the exact solution at hand see the rate of convergence.  Picking $u(x) =
 \sin{(\pi x)}$ as our solution and various values for our parameters $a,b,c$ we
-can easily determine the right hand side of the equation to feed into the code.
+can easily construct the right hand side of the equation.
 
-Choosing $a = 1, b = 0, c = 0$ and $u(x) = \sin{(\pi x)}$
-in \myref{eq:oned-deterministic} reduces implies that
-$f(x) = \pi^2\sin{(\pi x)}$. Running the code we defined above in
-Listing \myref{code:oned-deterministic} with the following definitions:
-
-\begin{lstlisting}[language=Python]
-a, b, c = 1, 0, 0
-
-def u(x):
-    return sin(pi*x)
-
-def f(x):
-    return (pi**2)*sin(pi*x)
-\end{lstlisting}
-
-Following a similar procedure for these other cases:
+Considering the following cases:
 \begin{itemize}
+    \item $a = 1, b = 0, c = 0$ and
+          $f(x) = \pi^2\sin{(\pi x)}$ \\
     \item $a = 1, b = 0, c = 1$ and
           $f(x) = \pi^2\sin{(\pi x)} + \sin{(\pi x)}$ \\
     \item $a = 1, b = 0, c = 10$ and
-          $f(x) = \pi^2\sin{(\pi x)} + 10\sin{(\pi x)}$ \\
-    \item $a = 1, b = 1, c = 0$ and
-          $f(x) = \pi^2\sin{(\pi x)} + \pi\cos{(\pi x)}$
+          $f(x) = \pi^2\sin{(\pi x)} + 10\sin{(\pi x)}$
+    %\item $a = 1, b = 1, c = 0$ and
+    %      $f(x) = \pi^2\sin{(\pi x)} + \pi\cos{(\pi x)}$
 \end{itemize}
 
-We obtain the following set of results:
+and recording the $L^2$ norm of the error at each value of $N$ we obtain the
+plot seen in Figure \ref{fig:oned-deterministic-error}. In Figure
+\ref{fig:oned-deterministic-exact-v-approx} we see the exact solution plotted
+against one of our approximations in the case where $a = 1, b = 0, c = 0$.
 \todo[inline]{Don't forget to include the results for the case $b=1$}
 
 %\begin{figure}
@@ -619,10 +596,12 @@ We obtain the following set of results:
     \includegraphics[width=0.75\textwidth]{img/one-d-deterministic-error.pdf}
     \caption{A plot showing the convergence of the approximations for the
              various cases}
+    \label{fig:oned-deterministic-error}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.75\textwidth]{img/oned-deterministic-plot.pdf}
     \caption{A plot of $u(x)$ and $u^h(x)$ in the case where $a=1, b=0, c=0$}
+    \label{fig:oned-deterministic-exact-v-approx}
 \end{figure}
