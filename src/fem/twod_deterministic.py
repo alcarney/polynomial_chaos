@@ -1,6 +1,7 @@
 import numpy as np
 from math import sqrt
-from scipy.sparse import csr_matrix
+from scipy.sparse import coo_matrix
+from scipy.sparse.linalg import spsolve
 
 
 def local_stiffness_matrix(a, b, c, h):
@@ -52,9 +53,8 @@ def construct_system(N, a, b, c):
     Ak = local_stiffness_matrix(a, b, c, h)
     Mk = local_mass_matrix(h)
 
-    # Consruct the global matrices
-    A = np.zeros((L**2, L**2))
-    M = np.zeros((L**2, P**2))
+    Ac = []; Ar = []; Av = []
+    Mc = []; Mr = []; Mv = []
 
     # Loop through each interior node, being careful of hitting boundary nodes
     for i in range(L):
@@ -63,37 +63,40 @@ def construct_system(N, a, b, c):
             # Compute k
             k = i*L + j
 
-            M[k, (i + 1)*P + (j + 1)] = 2*(Mk[0, 0] + Mk[1, 1] + Mk[2, 2])
-            M[k, (i + 1)*P + (j + 2)] = Mk[0, 1] + Mk[1, 0]
-            M[k, (i + 1)*P + j] = Mk[1, 0] + Mk[0, 1]
-            M[k, i*P + (j + 1)] = Mk[0, 2] + Mk[2, 0]
-            M[k, (i+2)*P + (j + 1)] = Mk[2, 0] + Mk[0, 2]
-            M[k, i*P + (j + 2)] = Mk[1, 2] + Mk[2, 1]
-            M[k, (i+2)*P + j ] = Mk[2, 1] + Mk[1, 2]
+            # Add the non zero entries of row k of M
+            Mr.append(k); Mc.append((i+1)*P+(j+1)); Mv.append(2*(Mk[0,0] + Mk[1,1] + Mk[2,2]))
+            Mr.append(k); Mc.append((i+1)*P+(j+2)); Mv.append(Mk[0, 1] + Mk[1, 0])
+            Mr.append(k); Mc.append((i+1)*P + j); Mv.append(Mk[1, 0] + Mk[0, 1])
+            Mr.append(k); Mc.append(i*P + (j+1)); Mv.append(Mk[0, 2] + Mk[2, 0])
+            Mr.append(k); Mc.append((i+2)*P + (j+1)); Mv.append(Mk[2, 0] + Mk[0, 2])
+            Mr.append(k); Mc.append(i*P + (j+2)); Mv.append(Mk[1, 2] + Mk[2, 1])
+            Mr.append(k); Mc.append((i+2)*P + j); Mv.append(Mk[2, 1] + Mk[1, 2])
 
-            A[k, k] = 2*(Ak[0, 0] + Ak[1, 1] + Ak[2, 2])
+            # Add the non zero entries of row k of A - checking of course that the given
+            # entries make sense
+            Ar.append(k); Ac.append(k); Av.append(2*(Ak[0, 0] + Ak[1, 1] + Ak[2, 2]))
 
             if (j + 1) <= (L - 1):
-                A[k, i*L + (j+1)] = Ak[0, 1] + Ak[1, 0]
+                Ar.append(k); Ac.append(i*L+(j+1)); Av.append(Ak[0, 1] + Ak[1, 0])
 
             if (j - 1) >= 0:
-                A[k, i*L + (j-1)] = Ak[1, 0] + Ak[0, 1]
+                Ar.append(k); Ac.append(i*L + (j-1)); Av.append(Ak[1, 0] + Ak[0, 1])
 
             if i - 1 >= 0:
-                A[k, (i-1)*L + j] = Ak[0, 2] + Ak[2, 0]
+                Ar.append(k); Ac.append((i-1)*L + j); Av.append(Ak[0, 2] + Ak[2, 0])
 
             if i + 1 <= (L - 1):
-                A[k, (i+1)*L + j] = Ak[2, 0] + Ak[0, 2]
+                Ar.append(k); Ac.append((i+1)*L + j); Av.append(Ak[2, 0] + Ak[0, 2])
 
             if j + 1 < (L - 1) and i - 1 >= 0:
-                A[k, (i-1)*L + (j+1)] = Ak[1, 2] + Ak[2, 1]
+                Ar.append(k); Ac.append((i-1)*L + (j+1)); Av.append(Ak[1, 2] + Ak[2, 1])
 
             if j - 1 >= 0 and i + 1 <= (L - 1):
-                A[k, (i+1)*L + (j-1)] = Ak[2, 1] + Ak[1, 2]
+                Ar.append(k); Ac.append((i+1)*L + (j-1)); Av.append(Ak[2, 1] + Ak[1, 2])
 
     # Convert the lil_matrix to csr_matrix for quicker solving
-#    A = csr_matrix(A)
-#    M = csr_matrix(M)
+    A = coo_matrix((Av, (Ar, Ac)), shape=(L**2,L**2)).tocsr()
+    M = coo_matrix((Mv, (Mr, Mc)), shape=(L**2,P**2)).tocsr()
 
     return A, M
 
@@ -113,15 +116,13 @@ def solve_system(f, N, a, b, c):
     fs = np.array([f(x,y) for x in xs for y in ys])
 
     # Construct the global matrices for the problem
-    print('Constructing...')
     A, M = construct_system(N, a, b, c)
 
     # Construct the RHS of Au = Mf
-    Mf = np.dot(M,fs)
+    Mf = M*fs
 
     # Solve the system
-    print('Solving...')
-    us = np.linalg.solve(A, Mf)
+    us = spsolve(A, Mf)
 
     # Add in the boundary conditions
     us = us.reshape((N - 1, N - 1))
