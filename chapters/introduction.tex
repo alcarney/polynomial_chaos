@@ -1,3 +1,144 @@
 \chapter{Introduction}
 
-\todo[inline]{Write this!!}
+\todo{Write this!!}
+
+\section{Function Spaces}
+
+There are a number of function spaces where our problems take place, so we will
+define these here:
+
+\begin{definition}\label{def:L2-D}
+    $L^2(D)$ Space
+
+    Let $D$ be an open subset of $\mathbb{R}^n$ the vector space $L^2(D)$ is
+    given by:
+
+    \begin{equation}\label{eq:L2-D}
+        L^2(D) = \{f: D \rightarrow \mathbb{R}\ |\ f \text{ is measureable, }
+                    \int_D|f|^2\, d\v{x} < \infty\}
+    \end{equation}
+
+    Any two elements $f,g$ of $L^2(D)$ are still considered equal if they
+    differ only in a set $A \subset D$ which has measure zero w.r.t the
+    Lebesque measure i.e. $f = g$ `almost everywhere'. This notion of equality
+    defines an equivalence class $f \sim g$ of functions where each class has a
+    unique continuous representative.
+
+    Furthermore $L^2(D)$ can be made into a \textit{Hilbert Space} when paired
+    with the following inner product:
+
+    \begin{equation}\label{eq:L2-D-inner-product}
+        \langle f,g \rangle = \int_Df(\v{x})g(\v{x})\, d\v{x}
+    \end{equation}
+
+    which induces the following norm:
+
+    \begin{equation}\label{eq:L2-D-norm}
+        ||f||_2 := \langle f, f\rangle^{\frac{1}{2}}
+                 = \left(\int_D|f|^2\, d\v{x}\right)^{\frac{1}{2}}
+    \end{equation}
+
+\end{definition}
+
+\begin{definition}\label{def:L2-Omega}
+    $L^2(\Omega)$ Space
+
+    Given a probability space $(\Omega, \Sigma, P)$ we define $L^2(\Omega)$ in
+    a similar manner to Definition \ref{def:L2-D} but this time with respect to
+    the probability measure $P$:
+
+    \begin{equation}\label{eq:L2-Omega}
+        L^2(\Omega) = \{f: \Omega \rightarrow \mathbb{R}\ |\
+            f \text{ is } P \text{ measureable and }
+            \int_\Omega|f|^2\, dP < \infty \}
+    \end{equation}
+
+    Again equality is defined in terms of an equivalence class:
+
+    \[
+        f \sim g \Rightarrow f = g \text{ a.e. w.r.t probability measure } P
+    \]
+
+    and can be made into a \textit{Hilbert Space} when paried with the
+    following inner product:
+
+    \begin{equation}\label{eq:L2-Omega-inner-prod}
+        \langle f, g \rangle = \int_\Omega f(\omega)g(\omega)\, dP
+    \end{equation}
+
+    which induces the following norm:
+
+    \begin{equation}\label{eq:L2-Omega-norm}
+        ||f||_2 := \langle f, f\rangle^{\frac{1}{2}}
+                 = \left(\int_\Omega|f|^2\, dP\right)^{\frac{1}{2}}
+    \end{equation}
+\end{definition}
+
+\begin{definition}\label{def:oned-H1-D}
+    Sobolev Space $H^1(D)$ in one dimension
+
+    Let $D \subset \mathbb{R}$ be open, then the Sobolev Space $H^1(D)$ in one
+    spatial dimension is given by:
+
+    \begin{equation}\label{eq:oned-H1-D}
+        H^1(D) = \{f: D \rightarrow \mathbb{R}\ |\ f' \text{ exists and }
+                    f' \in L^2(D)\}
+    \end{equation}
+
+    where in this case the derivative is meant in the weak sense i.e. there
+    exists some $v$ such that:
+
+    \[
+        \int_D v\varphi\, dx = -\int_Df\varphi'\, dx
+    \]
+
+    holds for all smooth functions $\varphi$ defined on $D$ with compact
+    support. $H^1(D)$ can be made into a \textit{Hilbert Space} with the
+    following inner product:
+
+    \begin{equation}\label{eq:oned-H1-D-inner-prod}
+        \langle f, g\rangle = \langle f', g' \rangle_{L^2(D)}
+    \end{equation}
+
+    which induces the following norm:
+
+    \begin{equation}\label{eq:oned-H1-D-norm}
+        ||f||_{H^1(D)} := ||f'||_{L^2(D)}
+    \end{equation}
+\end{definition}
+
+\begin{definition}\label{def:twod-H1-D}
+    Sobolev Space $H^1(D)$ in two dimensions
+
+    Let $D \subset \mathbb{R}^2$ be open, then the Sobolev Space $H^1(D)$ in
+    two spatial dimensions is given by:
+
+    \begin{equation}\label{eq:twod-H1-D}
+        H^1(D) = \{f: D \rightarrow \mathbb{R}\ |\
+            D^\alpha f \text{ exists and } D^\alpha f \in L^2(D),
+            \forall |\alpha| \leq 1 \}
+    \end{equation}
+
+    where $\alpha = (\alpha_1, \alpha_2)$, $\alpha_1, \alpha_2 \in \mathbb{N}$
+    is a multi-index which we use to define the differential operator $D^\alpha$:
+
+    \[
+        D^\alpha = \frac{\partial^{\alpha_1 + \alpha_2}}
+        {\partial^{\alpha_1}x_1\partial^{\alpha_2}x_2}
+    \]
+
+    when equipped with the following inner product:
+
+    \begin{equation}\label{eq:twod-H1-D-inner-product}
+        \langle f, g\rangle =
+            \sum_{|\alpha| \leq 1}\langle D^\alpha f, D^\alpha g \rangle_{L^2(D)}
+    \end{equation}
+
+    $H^1(D)$ can be made into a \textit{Hilbert Space} with the following
+    induced norm:
+
+    \begin{equation}\label{eq:twod-H1-D-norm}
+        ||f||_{H^1(D)} =
+         \left(\sum_{|\alpha| \leq 1}||D^\alpha f||_{L^2(D)}\right)^\frac{1}{2}
+    \end{equation}
+\end{definition}
