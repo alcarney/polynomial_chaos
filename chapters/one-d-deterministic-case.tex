@@ -16,11 +16,33 @@ condition at the endpoints $x = 0$ and $x = 1$.
 
 \section{Weak Formulation}
 
-\todo[inline]{Give proper definitions of $V$ and $W$}
+In order to obtain the weak formulation of the problem we need to take the
+inner product of \myref{eq:oned-deterministic} with a function $v$ from a
+\textit{test space} of functions $W$. Then in this weak sense finding a
+solution means finding a function $u$ from some \textit{trial space} $V$ which
+satisfies the equation $\forall v\in W$
 
-The first step in implementing the finite element method is to obtain the weak
-formulation of this problem. To get the continuous weak form of the equation,
-we multiply through by $v \in W$ and integrate over the domain:
+In the case of this problem, the test and trial spaces actually coincide and we
+define them as follows:
+
+\begin{equation}
+    \begin{array}{c c}
+        V = H^1_0(D) & W = H^1_0(D)
+    \end{array}
+\end{equation}
+
+where $H^1_0(D)$ is a subset of the one dimensional Sobolev Space $H^1(D)$
+where all elements vanish at the boundary. It is worth noting that the boundary
+in this case is a measure zero set hence it's impossible to define an unique
+solution in this way! Therefore we have to define $H^1_0(D)$ slightly
+differently, consider $C^\infty_0(\mathbb{R})$ the space of infinitely smooth
+functions defined on $\mathbb{R}$ with compact support. This space is dense in
+$H^1(\mathbb{R})$ so we can therefore write any function in $\mathbb{R}$ as a
+limit of some sequence in $C_0^\infty(\mathbb{R})$. Then, by restricting to
+the domain $D$ we define $H^1_0(D)$ as the closure of $C_0^\infty(D)$ (with
+respect to the Sobolev norm).
+
+So, taking some $v \in W$ and integrating over the domain we obtain:
 
 \begin{equation}
     -a\int_0^1{u''(x)v(x)\ dx} + b\int_0^1{u'(x)v(x)\ dx}
@@ -187,6 +209,10 @@ system reduces quite nicely to:
 
 Solving this system for the vector $\v{u}$ will give us the approximate
 solution to the equation \myref{eq:oned-deterministic}
+
+\section{Quantifying the Error}
+
+\todo[inline]{Existence and Uniqueness, Quantifying the Error - Use the book}
 
 \section{Constructing the Global Linear System}\label{sec:oned-deterministic-global-construct}
 
@@ -495,9 +521,6 @@ zero. Hence the global mass matrix takes the following form:
         \end{array}\right]
 \end{equation}
 
-\section{Quantifying the Error}
-
-\todo[inline]{Existence and Uniqueness, Quantifying the Error - Use the book}
 
 \section{Example Problems and Results}
 
