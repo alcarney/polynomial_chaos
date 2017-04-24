@@ -17,12 +17,29 @@ condition on the problem
 
 \section{Weak Formulation}
 
-\todo[inline]{Give proper definitions of the trial and test spaces}
+Similarly to the one dimensional case, the weak formulation is obtained by
+taking the inner product of \myref{eq:two-d-deterministic} with a function $v$
+from a \textit{test space} of functions $W$. The the weak solution is obtained
+when we find a function $u$ from a \textit{trial space} $V$ which satisfies the
+equation $\forall v \in W$
 
-As with the one dimensional case, the first step in implementing the finite
-element method for this problem is to obtain the weak formulation of the above
-equation. Which involves multiplying through by $v \in W$ and integrating over
-the domain:
+Again as in the one dimensional case the test and trial spaces will coincide
+and are defined as follows:
+
+\begin{equation}
+    \begin{array}{c c}
+        V = H^1_0(D) & W = H^1_0(D)
+    \end{array}
+\end{equation}
+
+but in this case $H^1_0(D)$ is a subset of the the two dimensional Sobolev
+space $H^1(D)$ as defined in Definition \ref{def:twod-H1-D} where all elements
+vanish at the boundary. Again in this case the boundary is a measure zero set
+so we need to define $H^1_0(D)$ as the closure of $C_0^\infty(D)$ with respect
+to the norm \myref{eq:twod-H1-D-norm}.
+
+So by multiplying through with some $v \in W$ and integrating over the domain
+we obtain:
 
 \begin{equation}
     -\int_{D}{v(\nabla\cdot(a\nabla{u}))}\,dD +
@@ -51,8 +68,6 @@ where we need to find $u \in V$ such that \myref{eq:wk-twod-deterministic}
 holds $\forall v \in W$
 
 \section{Discrete Formulation}
-
-\todo[inline]{This probably needs some work, especially when it comes to indices etc.}
 
 Moving from the one dimensional case to two dimensions suddenly adds a number
 of considerations since, unlike the one dimensional interval any two
@@ -108,8 +123,6 @@ Similarly we can approximate $f(\v{x})$:
 \end{equation}
 
 where $f_j = f(\v{x_j})$
-
-\todo[inline]{Give details on errors, convergence etc!}
 
 As in the one dimensional case, an appropriate basis would be the `hat
 functions' which we can define in terms of a reference function $\Phi(\v{x})$

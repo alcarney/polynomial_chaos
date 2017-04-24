@@ -13,8 +13,8 @@ this equation:
 
 where $\Gamma = (\{-1,1\} \times [-1,1]) \cup ([-1,1] \times \{-1, 1\})$ and
 $\Omega$ is a probability space. As with the previous stochasitc case in
-Chapter \ref{chap:one-d-stochastic} we will follow a similar process to the
-deterministic case as we saw in Chapter \ref{chap:two-d-deterministic} to
+Chapter \ref{chap:oned-stochastic} we will follow a similar process to the
+deterministic case as we saw in Chapter \ref{chap:twod-deterministic} to
 discretise the physical space while following methods outlined in
 \cite{general-poly-chaos} to construct a finite dimensional approximation to
 the probability space.
@@ -46,8 +46,8 @@ If we apply Green's first integral identity we obtain:
 where the integral on $\Gamma$ is zero as elements in $W$ are zero on the
 boundary. Therefore the weak form of the problem is given by:
 
-\begin{equation}\label{eq:wk-twod-stochastic}
-    \int_{\Omega}\int_D\kappa(x;\omega)\cdot\nabla u(x;\omega)\cdot\nabla
+\begin{equation}\label{eq:twod-stochastic-wk}
+    \int_{\Omega}\int_D\kappa(x;\omega)\nabla u(x;\omega)\cdot\nabla
     w(x;\omega)\, d\v{x}\, d\Omega =
     \int_{\Omega}\int_D f(\v{x})w(x;\omega)\, d\v{x}\, d\Omega
 \end{equation}
@@ -60,7 +60,7 @@ the the above equation $\forall w \in W$
 In order to construct a finite dimensional approximation to
 \myref{eq:twod-stochastic} we must discretise both the physical and probability
 spaces. For the physical space, we can proceed just as we did in Chapter
-\ref{chap:two-d-deterministic} and construct a uniform triangulation taking
+\ref{chap:twod-deterministic} and construct a uniform triangulation taking
 into account that the physical domain is now $[-1,1] \times [-1,1]$.
 
 Given a parameter $N \in \mathbb{N}$ we create a
@@ -76,9 +76,9 @@ of negative slope. Which we can now use to define the discretisation:
 Upon which we can define finite dimensional subspaces of V and W:
 
 \begin{align*}
-    V_h &= \{v \in V: v \text{ is linear on } T_k,\ i \in \{0, \ldots, 2N^2\},
+    V^h &= \{v \in V: v \text{ is linear on } T_k,\ i \in \{0, \ldots, 2N^2\},
                       v \text{ is continuous on } D\} \\
-    W_h &= \{w \in W: w \text{ is linear on } T_k,\ i \in \{0, \ldots, 2N^2\},
+    W^h &= \{w \in W: w \text{ is linear on } T_k,\ i \in \{0, \ldots, 2N^2\},
                       w \text{ is continuous on } D\}
 \end{align*}
 
@@ -87,7 +87,7 @@ and define each $\phi_i$ associated with a node $\v{x}_i$ in terms of the
 reference function \myref{eq:two-d-ref-basis-fn} as such
 $\phi_i(\v{x}) = \Phi(\v{x} - \v{x}_i)$. Then we can approximate as follows:
 
-\begin{equation}
+\begin{equation}\label{eq:twod-stochastic-f-approx}
     f(\v{x}) \approx \sum_{j=0}^Mf_j\phi_j(\v{x})
 \end{equation}
 
@@ -102,16 +102,109 @@ where we now have a finite dimensional representation for $u$ in the physical
 space but we also need a discrete representation for $u$ in the probability
 space.
 
-As in the one dimensional case in Chapter \ref{chap:one-d-stochastic} we will
+\subsection{Polynomial Chaos}
+
+As in the one dimensional case in Chapter \ref{chap:oned-stochastic} we will
 use members from the \textit{Askey Scheme} of Orthogonal Polynomials to form a
-basis which spans the probability space. This then allows us to approximate the
-solution process $u$ as:
+basis which spans the probability space. In this particular project we will be
+focusing on a uniform randon process, hence we will be making use of the
+\textit{Legendre Polynomials} to obtain an approximation to the solution process
+$u$.
+
+The Legendre Polynomials obey the following orthogonality relation:
 
 \begin{equation}
+    \expect{\chi_s\chi_t} = \expect{\chi_s}^2\delta_{st}
+\end{equation}
+
+where as stated in \cite{poly-bible} $\expect{\chi_s}^2 = \frac{2}{2s + 1}$.
+With an appropriate basis chosen we can then approximate a random process as
+follows:
+
+\begin{equation}
+    \omega(\theta) = \sum_{s=0}^P\omega_s\chi_s(\theta)
+\end{equation}
+
+where $P = (d + p)!/d!p!$ and $d$ denotes the dimensionality of the
+approximation and $p$ represents the highest degree of polynomial used. Then we
+can write the solution process as follows:
+
+\begin{equation}\label{eq:twod-stochastic-uhp}
     u^{h,P}(\v{x};\omega) = \sum_{j=0}^M\sum_{s=0}^Pu_{j,s}
         \chi_s(\xi)\phi_j(\v{x})
 \end{equation}
 
+
 \subsection{Karhumen Loeve Expansion}
 
+The KL Expansion allows us to write a second order random process as follows:
+
+\begin{equation}
+    X(\v{x};\omega) = \bar{X}(\v{x}) +
+        \sum_{n=0}^\infty\sqrt{\lambda_n}\beta_n(\v{x})\xi(\omega)
+\end{equation}
+
+See Section \ref{sec:oned-stochastic-kl-expansion} for an introduction to the
+KL-Expansion.
+
+In this case we proceed in a similar fashion to the one dimensional case
+however we now consider the following correlation function:
+
+\begin{equation}
+    C(\v{x}, \v{y}) =
+        \sigma^2\exp{\left(-\frac{|x_1 - y_1|}{k_1} - \frac{|x_2 - y_2|}{k_2}\right)}
+\end{equation}
+
+where for simplicity we will set $k_1 = 0 = k_2$ then to find the
+eigenvalues/eigenfunctions means solving the following integral equation:
+
+\begin{equation}\label{eq:twod-stochastic-kl-eigenvalue-problem}
+    \sigma^2\int_D\exp(-|x_1 - y_1| - |x_2 - y_2|)\beta_n(\v{y})\, d\v{x}
+        = \lambda_n\beta_n(\v{x})
+\end{equation}
+
+However as the kernel is seperable we can reduce this two dimensional problem
+to a system of one dimensional problems:
+
+\begin{align}
+    \begin{split}
+        \sigma^2\int_{-1}^1\exp(-|x_1 - y_2|)\beta^1_i(y)\, dy &= \lambda^1_i\beta^1_i(x) \\
+        \sigma^2\int_{-1}^1\exp(-|x_2 - y_2|)\beta^2_i(y)\, dy &= \lambda^2_i\beta^2_i(x) \\
+    \end{split}
+\end{align}
+
+where solutions to the original problem
+\myref{eq:twod-stochastic-kl-eigenvalue-problem} are given by $\lambda_n =
+\lambda^1_i\lambda^2_j$ and $\beta_n(\v{x}) = \beta^1_i(x_1)\beta^2_j(x_2)$ for
+each $i, j \in \mathbb{N}$. Since in our particular problem the domain is $[-1,
+1] \times [-1, 1]$ we can reuse our results from earlier, using a combination
+of Listing \ref{code:matlab-eigen} and Listing
+\ref{code:python-reconstruct-eigen} to find each of the $\lambda_i^k$,
+$\beta_i^k$, for $i \in \mathbb{N}$, $k \in \{1, 2\}$.
+
+Therefore we may write $\kappa(\v{x};\omega)$ as:
+
+\begin{equation}\label{eq:twod-stochastic-kl-kappa}
+    \kappa(\v{x};\omega) =
+    \mu + \sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(\v{x})\xi_l(\omega)
+\end{equation}
+
 \subsection{Derivation of the Global System of Equations}
+
+As the weak formulation \myref{eq:twod-stochastic-wk} has to hold $\forall v
+\in W$ in particular it has to hold for the basis functions so by setting
+$v = \chi_t\phi_i$ for each $i \in \{0, \ldots, M\}$ and $t \in \{0, \ldots, P\}$
+in \myref{eq:twod-stochastic-wk}. Also including our expansions
+\myref{eq:twod-stochastic-f-approx}, \myref{eq:twod-stochastic-kl-kappa} and
+\myref{eq:twod-stochastic-uhp} we obtain:
+
+\begin{align}
+  \begin{split}
+    \int_\Omega\int_D
+      \left(\mu + \sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(\v{x})\xi_l(\omega)\right)
+      &\nabla\left(\sum_{j=0}^M\sum_{s=0}^Pu_{r,s}\chi_s(\omega)\phi_j(\v{x})\right)
+      \cdot\nabla\left(\chi_t(\omega)\phi_i(\v{x})\right), d\v{x}\, d\Omega \\
+      &= \int_\Omega\int_D\left(\sum_{j=0}^Mf_j\phi_j(\v{x})\right)
+        \chi_t(\omega)\phi_i(\v{x})\, d\v{x}\, d\Omega
+  \end{split}
+\end{align}

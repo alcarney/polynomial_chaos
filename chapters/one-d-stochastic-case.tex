@@ -118,13 +118,13 @@ dimensional approximations to second order random processes.
 By introducing the following notation for the expected value of a quantity:
 
 \begin{equation}\label{eq:oned-stochastic-expect-notation}
-    \langle\cdot\rangle = \int_{\Omega}(\cdot) \,d\omega
+    \expect{\cdot} = \int_{\Omega}(\cdot) \,dP
 \end{equation}
 
 allows us to express this orthogonality relation as follows:
 
 \begin{equation}\label{oned-stochastic-orthog-relation}
-    \langle\chi_i\chi_j\rangle = \langle\chi_i\rangle^2\delta_{ij}
+    \expect{\chi_i\chi_j} = \expect{\chi_i}^2\delta_{ij}
 \end{equation}
 
 Depending on the probability measure of a space a different set of polynomials
@@ -172,7 +172,7 @@ Therefore we may now rewrite our approximation to the solution process
     u^{h,P}(x;\omega) = \sum_{j=0}^N\sum_{s=1}^Pu_{j,s}\chi_s(\xi)\phi_j(x)
 \end{equation}
 
-\subsection{The Karhunen-Loeve Expansion}
+\subsection{The Karhunen-Loeve Expansion}\label{sec:oned-stochastic-kl-expansion}
 
 The Karhunen-Loeve (KL) expansion allows us to write any second order
 stochastic process $X(\v{x},\omega)$ in the following way:
@@ -221,7 +221,7 @@ Therefore to determine $\beta_n, \lambda_n$ we have to solve the following
 integral equation:
 
 \begin{equation}\label{eq:oned-stochastic-kle-eigenvalue-problem}
-    \sigma^2\int_{-1}^1\exp(-|x - y|)\beta_n(y) dy = \lambda_n\beta_n(x)
+    \sigma^2\int_{-1}^1\exp(-|x - y|)\beta_n(y)\, dy = \lambda_n\beta_n(x)
 \end{equation}
 
 A detailed discussion on finding the eigenvalues/eigenfunctions above can be
@@ -347,7 +347,7 @@ obtain:
 \begin{align*}
     \int_{\Omega}\int_{-1}^1
       \left(\mu + \sum_{l=1}^d\sqrt{\lambda_l}\beta_l(x)\xi_l(\omega)\right)
-      \frac{d}{dx}\left(\sum_{j=0}^N\sum_{s=1}^Pu_{s,j}\phi_j(x)\chi(\omega)\right)
+      \frac{d}{dx}\left(\sum_{j=0}^N\sum_{s=1}^Pu_{s,j}\phi_j(x)\chi_s(\omega)\right)
       \phi_i'(x)\chi_t(\omega)\, dx\, d\Omega \\ =
     \int_{\Omega}\int_{-1}^1
       \left(\sum_{j=0}^Nf_j\phi_j(x)\right)
@@ -364,9 +364,9 @@ advantage of our notation for the expectation
           \mu\expect{\chi_s\chi_t}
           \int_{-1}^1\phi_j'(x)\phi_i'(x)\, dx +
           \sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
-          \left(\int_{-1}^1 \beta_l(x)\phi_j'(x)\phi_i(x)\, dx\right)
+          \left(\int_{-1}^1 \beta_l(x)\phi_j'(x)\phi_i'(x)\, dx\right)
       \right]\\ =
-      \sum_{j=0}^N\sum_{s=0}^Pf_j\expect{\chi_s\chi_t}
+      \sum_{j=0}^Nf_j\expect{\chi_t}
           \left(\int_{-1}^1\phi_j(x)\phi_i(x)\, dx\right)
   \end{split}
 \end{align}
@@ -441,28 +441,22 @@ over a symmetric domain, this quantity vanishes. Hence the above reduces to:
 \end{equation}
 
 for each $i \in \{1,\ldots,N-1\}$. As the quantity $\mu\expect{\chi_s^2}$ is
-fully deterministic and scalar if we compare this with Chapter
-\ref{chap:oned-deterministic} we can treat this similarly. So by setting $a =
+fully deterministic and scalar we can treat this in a similar manner to the
+deterministic case in  Chapter \ref{chap:oned-deterministic}. By setting $a =
 \mu\expect{\chi_s^2}, b = 0, c = 0$ in \myref{eq:oned-deterministic-discrete}
 and following a similar argument as outlined in Section
 \ref{sec:oned-deterministic-local-stiffness} we obtain the following form of
 the local stiffness matrix $A_{s,s}^{(k)}$:
 
-\begin{align}\label{eq:oned-stochasic-local-stifness-diag}
-  \begin{split}
-    A_{s,s}^{(k)} &= \frac{\mu\expect{\chi_s^2}}{h_k}\left[\begin{array}{c c}
+\begin{equation}\label{eq:oned-stochasic-local-stifness-diag}
+    A_{s,s}^{(k)} = \frac{\mu\expect{\chi_s^2}}{h_k}\left[\begin{array}{c c}
                 1 & -1 \\ -1 & 1
-              \end{array}\right] \\
-    &= \frac{2\mu}{h_k(2s + 1)}\left[\begin{array}{c c}
-              1 & -1 \\ -1 & 1
-      \end{array}\right]
-  \end{split}
-\end{align}
+              \end{array}\right]
+\end{equation}
 
-where $\expect{\chi_s^2} = \frac{2}{2s + 1}$ is the orthogonality relation for
-the \textit{Legendre Polynomials} \cite{poly-bible}. Continuing with the same
-argument as in Section \ref{sec:oned-deterministic-global-stiffness-assembly}
-we find that the matrix $A_{s,s}$ will have the form as shown in
+Continuing with the same argument as in Section
+\ref{sec:oned-deterministic-global-stiffness-assembly} we find that the matrix
+$A_{s,s}$ will have the form as shown in
 \myref{eq:oned-deterministic-global-stiffness}.
 
 \subsubsection{The Off-Diagonal Matrices}
@@ -486,6 +480,37 @@ and we are left with:
         \sum_{l=1}^d\sqrt{\lambda_n}\expect{\xi_l\chi_s\chi_t}
             \int_{-1}^1\beta_l(x)\phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
+
+Determining the entries to these off diagonal matrices can be done in a similar
+manner to the diagonal matrices but some more care must be taken at each step
+as we now longer have a simple scalar coefficient. Each of these off diagonal
+matrices are comprised of $d$ matrices which are summed together. Let's for a
+moment just consider one of these:
+
+\begin{equation}
+    \sum_{j=1}^{N - 1}\left(\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
+        \int_{-1}^1\beta_l(x)\phi_j'(x)\phi_i'(x)\, dx\right)
+\end{equation}
+
+The quantity $\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}$ is deterministic and
+a scalar which we can easily evaluate, so focusing on the integral, we know
+from Section \ref{sec:oned-deterministic-global-construct} that we can rewrite
+each of the global basis functions $\phi_i,\phi_j$ locally in each subinterval
+in terms of \myref{eq:oned-deterministic-psi-1} and
+\myref{eq:oned-deterministic-psi-2}, so for the off diagonal matrices the local
+stiffness matrix is given by:
+
+\begin{equation}
+    A^{(k)}_{m,n} = \int_{x_k}^{x_{k+1}}
+        \beta_l(x)\psi_{k,m}'(x)\psi_{k,n}'(x)\, dx
+\end{equation}
+
+for each $m, n \in \{1, 2\}$. An important distinction to note here is that in
+the off diagonal matrices with the introduction of the eigenfunctions
+$\beta_l(x)$ the local sitffness matrix now changes depending on which
+subinterval in the domain we are considering. With the local stiffness matrix
+determined we can assemble the off diagonal matrix as seen in
+\myref{eq:oned-deterministic-global-stiffness}
 
 \subsection{The Global Mass Matrix}
 
@@ -532,7 +557,7 @@ Now when we consider the case where $s \neq t$,
     \right)
 \end{equation}
 
-for each $i \in \{1,\ldots,N - 1\}$By the orthogonality relation
+for each $i \in \{1,\ldots,N - 1\}$ By the orthogonality relation
 $\expect{\chi_s\chi_t} = \expect{\chi_s^2}\delta_{st}$ all terms in the off
 diagonal matrices vanish.
 

@@ -31,18 +31,20 @@ define them as follows:
     \end{array}
 \end{equation}
 
-where $H^1_0(D)$ is a subset of the one dimensional Sobolev Space $H^1(D)$
-where all elements vanish at the boundary. It is worth noting that the boundary
-in this case is a measure zero set hence it's impossible to define an unique
-solution in this way! Therefore we have to define $H^1_0(D)$ slightly
-differently, consider $C^\infty_0(\mathbb{R})$ the space of infinitely smooth
-functions defined on $\mathbb{R}$ with compact support. This space is dense in
-$H^1(\mathbb{R})$ so we can therefore write any function in $\mathbb{R}$ as a
-limit of some sequence in $C_0^\infty(\mathbb{R})$. Then, by restricting to
-the domain $D$ we define $H^1_0(D)$ as the closure of $C_0^\infty(D)$ (with
-respect to the Sobolev norm).
+where $H^1_0(D)$ is a subspace of the one dimensional Sobolev Space $H^1(D)$ as
+defined in Definition \ref{def:oned-H1-D} where all elements vanish at the
+boundary. It is worth noting that the boundary in this case is a measure zero
+set hence it's impossible to define an unique solution in this way! Therefore
+we have to define $H^1_0(D)$ slightly differently, consider
+$C^\infty_0(\mathbb{R})$ the space of infinitely smooth functions defined on
+$\mathbb{R}$ with compact support. This space is dense in $H^1(\mathbb{R})$ so
+we can therefore write any function in $\mathbb{R}$ as a limit of some sequence
+in $C_0^\infty(\mathbb{R})$. Then, by restricting to the domain $D$ we define
+$H^1_0(D)$ as the closure of $C_0^\infty(D)$ (with respect to the Sobolev
+norm).
 
-So, taking some $v \in W$ and integrating over the domain we obtain:
+So, multiplying through with some $v \in W$ and integrating over the domain we
+obtain:
 
 \begin{equation}
     -a\int_0^1{u''(x)v(x)\ dx} + b\int_0^1{u'(x)v(x)\ dx}
@@ -237,11 +239,11 @@ functions $\phi_i$ each subinterval will have 2 local basis functions which we
 will call $\psi_{k,1}$ and $\psi_{k,2}$ associated with it which we write as
 follows:
 
-\begin{equation}
+\begin{equation}\label{eq:oned-deterministic-psi-1}
     \psi_{k,1}(x) = \frac{x_{k+1} - x}{x_{k+1} - x_k}
 \end{equation}
 
-\begin{equation}
+\begin{equation}\label{eq:oned-deterministic-psi-2}
     \psi_{k,2}(x) = \frac{x - x_k}{x_{k+1} - x_k}
 \end{equation}
 
