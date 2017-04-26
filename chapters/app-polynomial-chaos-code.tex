@@ -1,0 +1,46 @@
+\chapter{Polynomial Chaos Code}\label{app:poly-chaos-code}
+
+Below is the supporting polynomial chaos code which is used to handle all the
+construction and calculations of the Legendre Chaos used by both the one
+dimensional stochastic code in Appendix \ref{app:oned-stochastic-code} and the
+two dimensional stochastic code in Appendix \ref{app:twod-stochastic-code}
+
+\lstinputlisting[language=Python]{src/fem/polynomial_chaos.py}
+
+Here is the supporting data we calculated using Matlab and the code in Listing
+\ref{code:matlab-eigen} which represents the eigenvalues and their associated
+eigenfunctions from the problem given in
+\myref{eq:oned-stochastic-kle-eigenvalue-problem}
+
+\begin{figure}
+    \centering
+    \begin{tabular} { r | r | r | r | r | r }
+        $x_i$       & $\beta_1(x_i)$ & $\beta_2(x_i)$ & $\beta_3(x_i)$ &
+            $\beta_4(x_i)$ & $\beta_5(x_i)$ \\ \hline
+        -1.00000 & 0.97563  & 0.96034     & -0.92401 & -0.82023   & 0.51969 \\
+        -0.98481 & 0.98583  & 0.97228     & -0.93681 & -0.8323    & 0.52754 \\
+        -0.93969 & 0.96074  & 0.97574     & -0.95977 & -0.86346   & 0.55033 \\
+        -0.86603 & 0.75065  & 0.87969     & -0.94807 & -0.89872   & 0.58573 \\
+        -0.76604 & 0.21545  & 0.57178     & -0.83688 & -0.91444   & 0.62999 \\
+        -0.64279 & -0.53623 & 0.016754    & -0.56836 & -0.88227   & 0.67811 \\
+        -0.50000 & -0.98555 & -0.62012    & -0.13651 & -0.77669   & 0.72431 \\
+        -0.34202 & -0.58389 & -0.97497    & 0.37412  & -0.58498   & 0.76267 \\
+        -0.17365 & 0.43239  & -0.73918    & 0.79758  & -0.31563   & 0.78805 \\
+        0.00000  & 0.98896  & -2.1869e-15 & 0.96307  & 3.5596e-16 & 0.79693 \\
+        0.17365  & 0.43239  & 0.73918     & 0.79758  & 0.31563    & 0.78805 \\
+        0.34202  & -0.58389 & 0.97497     & 0.37412  & 0.58498    & 0.76267 \\
+        0.50000  & -0.98555 & 0.62012     & -0.13651 & 0.77669    & 0.72431 \\
+        0.64279  & -0.53623 & -0.016754   & -0.56836 & 0.88227    & 0.67811 \\
+        0.76604  & 0.21545  & -0.57178    & -0.83688 & 0.91444    & 0.62999 \\
+        0.86603  & 0.75065  & -0.87969    & -0.94807 & 0.89872    & 0.58573 \\
+        0.93969  & 0.96074  & -0.97574    & -0.95977 & 0.86346    & 0.55033 \\
+        0.98481  & 0.98583  & -0.97228    & -0.93681 & 0.8323     & 0.52754 \\
+        1.00000  & 0.97563  & -0.96034    & -0.92401 & 0.82023    & 0.51969 \\
+        \hline
+        $\lambda_l$ & 0.04192 & 0.07962 & 0.15711 & 0.39099 & 1.1494
+\end{tabular}
+    \captionof{table}{The data generated from Matlab representing the
+    eigenvalues and eigenfunctions of
+    \myref{eq:oned-stochastic-kle-eigenvalue-problem}}
+    \label{tab:eigenvalue-data}
+\end{figure}

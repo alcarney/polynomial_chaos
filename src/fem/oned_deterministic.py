@@ -20,10 +20,10 @@ def local_stiffness_matrix(a, b, c, h):
     """
 
     A1 = np.array([[1, -1], [-1, 1]])
-    A2 = np.array([[2, 1], [1, 2]])
+    A2 = np.array([[-1, 1], [-1, 1]])
     A3 = np.array([[2, 1], [1, 2]])
 
-    return (a/h)*A1 - (b/2)*A2 + (c*h/6)*A3
+    return (a/h)*A1 + (b/2)*A2 + (c*h/6)*A3
 
 
 def local_mass_matrix(h):

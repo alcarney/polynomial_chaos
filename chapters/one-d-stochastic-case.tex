@@ -261,6 +261,9 @@ function KLEigs(k)
 end
 \end{lstlisting}
 
+The results from running the above code with $k = 5$ can be found as part of
+Appendix \ref{app:poly-chaos-code} in Table \ref{tab:eigenvalue-data}
+
 In order to be able to use the results from Matlab in the remaining Python
 code, we require a brief discussion of how the \textit{Chebfun} library
 represents mathematical functions. As stated in \cite{chebfun-data}, the
@@ -330,7 +333,8 @@ correct results.
     \centering
     \includegraphics[width=0.7\textwidth]{img/kle-eigenfunctions.pdf}
     \caption{The first 5 eigenfunctions and associated eigenvalues of
-             \myref{eq:oned-stochastic-kle-eigenvalue-problem}}
+             \myref{eq:oned-stochastic-kle-eigenvalue-problem}, assuming unit
+             variance}
     \label{fig:kle-eigenfunctions}
 \end{figure}
 
@@ -477,7 +481,7 @@ and we are left with:
 
 \begin{equation}
     A_{s,t} = \sum_{j=1}^{N - 1}\left(
-        \sum_{l=1}^d\sqrt{\lambda_n}\expect{\xi_l\chi_s\chi_t}
+        \sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
             \int_{-1}^1\beta_l(x)\phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
 
@@ -570,4 +574,77 @@ Therefore the global mass matrix is of the form:
             \vdots & & & \vdots \\
             0 & \cdots & 0 & M_{P,P}
     \end{array}\right]
+\end{equation}
+
+\section{Example Problems and Results}
+
+
+\subsection{Post Processing the Solution}
+
+Now that we have our approximation to the solution solution process
+$u^{h,P}(x,\omega)$ we can ask questions such as what is the mean of varience
+of the process on the interval.
+
+\subsubsection{Calculating the Mean}
+
+Given the solution process $u^{h,P}$ we can calculate the mean by integrate it
+over the probability space:
+
+\begin{align}
+  \begin{split}
+    \mathbb{E}\left[u^{h,P}\right] = \expect{u^{h,P}} &=
+    \int_\Omega\sum_{j=0}^N\sum_{s=0}^Pu_{j,s}\phi_j(x)\chi_s(\omega)\, d\Omega \\
+    &= \sum_{j=0}^Nu_{j,s}\phi_j(x)\sum_{s=0}^P\int_\Omega\chi_s(\omega)\, d\Omega \\
+    &= \sum_{j=0}^Nu_{j,0}\phi_j(x)
+  \end{split}
+\end{align}
+
+This is due to the fact we can write the integral from above as follows:
+
+\begin{equation}
+    \int_\Omega\chi_s(\omega)\cdot 1\, d\Omega =
+    \int_\Omega\chi_s(\omega)\chi_0(\omega)\, d\Omega = \delta_{s,0}
+\end{equation}
+
+by the orthogonality of the Legendre Polynomials.
+
+\subsubsection{Calculating the Variance}
+
+The variance of our approximation to the solution process is given by:
+
+\begin{align}
+  \begin{split}
+    Var(u^{h,P}) &= \mathbb{E}\left[\left(u^{h,P}\right)^2\right]
+                    - \left(\mathbb{E}\left[u^{h,P}\right]\right)^2 \\
+      &= \int_\Omega\left(\sum_{j=1}^{N - 1}\sum_{s=0}^Pu_{j,s}\phi_j(x)\chi_s(\omega)\right)^2\, d\Omega
+        - \left(\sum_{j=1}^{N - 1}u_{j,0}\phi_j(x)\right)^2 \\
+      &= \int_\Omega\left(\sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=0}^P\sum_{s=0}^P
+           u_{j,s}u_{i,t}\phi_j(x)\phi_i(x)\chi_s(\omega)\chi_t(\omega)
+         \right)\, d\Omega - \left(\sum_{j=1}^{N - 1}u_{j,0}\phi_j(x)\right)^2 \\
+      &= \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=0}^P\sum_{t=0}^Pu_{j,s}u_{i,t}
+            \phi_j(x)\phi_i(x)\int_\Omega\chi_s(\omega)\chi_t(\omega)\, d\Omega
+            - \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}u_{i,0}u_{j,0}\phi_j(x)\phi_i(x)
+  \end{split}
+\end{align}
+
+Once again invoking the orthogonality relation for the stochastic basis vectors
+$\chi_s$ the above reduces to:
+
+\begin{align}
+  \begin{split}
+    Var(u^{h,P}) &= \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=0}^P
+      u_{j,s}u_{i,s}\phi_j(x)\phi_i(x)\expect{\chi_s^2}
+            - \sum_{i=1}^{N - 1}\sum_{j=1}^{N-1}u_{i,0}u_{j,0}\phi_j(x)\phi_i(x) \\
+      &= \sum_{i=1}^{N-1}\sum_{j=1}^{N-1}\sum_{s=1}^P
+            u_{j,s}u_{i,s}\phi_j(x)\phi_i(x)\expect{\chi_s^2}
+  \end{split}
+\end{align}
+
+Now if we consider the support of the spatial basis functions as we can see in
+Figure \ref{fig:oned-local-basis} for each $j$ the only non zero terms will be
+when $|j - i| \leq 1$ so the variance is given by:
+
+\begin{equation}
+    Var(u^{h,P})= \sum_{j=1}^{N-1}\sum_{i=-1}^1\sum_{s=1}^P
+      u_{j,s}u_{(j+i),s}\phi_j(x)\phi_{j+i}(x)\expect{\chi_s^2}
 \end{equation}

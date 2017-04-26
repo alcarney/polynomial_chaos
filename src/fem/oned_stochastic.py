@@ -1,11 +1,12 @@
 import numpy as np
 import scipy.integrate as integrate
 
-from scipy.special import legendre
 from scipy.sparse import bmat, csr_matrix
+from fem.polynomial_chaos import legendre_chaos, eval_chi_s_squared,\
+                                eval_xi_chi_st, read_eigendata
 
 
-def local_diagonal_stiffness_matrix(mu, s, h):
+def local_diagonal_stiffness_matrix(mu, basis, s, h):
     """
     Given the mean of the random process mu, the length of the
     interval h and the number of the legendre polynomial basis
@@ -14,8 +15,7 @@ def local_diagonal_stiffness_matrix(mu, s, h):
     """
 
     # Calculate <<\chi_s^2>>
-    Ps = legendre(s)
-    chi, _ = integrate.quad(lambda x: 0.5 * Ps(x) * Ps(x), -1, 1)
+    chi = eval_chi_s_squared(basis, s)
 
     A = np.array([[1, -1], [-1, 1]])
 
@@ -47,19 +47,20 @@ def local_off_diag_stiffness_matrix(xk, xk1, beta):
     return Ak
 
 
-def local_mass_matrix(h, s):
+def local_mass_matrix(h, basis, s):
     """
     Given the number of the legendre polynomial basis s, and h
     representing the length of the interval return the corresponding
     local mass matrix.
     """
+    chi = eval_chi_s_squared(basis, s)
 
     M = np.array([[2, 1], [1, 2]])
 
-    return (h/3*(2*s + 1))*M
+    return (h*chi/6)*M
 
 
-def assemble_diagonal_stiffness_matrix(N, mu, s):
+def assemble_diagonal_stiffness_matrix(N, mu, basis, s):
     """
     Assemble the sth-sth matrix in the global stiffness matrix
     for given mean mu, resolution N and legendre polynomial index s
@@ -69,7 +70,7 @@ def assemble_diagonal_stiffness_matrix(N, mu, s):
     h = 1/N
 
     # Get the local stiffness matrix
-    A_k = local_diagonal_stiffness_matrix(mu, s, h)
+    A_k = local_diagonal_stiffness_matrix(mu, basis, s, h)
 
     # Construct the 'global' matrix
     A = np.zeros((N - 1, N - 1))
@@ -82,7 +83,7 @@ def assemble_diagonal_stiffness_matrix(N, mu, s):
     return A
 
 
-def assemble_off_diagonal_stiffness_matrix(N, s, t, lmda, beta):
+def assemble_off_diagonal_stiffness_matrix(N, basis, l, s, t, lmda, beta):
     """
     Assemble the sth-tth matrix in the global stiffness matrix
     for given resolution N, legendre polynomial indices s and t
@@ -92,11 +93,8 @@ def assemble_off_diagonal_stiffness_matrix(N, s, t, lmda, beta):
     # Discreteise the domain - we will need the xis
     xs = np.linspace(-1, 1, N + 1)
 
-    # Determine the coefficient which captures the stochastic behavoir
-    # modelled by this particular matrix
-    Ps = legendre(s)
-    Pt = legendre(t)
-    coef = 0.5 * lmda * integrate.quad(lambda x: x * Ps(x) * Pt(x), -1, 1)[0]
+    # Evaluate n<<\xi_l\chi_s\chi_t>>
+    coef = lmda * eval_xi_chi_st(basis, l, s, t)
 
     # Construct the 'global' matrix
     A = np.zeros((N - 1, N - 1))
@@ -130,7 +128,7 @@ def assemble_off_diagonal_stiffness_matrix(N, s, t, lmda, beta):
     A[i == j - 1] = np.array(superdiagonal)
     A[i == j + 1] = np.array(subdiagonal)
 
-    return A
+    return coef * A
 
 
 def assemble_mass_matrix(N, s):
@@ -156,10 +154,16 @@ def assemble_mass_matrix(N, s):
     return M
 
 
-def construct_global_stiffness_matrix(N, P, mu):
+def construct_global_stiffness_matrix(N, d, p, mu):
     """
     Assemble the global stiffness matrix
     """
+    basis = legendre_chaos(d, p)
+    P = len(basis)
+
+    eigendata = read_eigendata('expansion-data.csv')
+    lambdas = [val['lambda'] for val in eigendata]
+    betas = [val['beta'] for val in eigendata]
 
     Ast = [[None for s in range(P)] for t in range(P)]
 
@@ -168,10 +172,11 @@ def construct_global_stiffness_matrix(N, P, mu):
 
             # Is this matrix on the diagonal
             if s == t:
-                mat = assemble_diagonal_stiffness_matrix(N, mu, s)
+                mat = assemble_diagonal_stiffness_matrix(N, mu, basis, s)
                 Ast[s][t] = mat
             else:
-                mat = assemble_off_diagonal_stiffness_matrix(N, s, t, 1, lambda x: 1)
+                mat = sum([assemble_off_diagonal_stiffness_matrix
+                            (N, basis, l, s, t, lambdas[l], betas[l]) for l in range(d)])
                 Ast[s][t] = csr_matrix(mat)
 
     # Assemble the block matrices into the global matrix

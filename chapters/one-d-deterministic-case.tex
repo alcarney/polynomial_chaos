@@ -336,14 +336,13 @@ Again taking $r=2$, $s=2$ we can evaluate the third integral in a similar manner
 Proceeding as we have above and evaluating the remaining integrals gives us the
 following form of the local stiffness matrix:
 
-\todo[inline]{Check the entries of $b$}
 
 \begin{equation}\label{eq:oned-determinisitic-local-stiffness}
     A^{(k)} = \frac{a}{h_k}\left[\begin{array}{c c}
                 1 & -1 \\ -1 & 1
               \end{array}\right]
-              -\frac{b}{2}\left[\begin{array}{c c}
-                2 & 1\\ 1 & 2
+              +\frac{b}{2}\left[\begin{array}{c c}
+                -1 & 1\\ -1 & 1
               \end{array}\right]
               + \frac{ch_k}{6}\left[\begin{array}{c c}
                 2 & 1 \\ 1 & 2
@@ -596,25 +595,19 @@ can easily construct the right hand side of the equation.
 Considering the following cases:
 \begin{itemize}
     \item $a = 1, b = 0, c = 0$ and
-          $f(x) = \pi^2\sin{(\pi x)}$ \\
+          $f(x) = \pi^2\sin{(\pi x)}$
     \item $a = 1, b = 0, c = 1$ and
-          $f(x) = \pi^2\sin{(\pi x)} + \sin{(\pi x)}$ \\
+          $f(x) = \pi^2\sin{(\pi x)} + \sin{(\pi x)}$
     \item $a = 1, b = 0, c = 10$ and
           $f(x) = \pi^2\sin{(\pi x)} + 10\sin{(\pi x)}$
-    %\item $a = 1, b = 1, c = 0$ and
-    %      $f(x) = \pi^2\sin{(\pi x)} + \pi\cos{(\pi x)}$
+    \item $a = 1, b = 2, c = 0$ and
+          $f(x) = \pi^2\sin{(\pi x)} + 2\pi\cos{(\pi x)}$
 \end{itemize}
 
 and recording the $L^2$ norm of the error at each value of $N$ we obtain the
 plot seen in Figure \ref{fig:oned-deterministic-error}. In Figure
 \ref{fig:oned-deterministic-exact-v-approx} we see the exact solution plotted
 against one of our approximations in the case where $a = 1, b = 0, c = 0$.
-\todo[inline]{Don't forget to include the results for the case $b=1$}
-
-%\begin{figure}
-%    \input{figures/oned-error-tables.tex}
-%    \caption{Approximation errors for various cases of of the equation}
-%\end{figure}
 
 \begin{figure}
     \centering
