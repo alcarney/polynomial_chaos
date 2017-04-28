@@ -23,7 +23,7 @@ def local_stiffness_matrix(a, b, c, h):
                    [1, 2, 1],
                    [1, 1, 2]])
 
-    return (a/2)*m1 + (h**2 * m2) + ((c*h**2)/24)*m3
+    return (a/2)*m1 + (h * m2) + ((c*h**2)/24)*m3
 
 
 def local_mass_matrix(h):
