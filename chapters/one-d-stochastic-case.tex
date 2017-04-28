@@ -27,10 +27,29 @@ of the solution process $u(x;\omega)$
 
 \section{Weak Formulation}
 
-\todo[inline]{Make exact all the functional spaces etc.}
-
 As with the deterministic cases, we first need to obtain the weak formulation
-of the problem, where we multiply through by $w \in W$ and integrate over the
+of the problem, which involves taking the inner product of
+\myref{eq:oned-stochastic} with a function $v$ from a \textit{test space} $W$.
+With the weak solution being a function $u$ from a \textit{trial space} $V$
+which satisfies the resulting equation $\forall v \in W$.
+
+In this case our function spaces not only have to admit functions on the
+physical domain but on the probability spaces also, hence the trial and test
+spaces are given by:
+
+\begin{equation}
+    \begin{array}{c c}
+        V = H^1_0(D) \otimes L^2(\Omega) &
+        W = H^1_0(D) \otimes L^2(\Omega)
+    \end{array}
+\end{equation}
+
+Just as in Chapter \ref{chap:oned-deterministic} $H^1_0(D)$ refers to the
+closure of $C_0^\infty(D)$ with respect to the Sobloev space norm
+\myref{eq:oned-H1-D-norm} and $L^2(\Omega)$ is as defined in Definition
+\ref{def:L2-Omega}.
+
+So multiplying through by $w \in W$ and integrate over the
 domain.
 
 \begin{equation}
@@ -370,23 +389,23 @@ advantage of our notation for the expectation
           \sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
           \left(\int_{-1}^1 \beta_l(x)\phi_j'(x)\phi_i'(x)\, dx\right)
       \right]\\ =
-      \sum_{j=0}^Nf_j\expect{\chi_t}
+      \expect{\chi_t}\sum_{j=0}^Nf_j
           \left(\int_{-1}^1\phi_j(x)\phi_i(x)\, dx\right)
   \end{split}
 \end{align}
 
-for each $j \in \{0,\ldots,N\}$ and each $t \in \{0,\ldots,P\}$. Just as in
-the deterministic case, we know the solution at the endpoints due to the
-boundary conditions on the problem \myref{eq:oned-stochastic} hence we can
-remove the terms associated with $j = 0$ and $j = N$ from the system of
-equations. Then by defining the $i$-th, $j$-th component of the matrix
-$A_{s,t}$ to be the terms in the square brackets of
-\myref{eq:oned-stochastic-discrete} and the $i$-th, $j$-th component of the
-matrix $M_{s,t}$ we obtain the following:
+for each $j \in \{0,\ldots,N\}$ and each $t \in \{0,\ldots,P\}$. Just as in the
+deterministic case, we know the solution at the endpoints due to the boundary
+conditions on the problem \myref{eq:oned-stochastic} hence we can remove the
+terms associated with $j = 0$ and $j = N$ from the system of equations. Then by
+defining the $i$-th, $j$-th component of the matrix $A_{s,t}$ to be the terms
+in the square brackets of \myref{eq:oned-stochastic-discrete} and the $i$-th,
+$j$-th component of the matrix $M_{t}$ to be the bracketed terms on the right
+hand side, we obtain the following:
 
 \begin{equation}
     \sum_{j=1}^{N - 1}\sum_{s=0}^P(A_{s,t})_{i,j}u_{s,j} =
-    \sum_{j=0}^N\sum_{s=0}^P(M_{s,t})_{i,j}f_j
+    \sum_{j=0}^N(M_t)_{i,j}f_j
 \end{equation}
 
 for $i \in \{1,\ldots,N - 1\}$ and $t \in \{0,\ldots,P\}$. Which defines a
@@ -405,14 +424,14 @@ where each $A_{s,t}$ are $(N - 1) \times (N - 1)$ matrices. Similarly the
 global mass matrix $M$ takes the form:
 
 \begin{equation}
-    M = \left[\begin{array}{c c c}
-            M_{1,1} & \cdots & M_{1,P} \\
-            \vdots & & \vdots \\
-            M_{P,1} & \cdots & M_{P,P}
+    M = \left[\begin{array}{c}
+            M_1 \\
+            \vdots \\
+            M_P
         \end{array}\right]
 \end{equation}
 
-where each $M_{s,t}$ are $(N - 1) \times (N + 1) $ matrices.
+where each $M_t$ are $(N - 1) \times (N + 1) $ matrices.
 
 \section{Constructing the Global System}
 
@@ -518,63 +537,32 @@ determined we can assemble the off diagonal matrix as seen in
 
 \subsection{The Global Mass Matrix}
 
-\subsubsection{Matrices on the Diagonal}
-
-As with the global stiffness matrix we will first consider the matrices sat on
-the main diagonal. By setting $s = t$ in \myref{eq:oned-stochastic-discrete} we
-obtain the following expression:
-
+As show in \ref{eq:oned-stochastic-discrete} the $t$-th block matrix in the
+global mass matrix is given by:
 \begin{equation}
-    M_{s,s} = \sum_{j=0}^Nf_j\expect{\chi_s^2}\left(
+    M_t = \expect{\chi_t}\sum_{j=0}^Nf_j\left(
         \int_{-1}^1\phi_j(x)\phi_i(x)\, dx\right)
 \end{equation}
 
-for each $i \in \{1,\ldots,N-1\}$. The quantity $f_j\expect{\chi_s^2}$ is now
-fully deterministic and scalar so proceeding with a similar argument as in
-Section \ref{sec:oned-deterministic-local-mass} we find that the local mass
-matrix for the matrix $M_{s,s}$ is given by:
-
-\begin{align}
-  \begin{split}
-    M_{s,s}^{(k)} &= \frac{\expect{\chi_s^2}h_k}{6}\left[\begin{array}{c c}
-                        2 & 1 \\ 1 & 2
-                    \end{array}\right]\\
-                  &= \frac{h_k}{3(2s + 1)}\left[\begin{array}{c c}
-                        2 & 1 \\ 1 & 2
-                    \end{array}\right]
-  \end{split}
-\end{align}
-
-where we again use the orthogonality relation of the \textit{Lengendre
-Polynomials}. Continuing with a similar argument to Section
-\ref{sec:oned-deterministic-global-mass-assembly} we find that the matrix
-$M_{s,s}$ will have the form found in \myref{eq:oned-deterministic-global-mass}
-
-\subsubsection{The Off-Diagonal Matrices}
-
-Now when we consider the case where $s \neq t$,
-\myref{eq:oned-stochastic-discrete} redcues to:
+for each $i \in \{1,\ldots,N-1\}$. Since $\expect{\chi_t} =
+\expect{\chi_t\chi_0} = \expect{\chi_0^2}\delta_{t, 0}$ by the orthogonality of
+the stochastic basis vectors, the global mass matrix is given by:
 
 \begin{equation}
-    M_{s,t} = \sum_{j=0}^Nf_j\expect{\chi_s\chi_t}\left(
-        \int_{-1}^1\phi_j(x)\phi_i(x)\, dx
-    \right)
-\end{equation}
-
-for each $i \in \{1,\ldots,N - 1\}$ By the orthogonality relation
-$\expect{\chi_s\chi_t} = \expect{\chi_s^2}\delta_{st}$ all terms in the off
-diagonal matrices vanish.
-
-Therefore the global mass matrix is of the form:
-
-\begin{equation}
-    M = \left[\begin{array}{c c c c}
-            M_{1,1} & 0 & \cdots & 0 \\
-            0 & M_{2,2} & \cdots & 0 \\
-            \vdots & & & \vdots \\
-            0 & \cdots & 0 & M_{P,P}
+    M = \left[\begin{array}{c}
+        M_0 \\ \v{0} \\ \vdots \\ \v{0}
     \end{array}\right]
 \end{equation}
+
+and since $\expect{\chi_0^2} = 1$, $M_0$ is exactly the global mass matrix we
+found in the deterministic problem \myref{eq:oned-deterministic-global-mass}.
+
+\paragraph{Note:}
+
+It is worth noting that the shape of the global mass matrix is due to the fact
+in our problem we have a fully deterministic $f$. If we introduced some
+uncertainty into $f$ then we would be in a similar situation to the left hand
+side with a global block mass matrix with non zero entries down the diagonal.
 
 \section{Example Problems and Results}
 
