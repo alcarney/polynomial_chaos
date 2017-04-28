@@ -2,6 +2,8 @@ import numpy as np
 import scipy.integrate as integrate
 
 from scipy.sparse import bmat, csr_matrix
+from scipy.sparse.linalg import spsolve
+from fem.oned_deterministic import local_mass_matrix
 from fem.polynomial_chaos import legendre_chaos, eval_chi_s_squared,\
                                 eval_xi_chi_st, read_eigendata
 
@@ -47,17 +49,30 @@ def local_off_diag_stiffness_matrix(xk, xk1, beta):
     return Ak
 
 
-def local_mass_matrix(h, basis, s):
+def assemble_mass_matrix(N, P):
     """
-    Given the number of the legendre polynomial basis s, and h
-    representing the length of the interval return the corresponding
-    local mass matrix.
+    Given N and P representing resolution of the physical and stoachastic
+    discretisations respectively, assemble the global mass matrix
     """
-    chi = eval_chi_s_squared(basis, s)
 
-    M = np.array([[2, 1], [1, 2]])
+    # Calculate h and Mk
+    h = 1/N
+    Mk = local_mass_matrix(h)
 
-    return (h*chi/6)*M
+    # Construct M_0
+    Z = np.zeros((N - 1, N + 1))
+    M0, Z = Z, csr_matrix(Z)
+    i, j = np.indices(M0.shape)      # We use these to access the diagonals of M
+
+    M0[i == j] = Mk[1, 0]                  # Subdiagonal
+    M0[i == j - 1] = Mk[1, 1] + Mk[0, 0]   # Main diagonal
+    M0[i == j - 2] = Mk[0, 1]              # Superdiagonal
+
+    # Assemble M
+    M = [[Z] for _ in range(P)]
+    M[0][0] = M0
+
+    return bmat(M).tocsc()
 
 
 def assemble_diagonal_stiffness_matrix(N, mu, basis, s):
@@ -131,34 +146,10 @@ def assemble_off_diagonal_stiffness_matrix(N, basis, l, s, t, lmda, beta):
     return coef * A
 
 
-def assemble_mass_matrix(N, s):
-    """
-    Assemble the sth-sth matrix in the global mass matrix
-    for given reolution N and legendre polynomial index s
-    """
-
-    # Calculate h
-    h = 1/N
-
-    # Get the local mass matrix
-    M_k = local_mass_matrix(h, s)
-
-    # Get the 'global' mass matrix
-    M = np.zeros((N - 1, N + 1))
-    i, j = np.indices(M.shape)
-
-    M[i == j] = M_k[1, 0]                   # Subdiagonal
-    M[i == j - 1] = M_k[1, 1] + M_k[0, 0]   # Main diagonal
-    M[i == j - 2] = M_k[0, 1]               # Superdiagonal
-
-    return M
-
-
-def construct_global_stiffness_matrix(N, d, p, mu):
+def construct_global_stiffness_matrix(N, basis, d, p, mu):
     """
     Assemble the global stiffness matrix
     """
-    basis = legendre_chaos(d, p)
     P = len(basis)
 
     eigendata = read_eigendata('expansion-data.csv')
@@ -180,6 +171,28 @@ def construct_global_stiffness_matrix(N, d, p, mu):
                 Ast[s][t] = csr_matrix(mat)
 
     # Assemble the block matrices into the global matrix
-    A = bmat(Ast).tocsr()
+    A = bmat(Ast)
 
-    return A
+    return A.tocsc()
+
+
+def solve_system(N, d, p, mu, f):
+    """
+    Construct the global stiffness and mass matrices for the given parameters
+    """
+
+    # Get the basis for the stochastic system
+    basis = legendre_chaos(d, p)
+    P = len(basis)
+    print(P)
+
+    # Approximate f
+    xs = np.linspace(-1, 1, N+1)
+    F = np.array([f(x) for x in xs])
+
+    # Assemble the linear system
+    A = construct_global_stiffness_matrix(N, basis, d, p, mu)
+    M = assemble_mass_matrix(N, P)
+
+    # Solve
+    return spsolve(A, M*F)
