@@ -1,11 +1,50 @@
 \chapter{Introduction}
 
-\todo{Write this!!}
+In the applied sciences mathematical models are developed which attempt to
+describe the world around us, often these models require input in the form of
+some observed quantity e.g. an object's mass. Unfortantely while every care is
+taken to ensure measured quantities are as accurate as possible there is always
+some margin of error to any observation.
 
-\section{Function Spaces}
+This begs the question, how does uncertainty in the measurement affect the
+outcome of the model? That is precisely the question that we address in this
+project. We consider the model of steady-state heat distribution in a given
+domain $D$ as described by the Partial Differential Equation (PDE) commonly
+known as \textit{Laplace's Equation}.
 
-There are a number of function spaces where our problems take place, so we will
-define these here:
+There are many approaches one can take to model uncertainty, perhaps one of the
+most striaghtforward methods would be to use \textit{Monte Carlo Methods} to
+generate a large number of samples for the uncertain values and use them in
+solving a large number of systems where you can then aggregate the results.
+While effective the large number of sytems involved can lead to analyses being
+computationally expensive.
+
+Instead we will look at using the \textit{Generalised Polynomial Chaos}, a
+recent method building on various results including the fact that members from
+the \textit{Askey Scheme} of orthogonal polynomials can be used as a basis to
+span various probability spaces. This then allows us to approximate various
+stochastic processes using truncated expansions in terms of these polynomials
+and when coupled with the \textit{Finite Element Method} construct a large,
+deterministic linear system of equations which we can easily solve.
+Specifically we will be following the process outlined in
+\cite{general-poly-chaos}
+
+First in Section \ref{sec:definitions} we state some definitions for the function
+spaces which will be commonly used throughout the project. Then in Chapters
+\ref{chap:oned-deterministic} and \ref{chap:twod-deterministic} we explore the
+deterministic cases of this equation in both one and two spatial dimensions
+with simple domains. We employ the Finite Element Method to construct a linear
+system of equations which we can use to obtain a numerical approximation to the
+solution.
+
+Then we consider the stochastic cases of this problem, first in one spatial
+dimension (Chapter \ref{chap:oned-stochastic}) and then in two spatial
+dimensions (Chapter \ref{chap:twod-stochastic}). Using the Generalised
+Polynomail Chaos we extend the linear systems constructed in the previous
+chapters to model the effects of the random processes with a fully
+deterministic set of equations which we solve numerically.
+
+\section{Function Spaces}\label{sec:definitions}
 
 \begin{definition}\label{def:L2-D}
     $L^2(D)$ Space
