@@ -58,17 +58,16 @@ Integrating the first term by parts gives us:
     + a\int_0^1{u'(x)v'(x)\ dx}
 \end{equation}
 
-Where the underbraced term is zero as $v$ is zero at the endpoints of the
-domain. Hence the continuous weak form of \myref{eq:oned-deterministic} is given
-by:
+where the underbraced term is zero as $v(0) = 0 = v(1)$.
+Hence the continuous weak form of \myref{eq:oned-deterministic} is to find $u
+\in V$ such that:
 
 \begin{equation}\label{eq:wk-oned-deterministic}
     a\int_0^1{u'(x)v'(x)\ dx} + b\int_0^1{u'(x)v(x)\ dx}
     + c\int_0^1{u(x)v(x)\ dx} = \int_0^1{f(x)v(x)\ dx}
 \end{equation}
 
-And a weak solution would be to find $u \in V$ such that, the above equation is
-satisfied $\forall v \in W$
+is satisfied $\forall w \in W$.
 
 \section{Discrete Formulation}
 
@@ -104,7 +103,7 @@ dimensional subspaces of our trial and test spaces $V^h \subset V$, $W^h
 \end{align*}
 
 By choosing appropriate basis functions $\phi_i$ that span the space, we will
-be able to approximate the solution as such:
+be able to approximate the solution:
 
 \begin{equation}\label{eq:one-d-approx-soln}
     u^h(x) = \sum_{j = 0}^N{u_j\phi_j(x)}
@@ -149,7 +148,7 @@ the intervals which lie in our domain:
 
 As the weak formulation \myref{eq:wk-oned-deterministic} must be satisfied for
 all $v \in W$ then in particular it must be satisfied for the basis functions
-$\phi_i(x)$. So by taking $v = \phi_i(x)$ for each $i \in \{1,\ldots,N\}$ and
+$\phi_i(x)$. So by taking $v = \phi_i(x)$ for each $i \in \{1,\ldots,N-1\}$ and
 substituting our approximations for $u$ and $f$ we obtain:
 
 \begin{align*}
@@ -168,7 +167,7 @@ By the linearity of the integrals and derivatives we can write this as:
     \sum_{j = 0}^Nf_j\int_0^1\phi_i(x)\phi_j(x)\, dx
 \end{align*}
 
-for each $i \in \{1,\ldots,N\}$. Or equivalently:
+for each $i \in \{1,\ldots,N-1\}$. Or equivalently:
 
 \begin{align}\label{eq:oned-deterministic-discrete}
   \begin{split}
@@ -186,13 +185,13 @@ by taking a sufficiently fine discretisation we can achieve a good
 approximation to the actual solution $u$.
 
 \begin{equation}
-    \sum_{j=0}^NA_{i,j}u_i = \sum_{j=0}^NM_{i,j}f_i,\ i \in \{0,\ldots,N\}
+    \sum_{j=0}^NA_{i,j}u_i = \sum_{j=0}^NM_{i,j}f_i,\ i \in \{1,\ldots,N-1\}
 \end{equation}
 
 However due to the Dirichlet condition we have in \myref{eq:oned-deterministic}
 we already know the value of $u$ at the nodes $x_0$ and $x_N$ so in the cases
 where $j = 0$ and $j = N$ the associated terms on the left hand side can be
-removed from the system of equations. Furthermore as we knows the value of our
+removed from the system of equations. Furthermore as we know the value of our
 solution $u$ at these nodes, we can move the associated terms over to the right
 hand side:
 
@@ -202,19 +201,14 @@ hand side:
 \end{equation}
 
 In our particular problem we have a zero Dirichlet condition so the linear
-system reduces quite nicely to:
+system when written in matrix-vector form is given by:
 
 \begin{equation}\label{eq:oned-deterministic-fem}
-    \sum_{i=1}^{N-1}\sum_{j=1}^{N-1}A_{i,j}u_j
-        = \sum_{i=1}^{N-1}\sum_{j=0}^NM_{i,j}f_j,\ i \in \{1,\dots,N-1\}
+    A\v{u} = M\v{f}
 \end{equation}
 
 Solving this system for the vector $\v{u}$ will give us the approximate
 solution to the equation \myref{eq:oned-deterministic}
-
-\section{Quantifying the Error}
-
-\todo[inline]{Existence and Uniqueness, Quantifying the Error - Use the book}
 
 \section{Constructing the Global Linear System}\label{sec:oned-deterministic-global-construct}
 
@@ -259,32 +253,32 @@ which means locally we can rewrite \myref{eq:oned-deterministic-discrete} as
 
 \begin{equation}\label{eq:oned-deterministic-local-discrete}
   \begin{split}
-    \sum_{r = 1}^2\sum_{s = 1}^2\underbrace{\left(
+    \sum_{r = 1}^2\underbrace{\left(
           a\int_{x_k}^{x_{k+1}}\psi_{k,r}'(x)\psi_{k,s}'(x)\, dx
         + b\int_{x_k}^{x_{k+1}}\psi_{k,r}'(x)\psi_{k,s}(x)\, dx
         + c\int_{x_k}^{x_{k+1}}\psi_{k,r}(x)\psi_{k,s}(x)\, dx
     \right)}_{A^{(k)}_{r,s}}u_r  \\
-    = \sum_{r= 1}^2\sum_{s = 1}^2\underbrace{
+    = \sum_{r= 1}^2\underbrace{
             \int_{x_k}^{x_{k+1}}{\psi_{k,r}(x)\psi_{k,s}(x)}\, dx}_{M^{(k)}_{r,s}}f_r
   \end{split}
 \end{equation}
 
-where we now denote these $2 \times 2$ matrices by $A^{(k)}_{r,s}$ and
-$M^{(k)}_{r,s}$ which are called the local stiffness and mass matrices
-respectively. As we can see from the above, we will need the derivatives of
-these local basis functions which are given by:
+for $s = 1,2$. Which defines two $2 \times 2$ matrices which we will denote by
+$A^{(k)}_{r,s}$ and $M^{(k)}_{r,s}$ and are called the local stiffness and
+mass matrices, respectively. As we can see from the above, we will need the
+derivatives of these local basis functions which are given by:
 
 \begin{align}
   \begin{split}
     \psi_{k,1}'(x) &= \frac{-1}{x_{k+1} - x_{k}} \\
-    \psi_{k,2}(x) &= \frac{1}{x_{k+1} - x_{k}}
+    \psi_{k,2}'(x) &= \frac{1}{x_{k+1} - x_{k}}
   \end{split}
 \end{align}
 
 \subsection{The Local Stiffness Matrix}\label{sec:oned-deterministic-local-stiffness}
 
 We are now in a position where we can evaluate each of the entries of the local
-stiffness matrix which involves calculating a large number of integrals so for
+stiffness matrix which involves calculating a number of integrals. For
 the sake of brevity I will only explicitly compute a couple of examples here
 and then present the results.
 
@@ -358,44 +352,8 @@ In an identical manner we can construct the entries for the local mass matrix,
 as we can see in \myref{eq:oned-deterministic-local-discrete} it has the much
 simpler form where each entry is given by a single integral. This integral
 happens to be the same as the third integral in the local stiffness matrix not
-including the parameter $c$. So as we have already computed  the value of the
-entry in the case where $r = 2, s = 2$ above, it simply remains for us to
-compute the remaining 3 entries which correspond to the cases where $r = 1 =
-s$, $r = 1, s = 2$ and $r = 2, s = 1$:
-
-In the case where $r = 1, s = 2$:
-
-\begin{align*}
-    \int_{x_k}^{x_{k+1}}\psi_{k,1}(x)\psi_{k,1}(x)\, dx
-        &= \frac{1}{h_k^2}\int_{x_k}^{x_{k+1}}(x_{k+1} - x)^2\, dx \\
-        &= \frac{1}{h_k^2}\left[-\frac{(x_{k+1} - x)^3}{3}\right]_{x_k}^{x_{k+1}} \\
-        &= \frac{1}{3h_k^2}\left[- (\underbrace{x_{k+1} - x_{k+1}}_{=0}) +
-                                 (\underbrace{x_{k+1} - x_k}_{h_k})\right] \\
-        &= \frac{h_k}{3}
-\end{align*}
-
-In the case where $r = 1, s = 2$:
-
-\begin{align*}
-    \int_{x_k}^{x_{k+1}}\psi_{k,1}(x)\psi_{k,2}(x)\, dx &=
-    \int_{x_k}^{x_{k+1}}\left(\frac{x_{k+1} - x}{x_{k+1} - x_k}\right)
-                        \left(\frac{x - x_k}{x_{k+1} - x_k}\right)\, dx \\
-    &= \frac{1}{h_k^2}\int_{x_k}^{x_{k+1}}(x_{k+1} - x)(x - x_k)\, dx \\
-    &= \frac{1}{h_k^2}\left[\frac{x_{k+1}x^2}{2} - xx_{k+1}x_k
-                            -\frac{x^3}{3} + \frac{x^2x_k}{2}\right]_{x_k}^{x_{k+1}} \\
-    &= \frac{1}{h_k^2}\left[\frac{x_{k+1}^3 - x_k^3}{2} +
-                            \frac{x_{k+1}^2x_k - x_{k+1}x_k^2}{2} +
-                            x_{k+1}x_k^2 - x_{k+1}^2x_k +
-                            \frac{x_k^3 - x_{k+1}^3}{3}\right] \\
-    &= \frac{1}{6h_k^2}\left[3(x_{k+1}^3 - x_k^2) - 2(x_{k+1}^3 - x_k^3)
-                           + 3(x_{k+1}^2x_k - x_{k+1}x_k^2) - 6(x_{k+1}^2x_k + x_{k+1}x_k^2)\right] \\
-    &= \frac{1}{6h_k^2}
-          [\underbrace{x_{k+1}^3 - 3x_{k+1}^2x_k + 3x_{k+1}x_k^2 - x_k^3}_{(x_{k+1} - x_k)^3 = h_k^3}] \\
-    &= \frac{h_k}{6}
-\end{align*}
-
-By symmetry this is the same as the case where $r = 2, s = 1$ Hence the local
-mass matrix has the following form:
+including the value $c$. Therefore as we have already evaluated these integrals
+we can write the local mass matrix directly as:
 
 \begin{equation}\label{eq:oned-deterministic-local-mass}
     M^{(k)} = \frac{h_k}{6}\left[\begin{array}{c c}
@@ -431,7 +389,7 @@ So now if we consider the expression we have for the global stiffness matrix in
              + c\int_0^1\phi_i(x)\phi_j(x)\, dx
 \]
 
-and the moment let's just consider the diagonal elements, corresponding to the
+and for the moment just consider the diagonal elements, corresponding to the
 case where $i = k = j$ then using our new representation above for the global
 basis functions then we have:
 
@@ -454,8 +412,8 @@ basis functions then we have:
 
 Hence the diagonal entries of the global stiffness matrix are given by $A_{k,k}
 = A^{(k-1)}_{2,2} + A^{(k)}_{1,1}$ for $k \in \{1, \ldots, N - 1\}$. Following
-a similar process for $A_{k,k+1}$ and $A_{k,k-1}$ which denote the super
-diagonal and sub diagonal entries respectively we find that:
+a similar process for $A_{k,k+1}$ and $A_{k,k-1}$ which denote the
+superdiagonal and subdiagonal entries respectively we find that:
 
 \begin{align*}
     A_{k,k+1} &= A^{(k)}_{1,2} \\
@@ -477,8 +435,7 @@ be zero. So the global stiffness matrix will take the following form:
         \end{array}\right]
 \end{equation}
 
-\subsection{Assembling the Global Mass
-Matrix}\label{sec:oned-deterministic-global-mass-assembly}
+\subsection{Assembling the Global Mass Matrix}\label{sec:oned-deterministic-global-mass-assembly}
 
 We can follow a very similar process to assembling the global mass matrix as we
 did above, first we note that we can rewrite the global basis functions as we
@@ -530,67 +487,15 @@ rather large linear systems of equations, it is necessary to use a computer to
 construct and solve these linear systems for us.  I have chosen to make use of
 the Python programming language and used the Numpy linear algebra library
 \cite{numpy-array} in order construct and solve the resulting linear system
-discussed above \myref{eq:oned-deterministic-fem} and the results have been
-visualised using the Matplotlib plotting library \cite{matplotlib}.
-
-All problems in this section were run using the following code:
-
-
-
-
-\begin{lstlisting}[caption={Setup code for the Finite Element Method
-                            Implementation},
-                   label={code:oned-deterministic},
-                   language=Python]
-import numpy as np
-from math import sin, cos, pi
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-sns.set_style('whitegrid')
-
-from fem.oned_deterministic import solve_system, L2_error
-
-a, b, c, = # Parameters are set depending on the problem
-
-def u(x):
-    # Exact solution is set depending on the problem
-
-def f(x):
-    # The RHS of the equation is set depending on the problem
-
-errors = []
-XS = np.linspace(0, 1, 512)
-US = [u(x) for x in XS]
-
-for N in [4,8,16,32,64,128,256,512]:
-    # Solve the system
-    xs, U = solve_system(f, N, a, b, c)
-
-    # Calculate the error
-    errors.append((N, L2_error(u, U, N)))
-
-    # Plot one of the results
-    if N == 32:
-        fig, ax = plt.subplots(1)
-        ax.plot(XS, US, c='black', label=r'$u(x) = \sin(\pi x)$')
-        ax.scatter(xs, U, facecolor='red', marker='o', s=50, linewidth=0, label=r'$u^h(x)$', alpha=1)
-        ax.set_xlim(0, 1)
-        ax.set_xlabel(r"$x$", fontsize=18)
-        ax.set_ylim(0, 1.2)
-        ax.set_ylabel(r'$u(x)$', fontsize=18)
-        ax.legend(fontsize=18, loc=0)
-\end{lstlisting}
-
-For full details on how \incode{solve\_system} and \incode{L2\_error} are
-implemented please see Appendix \ref{app:oned-deterministic-code}
+\myref{eq:oned-deterministic-fem} with Matplotlib \cite{matplotlib} used to
+visualise the results.
 
 It is important to verify that any code we write is functioning as we expect it
 to, so for this set of examples we will choose a particular solution to the
-problem, not only can we verify that the code works as intended we can also
-with the exact solution at hand see the rate of convergence.  Picking $u(x) =
-\sin{(\pi x)}$ as our solution and various values for our parameters $a,b,c$ we
-can easily construct the right hand side of the equation.
+problem, so that we can evaluate the error and rate of convergence. Choosing
+$u(x) = \sin{(\pi x)}$ as our solution and various values for our parameters
+$a,b,c$ we can easily construct the corresponding right hand side of the
+equation.
 
 Considering the following cases:
 \begin{itemize}
@@ -608,6 +513,9 @@ and recording the $L^2$ norm of the error at each value of $N$ we obtain the
 plot seen in Figure \ref{fig:oned-deterministic-error}. In Figure
 \ref{fig:oned-deterministic-exact-v-approx} we see the exact solution plotted
 against one of our approximations in the case where $a = 1, b = 0, c = 0$.
+
+For full details on the code that was written in order to obtain these results
+see Appendix \ref{app:oned-deterministic-code}.
 
 \begin{figure}
     \centering

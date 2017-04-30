@@ -1,6 +1,53 @@
 \chapter{One Dimensional Deterministic Code}\label{app:oned-deterministic-code}
 
-Here is the code that implements the Finite Element Method as was described in
-Chapter \ref{chap:oned-deterministic}
+This is the code used to produce the plots shown in Figures
+\ref{fig:oned-deterministic-error} and
+\ref{fig:oned-deterministic-exact-v-approx}.
+\begin{lstlisting}[caption={Setup code for the Finite Element Method
+                            Implementation},
+                   label={code:oned-deterministic},
+                   language=Python]
+import numpy as np
+from math import sin, cos, pi
+import matplotlib.pyplot as plt
+import seaborn as sns
 
+sns.set_style('whitegrid')
+
+from fem.oned_deterministic import solve_system, L2_error
+
+a, b, c, = # Parameters are set depending on the problem
+
+def u(x):
+    # Exact solution is set depending on the problem
+
+def f(x):
+    # The RHS of the equation is set depending on the problem
+
+errors = []
+XS = np.linspace(0, 1, 512)
+US = [u(x) for x in XS]
+
+for N in [4,8,16,32,64,128,256,512]:
+    # Solve the system
+    xs, U = solve_system(f, N, a, b, c)
+
+    # Calculate the error
+    errors.append((N, L2_error(u, U, N)))
+
+    # Plot one of the results
+    if N == 32:
+        fig, ax = plt.subplots(1)
+        ax.plot(XS, US, c='black', label=r'$u(x) = \sin(\pi x)$')
+        ax.scatter(xs, U, facecolor='red', marker='o', s=50, linewidth=0, label=r'$u^h(x)$', alpha=1)
+        ax.set_xlim(0, 1)
+        ax.set_xlabel(r"$x$", fontsize=18)
+        ax.set_ylim(0, 1.2)
+        ax.set_ylabel(r'$u(x)$', fontsize=18)
+        ax.legend(fontsize=18, loc=0)
+\end{lstlisting}
+
+The above code makes use of two important functions \incode{solve\_system} and
+\incode{L2\_error}, the full details on their implementation can be seen in the
+following:
 \lstinputlisting[language=Python]{src/fem/oned_deterministic.py}

@@ -1,7 +1,58 @@
 \chapter{Two Dimensional Deterministic Code}\label{app:twod-deterministic-code}
 
-Here is the code which implements the Finite Element Method as described in
-Chapter \ref{chap:twod-deterministic}
+Here is the code that was used to produce the plot shown in Figure
+\ref{fig:twod-deterministic-error} as seen in Chapter
+\ref{chap:twod-deterministic}
 
+\begin{lstlisting}[language=Python,
+                   caption={Setup code for the 2D Deterministic Finite Element
+                            Method},
+                   label={code:twod-deterministic}]
+import numpy as np
+from math import sin, cos, pi
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_style('whitegrid')
+
+from fem.twod_deterministic import solve_system, L2_error
+
+a, b, c = # Coefficients are set depending on the problem
+
+def u(x,y):
+    # Exact solution is set depending on the problem
+
+def f(x, y):
+    # The RHS of the equation is set depending on the problem
+
+def do_fem(f, a, b, c):
+
+    NS = [4, 8, 16, 32, 64, 128, 256, 512]
+    errors = []
+
+    # For each mesh density
+    for N in NS:
+
+        # Solve the system
+        xs, ys, U = solve_system(f, N, a, b, c)
+
+        # Calculate the error
+        errors.append(L2_error(u, U, N))
+
+        # Plot one of the results
+        if N == 64:
+            fig, ax = plt.subplots(1)
+            p = ax.pcolor(xs, ys, U, cmap='viridis')
+            ax.set_xlabel(r"$x$", fontsize=18)
+            ax.set_ylabel(r"$y$", fontsize=18)
+            fig.colorbar(p)
+            fig.savefig('twod-deterministic-approx.pdf')
+
+    return (NS, errors), fig
+\end{lstlisting}
+
+The above code makes use of two important functions \incode{solve\_system} and
+\incode{L2\_error}, the full details of their implementation can be seen in the
+following:
 \lstinputlisting[language=Python]{src/fem/twod_deterministic.py}
 
