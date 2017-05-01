@@ -130,3 +130,35 @@ def L2_error(u, U, N):
     err = sqrt(h*err)
 
     return err
+
+
+def hat_basis_fn(xkm, xk, xkp):
+
+
+    def phi_k(x):
+
+        if x < xkm or x > xkp:
+            return 0
+
+        if x < xk:
+            return (x - xkm)/(xk - xkm)
+        else:
+            return (xkp - x)/(xkp - xk)
+
+    return phi_k
+
+def hat_basis(a, b, N):
+
+    xs, h = np.linspace(a, b, N+1, retstep=True)
+
+    # A bit of care is needed for x_0
+    bases = [hat_basis_fn(a-h, a, a+h)]
+
+    # Build the middle
+    for k in range(1, N):
+        bases.append(hat_basis_fn(xs[k-1], xs[k], xs[k+1]))
+
+    # And some care is needed for x_N
+    bases.append(hat_basis_fn(b-h, b, b+h))
+
+    return bases

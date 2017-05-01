@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.integrate as integrate
 
+from math import sqrt
 from scipy.sparse import bmat, csr_matrix
 from scipy.sparse.linalg import spsolve
 from fem.oned_deterministic import local_mass_matrix
@@ -8,7 +9,7 @@ from fem.polynomial_chaos import legendre_chaos, eval_chi_s_squared,\
                                 eval_xi_chi_st, read_eigendata
 
 
-def local_diagonal_stiffness_matrix(mu, basis, s, h):
+def local_diagonal_stiffness_matrix(eps, mu, basis, s, h):
     """
     Given the mean of the random process mu, the length of the
     interval h and the number of the legendre polynomial basis
@@ -21,7 +22,7 @@ def local_diagonal_stiffness_matrix(mu, basis, s, h):
 
     A = np.array([[1, -1], [-1, 1]])
 
-    return (mu*chi/h)*A
+    return ((1 + eps*mu) * chi / h) * A
 
 
 def local_off_diag_stiffness_matrix(xk, xk1, beta):
@@ -75,7 +76,7 @@ def assemble_mass_matrix(N, P):
     return bmat(M).tocsc()
 
 
-def assemble_diagonal_stiffness_matrix(N, mu, basis, s):
+def assemble_diagonal_stiffness_matrix(N, eps, mu, basis, s):
     """
     Assemble the sth-sth matrix in the global stiffness matrix
     for given mean mu, resolution N and legendre polynomial index s
@@ -85,7 +86,7 @@ def assemble_diagonal_stiffness_matrix(N, mu, basis, s):
     h = 1/N
 
     # Get the local stiffness matrix
-    A_k = local_diagonal_stiffness_matrix(mu, basis, s, h)
+    A_k = local_diagonal_stiffness_matrix(eps, mu, basis, s, h)
 
     # Construct the 'global' matrix
     A = np.zeros((N - 1, N - 1))
@@ -95,10 +96,11 @@ def assemble_diagonal_stiffness_matrix(N, mu, basis, s):
     A[i == j] = A_k[1, 1] + A_k[0, 0]       # Main diagonal
     A[i == j - 1] = A_k[0, 1]               # Superdiagonal
 
+
     return A
 
 
-def assemble_off_diagonal_stiffness_matrix(N, basis, l, s, t, lmda, beta):
+def assemble_off_diagonal_stiffness_matrix(N, basis, l, s, t, eps, lmda, beta):
     """
     Assemble the sth-tth matrix in the global stiffness matrix
     for given resolution N, legendre polynomial indices s and t
@@ -109,7 +111,7 @@ def assemble_off_diagonal_stiffness_matrix(N, basis, l, s, t, lmda, beta):
     xs = np.linspace(-1, 1, N + 1)
 
     # Evaluate n<<\xi_l\chi_s\chi_t>>
-    coef = lmda * eval_xi_chi_st(basis, l, s, t)
+    coef = (1/3) * eps * sqrt(lmda) * eval_xi_chi_st(basis, l, s, t)
 
     # Construct the 'global' matrix
     A = np.zeros((N - 1, N - 1))
@@ -146,7 +148,7 @@ def assemble_off_diagonal_stiffness_matrix(N, basis, l, s, t, lmda, beta):
     return coef * A
 
 
-def construct_global_stiffness_matrix(N, basis, d, p, mu):
+def construct_global_stiffness_matrix(N, basis, d, p, eps, mu):
     """
     Assemble the global stiffness matrix
     """
@@ -163,11 +165,11 @@ def construct_global_stiffness_matrix(N, basis, d, p, mu):
 
             # Is this matrix on the diagonal
             if s == t:
-                mat = assemble_diagonal_stiffness_matrix(N, mu, basis, s)
+                mat = assemble_diagonal_stiffness_matrix(N, eps, mu, basis, s)
                 Ast[s][t] = mat
             else:
                 mat = sum([assemble_off_diagonal_stiffness_matrix
-                            (N, basis, l, s, t, lambdas[l], betas[l]) for l in range(d)])
+                            (N, basis, l, s, t, eps, lambdas[l], betas[l]) for l in range(d)])
                 Ast[s][t] = csr_matrix(mat)
 
     # Assemble the block matrices into the global matrix
@@ -176,7 +178,7 @@ def construct_global_stiffness_matrix(N, basis, d, p, mu):
     return A.tocsc()
 
 
-def solve_system(N, d, p, mu, f):
+def solve_system(N, d, p, eps, mu, f):
     """
     Construct the global stiffness and mass matrices for the given parameters
     """
@@ -184,15 +186,21 @@ def solve_system(N, d, p, mu, f):
     # Get the basis for the stochastic system
     basis = legendre_chaos(d, p)
     P = len(basis)
-    print(P)
 
     # Approximate f
     xs = np.linspace(-1, 1, N+1)
     F = np.array([f(x) for x in xs])
 
     # Assemble the linear system
-    A = construct_global_stiffness_matrix(N, basis, d, p, mu)
+    A = construct_global_stiffness_matrix(N, basis, d, p, eps, mu)
     M = assemble_mass_matrix(N, P)
 
     # Solve
-    return spsolve(A, M*F)
+    u = spsolve(A, M*F)
+    u = u.reshape((P, N-1))
+
+    U = np.zeros((P, N+1))
+    U[:,1:-1] = u
+
+    return U
+

@@ -5,30 +5,40 @@ this equation:
 
 \begin{equation}\label{eq:twod-stochastic}
   \begin{aligned}
-      -\nabla\cdot\left[\kappa(\v{x};\omega)\cdot\nabla u(\v{x};\omega) \right]
+      -\nabla\cdot\left[a(\v{x};\omega)\cdot\nabla u(\v{x};\omega) \right]
       &= f(\v{x})\, &\v{x} \in D = [-1,1] \times [-1,1]\, \omega \in \Omega \\
       u(\v{x};\omega) &= 0\, &\v{x} \in \partial D = \Gamma\, \omega \in \Omega
   \end{aligned}
 \end{equation}
 
-where $\Gamma = (\{-1,1\} \times [-1,1]) \cup ([-1,1] \times \{-1, 1\})$ and
-$\Omega$ is a probability space. As with the previous stochasitc case in
-Chapter \ref{chap:oned-stochastic} we will follow a similar process to the
-deterministic case as we saw in Chapter \ref{chap:twod-deterministic} to
-discretise the physical space while following methods outlined in
-\cite{general-poly-chaos} to construct a finite dimensional approximation to
-the probability space.
+where $\Gamma = (\{-1,1\} \times [-1,1]) \cup ([-1,1] \times \{-1, 1\})$.  As
+with the previous stochastic case we will be following a similar process to the
+original two dimensional case in order to discretise the physical space. Then
+following methods outlined in \cite{general-poly-chaos} to construct a finite
+dimensional approximation to elements in the probability space.
 
 \section{Weak Formulation}
 
-\todo[inline]{Give real definitions for $V$ and $W$}
+In order to obtain the weak formulation we take the inner product of
+\myref{eq:twod-stochastic} with a function $w$ from a \textit{test space} $W$
+and in this sense the weak solution is given by a function $u$ from our
+\textit{trial space} $V$ which satisfies the resulting equation $\forall w \in
+W$. As with the previous case, our test and trial spaces are given by:
 
-Obtaining the weak forumulation, we multiply through with $w \in W$ and
-integrate over the domain:
+\begin{equation}
+    \begin{array}{c c}
+        V = H^1_0(D) \otimes L^2(\Omega) &
+        W = H^1_0(D) \otimes L^2(\Omega)
+    \end{array}
+\end{equation}
+
+where $H^1_0(D)$ is as defined as the closure of $C_0^\infty(D)$ with respect
+to the Sobolev space norm \ref{eq:twod-H1-D-norm} and $L^2(\Omega)$ as defined
+in Definition \ref{eq:L2-Omega}. So multiplying through by $w \in W$ we obtain:
 
 \begin{equation}
     -\int_{\Omega}\int_D(\nabla\cdot\left[
-        \kappa(\v{x};\omega)\cdot\nabla u(\v{x};\omega)\right]
+        a(\v{x};\omega)\cdot\nabla u(\v{x};\omega)\right]
     w(\v{x};\omega))\, d\v{x}\, d\Omega =
         \int_{\Omega}\int_Df(\v{x})w(\v{x};\omega)\, d\v{x}\, d\Omega
 \end{equation}
@@ -37,8 +47,8 @@ If we apply Green's first integral identity we obtain:
 
 \begin{equation}
     -\int_{\Omega}\left(\int_{\Gamma}\underbrace{\frac{\partial}{\partial n}
-        \left[\kappa(x;\omega)\cdot\nabla u(x;\omega)\right]}_{=0}\, d\Gamma
-      -\int_D \kappa(x;\omega)\cdot\nabla u(x;\omega)\cdot\nabla w(x;\omega)
+        \left[a(x;\omega)\cdot\nabla u(x;\omega)\right]}_{=0}\, d\Gamma
+      -\int_D a(x;\omega)\cdot\nabla u(x;\omega)\cdot\nabla w(x;\omega)
       w(x;\omega)\, d\v{x}
   \right)\, d\Omega
 \end{equation}
@@ -47,7 +57,7 @@ where the integral on $\Gamma$ is zero as elements in $W$ are zero on the
 boundary. Therefore the weak form of the problem is given by:
 
 \begin{equation}\label{eq:twod-stochastic-wk}
-    \int_{\Omega}\int_D\kappa(x;\omega)\nabla u(x;\omega)\cdot\nabla
+    \int_{\Omega}\int_Da(x;\omega)\nabla u(x;\omega)\cdot\nabla
     w(x;\omega)\, d\v{x}\, d\Omega =
     \int_{\Omega}\int_D f(\v{x})w(x;\omega)\, d\v{x}\, d\Omega
 \end{equation}
@@ -117,7 +127,6 @@ The Legendre Polynomials obey the following orthogonality relation:
     \expect{\chi_s\chi_t} = \expect{\chi_s}^2\delta_{st}
 \end{equation}
 
-where as stated in \cite{poly-bible} $\expect{\chi_s}^2 = \frac{2}{2s + 1}$.
 With an appropriate basis chosen we can then approximate a random process as
 follows:
 
@@ -147,16 +156,25 @@ The KL Expansion allows us to write a second order random process as follows:
 See Section \ref{sec:oned-stochastic-kl-expansion} for an introduction to the
 KL-Expansion.
 
-In this case we proceed in a similar fashion to the one dimensional case
-however we now consider the following correlation function:
+In this case we proceed in a similar fashion to the one dimensional case where
+we assume that $a(\v{x};\omega)$ has the following form:
+
+\begin{equation}
+    a(\v{x};\omega) = 1 + \epsilon\kappa(\v{x};\omega)
+\end{equation}
+
+where $\epsilon < 1$ is a small parameter and $\kappa(\v{x};\omega)$ is
+uniformly distributed taking values between $a$ and $b$ with mean $\mu$,
+variance $\sigma^2$ with correlation function given by:
 
 \begin{equation}
     C(\v{x}, \v{y}) =
         \sigma^2\exp{\left(-\frac{|x_1 - y_1|}{k_1} - \frac{|x_2 - y_2|}{k_2}\right)}
 \end{equation}
 
-where for simplicity we will set $k_1 = 0 = k_2$ then to find the
-eigenvalues/eigenfunctions means solving the following integral equation:
+where for simplicity we will set the correlation lengths $k_1, k_2$ to be $1$
+then to find the eigenvalues/eigenfunctions means solving the following
+integral equation:
 
 \begin{equation}\label{eq:twod-stochastic-kl-eigenvalue-problem}
     \sigma^2\int_D\exp(-|x_1 - y_1| - |x_2 - y_2|)\beta_n(\v{y})\, d\v{x}
@@ -168,25 +186,26 @@ to a system of one dimensional problems:
 
 \begin{align}
     \begin{split}
-        \sigma^2\int_{-1}^1\exp(-|x_1 - y_2|)\beta^1_i(y)\, dy &= \lambda^1_i\beta^1_i(x) \\
-        \sigma^2\int_{-1}^1\exp(-|x_2 - y_2|)\beta^2_i(y)\, dy &= \lambda^2_i\beta^2_i(x) \\
+        \sigma^2\int_{-1}^1\exp(-|x_1 - y_1|)\beta^1_i(y_1)\, dy_1 &= \lambda^1_i\beta^1_i(x_1) \\
+        \sigma^2\int_{-1}^1\exp(-|x_2 - y_2|)\beta^2_i(y_2)\, dy_2 &= \lambda^2_i\beta^2_i(x_2) \\
     \end{split}
 \end{align}
 
 where solutions to the original problem
 \myref{eq:twod-stochastic-kl-eigenvalue-problem} are given by $\lambda_n =
 \lambda^1_i\lambda^2_j$ and $\beta_n(\v{x}) = \beta^1_i(x_1)\beta^2_j(x_2)$ for
-each $i, j \in \mathbb{N}$. Since in our particular problem the domain is $[-1,
-1] \times [-1, 1]$ we can reuse our results from earlier, using a combination
-of Listing \ref{code:matlab-eigen} and Listing
-\ref{code:python-reconstruct-eigen} to find each of the $\lambda_i^k$,
-$\beta_i^k$, for $i \in \mathbb{N}$, $k \in \{1, 2\}$.
+each $i, j \in \mathbb{N}$. Since the domain is $[-1, 1] \times [-1, 1]$ we can
+reuse our results from earlier, using a combination of Listing
+\ref{code:matlab-eigen} and Listing \ref{code:python-reconstruct-eigen} to find
+each of the $\lambda_i^k$, $\beta_i^k$, for $i \in \mathbb{N}$, $k \in \{1,
+2\}$.
 
-Therefore we may write $\kappa(\v{x};\omega)$ as:
+Therefore we may approximate $a(\v{x};\omega)$ by:
 
 \begin{equation}\label{eq:twod-stochastic-kl-kappa}
-    \kappa(\v{x};\omega) =
-    \mu + \sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(\v{x})\xi_l(\omega)
+    a(\v{x};\omega) \approx 1 + \epsilon\left(
+        \mu + \sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(\v{x})\xi_l(\omega)
+    \right)
 \end{equation}
 
 \subsection{Derivation of the Global System of Equations}
@@ -201,10 +220,61 @@ in \myref{eq:twod-stochastic-wk}. Also including our expansions
 \begin{align}
   \begin{split}
     \int_\Omega\int_D
-      \left(\mu + \sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(\v{x})\xi_l(\omega)\right)
+    \left[1 + \epsilon\left(\mu +
+  \sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(\v{x})\xi_l(\omega)\right)\right]
       &\nabla\left(\sum_{j=0}^M\sum_{s=0}^Pu_{r,s}\chi_s(\omega)\phi_j(\v{x})\right)
-      \cdot\nabla\left(\chi_t(\omega)\phi_i(\v{x})\right), d\v{x}\, d\Omega \\
+      \cdot\nabla\left(\chi_t(\omega)\phi_i(\v{x})\right)\, d\v{x}\, d\Omega \\
       &= \int_\Omega\int_D\left(\sum_{j=0}^Mf_j\phi_j(\v{x})\right)
         \chi_t(\omega)\phi_i(\v{x})\, d\v{x}\, d\Omega
   \end{split}
 \end{align}
+
+By the linearity of the integral and differential operator and using our
+notation for the expectation \myref{eq:oned-stochastic-expect-notation} we may
+write this as:
+
+\begin{align}\label{eq:twod-stochastic-discrete}
+  \begin{split}
+      \sum_{j=0}^M\sum_{s=1}^Pu_{j,s}\left[(1 + \epsilon\mu)\expect{\chi_s\chi_t}
+      \left(\int_D\nabla\phi_j(\v{x})\cdot\nabla\phi_i(\v{x})\, d\v{x}\right) +
+      \epsilon\sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
+      \left(\int_D\beta_l(\v{x})\nabla\phi_j(\v{x})\cdot\nabla\phi_i(\v{x})\, d\v{x}\right)\right] \\
+      \expect{\chi_t}\sum_{j=0}^Mf_j\left(\int_D\phi_j(\v{x}x)\phi_i(\v{x})\right)
+  \end{split}
+\end{align}
+
+for each $j \in \{0,\ldots,M\}$ and each $t \in \{1, \ldots, P\}$. Similarly to
+the deterministic case, due to the homogeneous boundary condition in
+\myref{eq:twod-stochastic} we can remove the terms associated with the boundary
+nodes. Then by defining the $i$-th, $j$-th component of the matrix $A_{s,t}$ to
+be the terms in the square brackets of \myref{eq:twod-stochastic-discrete} and
+defining the $i$-th, $j$-th component of the matrix $M_t$ to be the bracketed
+terms on the right hand side, we obtain the following matrix equation:
+
+\begin{equation}
+    \sum_{j=1}^{(N-1)^2}\sum_{s=1}^P(A_{s,t})_{i,j}u_{s,j} =
+    \sum_{j=0}^M(M_t)_{i,j}f_j
+\end{equation}
+
+for $i \in \{1, \ldots, (N-1)^2\}$ and $t \in \{1,\ldots,P\}$. This defines a
+$(N-1)^2P \times (N-1)^2P$ system of linear equations $A\v{u} = M\v{f}$ in
+which the global stiffness matrix $A$ takes the following block form:
+
+\begin{equation}
+    A = \left[\begin{array}{c c c}
+        A_{1,1} & \cdots & A_{1,P} \\
+        \vdots & & \vdots \\
+        A_{P,1} & \cdots & A_{P,P}
+    \end{array}\right]
+\end{equation}
+
+where $A_{s,t}$ are $(N-1)^2 \times (N-1)^2$ matrices. Similarly the global
+mass matrix $M$ takes the block form:
+
+\begin{equation}
+    M = \left[\begin{array}{c}
+            M_1 \\ \vdots \\ M_P
+    \end{array}\right]
+\end{equation}
+
+where $M_t$ are $(N+1)^2 \times (N-1)^2$ matrices.

@@ -5,7 +5,7 @@ we introduce some form of uncertainty in the coefficients of the equation:
 
 \begin{equation}\label{eq:oned-stochastic}
   \begin{aligned}
-      -\frac{d}{dx}\left[\kappa(x;\omega)\frac{d}{dx}u(x;\omega)\right] &= f(x)\,
+      -\frac{d}{dx}\left[a(x;\omega)\frac{d}{dx}u(x;\omega)\right] &= f(x)\,
                               &x \in  D = [-1,1]\, \omega \in \Omega \\
     u(x;\omega) &= 0 &x \in \partial D = \{-1,1\}\, \omega \in \Omega
   \end{aligned}
@@ -29,9 +29,9 @@ of the solution process $u(x;\omega)$
 
 As with the deterministic cases, we first need to obtain the weak formulation
 of the problem, which involves taking the inner product of
-\myref{eq:oned-stochastic} with a function $v$ from a \textit{test space} $W$.
+\myref{eq:oned-stochastic} with a function $w$ from a \textit{test space} $W$.
 With the weak solution being a function $u$ from a \textit{trial space} $V$
-which satisfies the resulting equation $\forall v \in W$.
+which satisfies the resulting equation $\forall w \in W$.
 
 In this case our function spaces not only have to admit functions on the
 physical domain but on the probability spaces also, hence the trial and test
@@ -45,15 +45,13 @@ spaces are given by:
 \end{equation}
 
 Just as in Chapter \ref{chap:oned-deterministic} $H^1_0(D)$ refers to the
-closure of $C_0^\infty(D)$ with respect to the Sobloev space norm
+closure of $C_0^\infty(D)$ with respect to the Sobolev space norm
 \myref{eq:oned-H1-D-norm} and $L^2(\Omega)$ is as defined in Definition
-\ref{def:L2-Omega}.
-
-So multiplying through by $w \in W$ and integrate over the
-domain.
+\ref{def:L2-Omega}. Multiplying through by $w \in W$ and integrating over
+$\Omega \times D$ we obtain:
 
 \begin{equation}
-    -\int_{\Omega}\int_{-1}^1\left(\frac{d}{dx}\left[\kappa(x;\omega)\frac{d}{dx}u(x;\omega)\right]
+    -\int_{\Omega}\int_{-1}^1\left(\frac{d}{dx}\left[a(x;\omega)\frac{d}{dx}u(x;\omega)\right]
     w(x;\omega)\right)\, dx\, d\Omega = \int_{\Omega}\int_{-1}^1 f(x)w(x;\omega)\, dx\, d\Omega
 \end{equation}
 
@@ -61,9 +59,9 @@ Proceeding with integration by parts
 
 \begin{equation}
     -\int_{\Omega}\left(
-      \underbrace{\left[\kappa(x;\omega)\frac{d}{dx}u(x;\omega)
+      \underbrace{\left[a(x;\omega)\frac{d}{dx}u(x;\omega)
                         w(x;\omega)\right]_{-1}^1}_{= 0}
-       -\int_{-1}^1\kappa(x;\omega)\frac{d}{dx}u(x;\omega)\frac{d}{dx}w(x;\omega)\, dx
+       -\int_{-1}^1a(x;\omega)\frac{d}{dx}u(x;\omega)\frac{d}{dx}w(x;\omega)\, dx
     \right)\, d\Omega = \int_{\Omega}\int_{-1}^1 f(x)w(x;\omega)\, dx\, d\Omega
 \end{equation}
 
@@ -71,7 +69,7 @@ where the underbraced term is zero as the elements of $W$ are zero at the
 endpoints of the domain. Hence the weak form of this equation is given by:
 
 \begin{equation}\label{eq:wk-one-d-stochastic}
-    \int_{\Omega}\int_{-1}^1\kappa(x;\omega)
+    \int_{\Omega}\int_{-1}^1a(x;\omega)
            \frac{d}{dx}u(x;\omega)\frac{d}{dx}w(x;\omega)\, dx\, d\Omega =
            \int_{\Omega}\int_{-1}^1 f(x)w(x;\omega)\, dx\, d\Omega
 \end{equation}
@@ -97,14 +95,13 @@ will have length $h = 1/N$ and we can define our discretisation as follows:
     D^h = \bigcup_{i=0}^{N - 1}I_i
 \]
 
-Upon which we can define finite dimensional subspaces of $V$ and $W$:
+Upon which we can define a finite dimensional subspace of $H^1_0(D)$:
 
-\begin{align*}
-    V^h &= \{v \in V : v \text{ is linear on } I_i,\ i \in \{0,\ldots,N-1\},
-                    \  v \text{ is continuous on } [-1,1]\} \\
-    W^h &= \{w \in W : w \text{ is linear on } I_i,\ i \in \{0,\ldots,N-1\},
-                    \  w \text{ is continuous on } [-1,1]\}
-\end{align*}
+\begin{equation}
+    \left(H_0^1(D)\right)^h =
+        \{v \in H^1_0(D) : v \text{ is linear on } I_i,\ i \in \{0,\ldots,N-1\},
+                        \  v \text{ is continuous on } [-1,1]\}
+\end{equation}
 
 Then we can choose the `hat functions' as our basis again which are defined
 just as they were in \myref{eq:one-d-hat-basis} hence we can approximate $f(x)$
@@ -157,7 +154,7 @@ Once the set of polynomials have been determined you can approximate a random
 process as follows:
 
 \begin{equation}
-    \omega(\theta) = \sum_{s=0}^P\omega_s\chi_s(\theta)
+    \omega(\theta) = \sum_{s=1}^P\omega_s\chi_s(\theta)
 \end{equation}
 
 where $P = (d + p)!/d!p!$ and $d$ denotes the dimensionality of the
@@ -183,13 +180,24 @@ Then the set of basis polynomials in this case would be given by:
   \end{array}
 \end{equation}
 
+With an appropriate basis chosen we can now define a finite dimensional
+subspace to the probability space $L^2(\Omega)$:
 
-Therefore we may now rewrite our approximation to the solution process
+\begin{equation}
+    \left(L^2(\Omega)\right)^P = span\{\chi_1, \ldots, \chi_P\}
+\end{equation}
+
+which allows us to rewrite our approximation to the solution process
 \myref{eq:oned-stochastic-uh} as follows:
 
 \begin{equation}\label{eq:oned-stochastic-uhp}
     u^{h,P}(x;\omega) = \sum_{j=0}^N\sum_{s=1}^Pu_{j,s}\chi_s(\xi)\phi_j(x)
 \end{equation}
+
+where $u^{h,P} \in V^{h,P} = \left(H^1_0(D)\right)^h \otimes
+\left(L^2(\Omega)\right)^P$. In a similar manner we can also construct a finite
+dimensional approximation to members of the test space $W$ as
+$W^{h,P} = \left(H^1_0(D)\right)^h \otimes \left(L^2(\Omega)\right)^P$
 
 \subsection{The Karhunen-Loeve Expansion}\label{sec:oned-stochastic-kl-expansion}
 
@@ -210,7 +218,7 @@ where:
     \item $\lambda_n$, $\beta_n(\v{x})$ denote the eigenvalues/eigenfunctions
           of the following eigenvalue problem:
           \[
-                \int_DC(\v{x}_1, \v{x}_2)\beta(\v{x})\, d\v{x}_1
+                \int_DC(\v{x}_1, \v{x}_2)\beta(\v{x}_1)\, d\v{x}_1
                 = \lambda\beta(\v{x}_2)
           \]
           where $C(\v{x}_1,\v{x}_2)$ denotes the correlation function of the
@@ -225,11 +233,16 @@ minimised.
 
 Of course since this representation requires that we know the correlation
 function of the random process so this will only be useful for expanding the
-term $\kappa(x;\omega)$ in \myref{eq:oned-stochastic}.
+term $a(x;\omega)$ in \myref{eq:oned-stochastic}.  For the purposes of this
+project we assume that $a(x;\omega)$ can be written as:
 
-For the purposes of this project we will assume that $\kappa(x;\omega)$ is
-uniformly distributed between the values $a$ and $b$ with mean $\mu$,
-variance $\sigma^2$ and correlation function given by:
+\begin{equation}
+    a(x;\omega) = 1 + \epsilon\kappa(x;\omega)
+\end{equation}
+
+where $\epsilon < 1$ is a small parameter and  $\kappa(x;\omega)$ is
+uniformly distributed taking values between $a$ and $b$ with mean $\mu$,
+variance $\sigma^2$ with correlation function given by:
 
 \begin{equation}
     C(x, y) = \sigma^2\exp\left(-\frac{|x - y|}{k}\right)
@@ -245,19 +258,20 @@ integral equation:
 
 A detailed discussion on finding the eigenvalues/eigenfunctions above can be
 found in \cite{stochastic-fem} but solving this numerically will be sufficient
-for our purposes. Therefore we will be able to approximate $\kappa(x;\omega)$
+for our purposes. Therefore we will be able to approximate $a(x;\omega)$
 as follows:
 
 \begin{equation}\label{eq:oned-stochastic-kl-kappa}
-    \kappa(x;\omega) \approx
+    a(x;\omega) \approx 1 + \epsilon\left(
         \mu + \sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\beta_l(x)\xi_l(\omega)
+    \right)
 \end{equation}
 
 \subsubsection{Obtaining a Numeric Representation of the KL Expansion}
 
 Unfortunately I was unable to find an existing method to numerically solve
-\myref{eq:oned-stochastic-kle-eigenvalue-problem} using Python however this is
-a relatively easy problem to solve in Matlab once you make use of the
+\myref{eq:oned-stochastic-kle-eigenvalue-problem} using Python. Fortunately
+this is a relatively easy problem to solve in Matlab with the use of the
 \textit{Chebfun} numerical computation library \cite{chebfun}. The Matlab code
 which solves this problem can be found in Listing \ref{code:matlab-eigen}.
 
@@ -283,19 +297,19 @@ end
 The results from running the above code with $k = 5$ can be found as part of
 Appendix \ref{app:poly-chaos-code} in Table \ref{tab:eigenvalue-data}
 
-In order to be able to use the results from Matlab in the remaining Python
+In order to use these results from Matlab with our Python
 code, we require a brief discussion of how the \textit{Chebfun} library
 represents mathematical functions. As stated in \cite{chebfun-data}, the
 fundamental data structure \incode{chebfun} is a numerical representation of a
 function $f$ using a set of numbers $\{f_0, \ldots, f_N\}$ where $f_j = f(x_j)$
 , $j \in \{0, \ldots, N\}$ where the $x_j$ are particular points in the domain
-called Chebyshev points. When the $f_j$ are used in conjunction with
-\textit{baycentric interpolation} one can achieve a good, fast and stable
+called Chebyshev points. The $f_j$ are then used with an interpolation method
+called \textit{barycentric interpolation} which achieves a good, fast and stable
 approximation to $f$.
 
-Therefore in order to use the Matlab results in our Python we simply need to
+Therefore in order to import the  Matlab results we simply need to
 export the $f_j$, $x_j$ of each of the eigenfunctions we find. Then by using
-the \incode{BarycentricInterpolator} that is part of the \textit{scipy} library
+the \incode{BarycentricInterpolator} which is part of the \textit{scipy} library
 \cite{scipy} we can reconstruct the functions in our Python code. The code
 which performs this reconstruction can be found in Listing
 \ref{code:python-reconstruct-eigen}.
@@ -359,23 +373,26 @@ correct results.
 
 \subsection{Derivation of Global System of Equations}
 
-Since the weak formulation \myref{eq:wk-one-d-stochastic} has to be satisifed
+Since the weak formulation \myref{eq:wk-one-d-stochastic} has to be satisfied
 $\forall w \in W$ it must in particular hold for the basis functions. So by
 using the expansions \myref{eq:oned-stochastic-uhp},
 \myref{eq:oned-stochastic-f-approx} and \myref{eq:oned-stochastic-kl-kappa} and
 choosing $w = \phi_i(x)\chi_t(x)$ for each $i = \{0,\ldots,N\}$ and each $t =
-\{0,\ldots,P\}$ and substituting into \myref{eq:wk-one-d-stochastic} we
+\{1,\ldots,P\}$ and substituting into \myref{eq:wk-one-d-stochastic} we
 obtain:
 
-\begin{align*}
+\begin{align}
+  \begin{split}
     \int_{\Omega}\int_{-1}^1
-      \left(\mu + \sum_{l=1}^d\sqrt{\lambda_l}\beta_l(x)\xi_l(\omega)\right)
+    \left[1 + \epsilon\left(\mu +
+        \sum_{l=1}^d\sqrt{\lambda_l}\beta_l(x)\xi_l(\omega)\right)\right]
       \frac{d}{dx}\left(\sum_{j=0}^N\sum_{s=1}^Pu_{s,j}\phi_j(x)\chi_s(\omega)\right)
       \phi_i'(x)\chi_t(\omega)\, dx\, d\Omega \\ =
     \int_{\Omega}\int_{-1}^1
       \left(\sum_{j=0}^Nf_j\phi_j(x)\right)
       \phi_i(x)\chi_t(\omega)\, dx\, d\Omega
-\end{align*}
+  \end{split}
+\end{align}
 
 Then by the linearity of the integral and differential operator and taking
 advantage of our notation for the expectation
@@ -383,10 +400,10 @@ advantage of our notation for the expectation
 
 \begin{align}\label{eq:oned-stochastic-discrete}
   \begin{split}
-      \sum_{j=0}^N\sum_{s=0}^Pu_{s,j}\left[
-          \mu\expect{\chi_s\chi_t}
+      \sum_{j=0}^N\sum_{s=1}^Pu_{s,j}\left[
+          (1 + \epsilon\mu)\expect{\chi_s\chi_t}
           \int_{-1}^1\phi_j'(x)\phi_i'(x)\, dx +
-          \sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
+          \epsilon\sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
           \left(\int_{-1}^1 \beta_l(x)\phi_j'(x)\phi_i'(x)\, dx\right)
       \right]\\ =
       \expect{\chi_t}\sum_{j=0}^Nf_j
@@ -394,7 +411,7 @@ advantage of our notation for the expectation
   \end{split}
 \end{align}
 
-for each $j \in \{0,\ldots,N\}$ and each $t \in \{0,\ldots,P\}$. Just as in the
+for each $j \in \{0,\ldots,N\}$ and each $t \in \{1,\ldots,P\}$. Just as in the
 deterministic case, we know the solution at the endpoints due to the boundary
 conditions on the problem \myref{eq:oned-stochastic} hence we can remove the
 terms associated with $j = 0$ and $j = N$ from the system of equations. Then by
@@ -404,13 +421,13 @@ $j$-th component of the matrix $M_{t}$ to be the bracketed terms on the right
 hand side, we obtain the following:
 
 \begin{equation}
-    \sum_{j=1}^{N - 1}\sum_{s=0}^P(A_{s,t})_{i,j}u_{s,j} =
+    \sum_{j=1}^{N - 1}\sum_{s=1}^P(A_{s,t})_{i,j}u_{s,j} =
     \sum_{j=0}^N(M_t)_{i,j}f_j
 \end{equation}
 
-for $i \in \{1,\ldots,N - 1\}$ and $t \in \{0,\ldots,P\}$. Which defines a
+for $i \in \{1,\ldots,N - 1\}$ and $t \in \{1,\ldots,P\}$. This defines a
 $(N - 1)P \times (N - 1)P$ system of linear equations $A\v{u} = M\v{f}$ in
-which the global stiffness matrix $A$ takes the following form:
+which the global stiffness matrix $A$ takes the following block form:
 
 \begin{equation}
     A = \left[\begin{array}{c c c}
@@ -420,8 +437,8 @@ which the global stiffness matrix $A$ takes the following form:
         \end{array}\right]
 \end{equation}
 
-where each $A_{s,t}$ are $(N - 1) \times (N - 1)$ matrices. Similarly the
-global mass matrix $M$ takes the form:
+where $A_{s,t}$ are $(N - 1) \times (N - 1)$ matrices. Similarly the
+global mass matrix $M$ takes the block form:
 
 \begin{equation}
     M = \left[\begin{array}{c}
@@ -431,7 +448,7 @@ global mass matrix $M$ takes the form:
         \end{array}\right]
 \end{equation}
 
-where each $M_t$ are $(N - 1) \times (N + 1) $ matrices.
+where $M_t$ are $(N - 1) \times (N + 1) $ matrices.
 
 \section{Constructing the Global System}
 
@@ -443,13 +460,13 @@ form of each of the smaller matrices $A_{s,t}$ and $M_{s,t}$
 \subsubsection{Matrices on the Diagonal}
 
 By setting $s=t$ in \myref{eq:oned-stochastic-discrete} we obtain the following
-expression for the entries of the matrices sitting on the diagonal of the
+expression for the entries of the matrices on the diagonal of the
 global stiffness matrix:
 
 \begin{equation}
-    A_{s,s} = \sum_{j=1}^{N-1}\left(\mu\expect{\chi_s^2}
+    A_{s,s} = \sum_{j=1}^{N-1}\left((1 + \epsilon\mu)\expect{\chi_s^2}
         \int_{-1}^1 \phi_j'(x)\phi_i'(x)\, dx
-       + \sum_{l=1}^d\sqrt{\lambda_n}\expect{\xi_l\chi_s^2}
+       + \epsilon\sigma^2\sum_{l=1}^d\sqrt{\lambda_n}\expect{\xi_l\chi_s^2}
        \int_{-1}^1 \beta_l(x)\phi_j'(x)\phi_i'(x) \, dx\right)
 \end{equation}
 
@@ -459,20 +476,21 @@ $\xi_l$ is an odd function their product is odd therefore, as we are integrating
 over a symmetric domain, this quantity vanishes. Hence the above reduces to:
 
 \begin{equation}
-    A_{s,s} = \mu\expect{\chi_s^2}\sum_{j=1}^{N - 1}\left(\int_{-1}^1
+    A_{s,s} = (1 + \epsilon\mu)\expect{\chi_s^2}\sum_{j=1}^{N - 1}\left(\int_{-1}^1
                 \phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
 
 for each $i \in \{1,\ldots,N-1\}$. As the quantity $\mu\expect{\chi_s^2}$ is
 fully deterministic and scalar we can treat this in a similar manner to the
 deterministic case in  Chapter \ref{chap:oned-deterministic}. By setting $a =
-\mu\expect{\chi_s^2}, b = 0, c = 0$ in \myref{eq:oned-deterministic-discrete}
-and following a similar argument as outlined in Section
-\ref{sec:oned-deterministic-local-stiffness} we obtain the following form of
-the local stiffness matrix $A_{s,s}^{(k)}$:
+(1 +\epsilon\mu)\expect{\chi_s^2}, b = 0, c = 0$ in
+\myref{eq:oned-deterministic-discrete} and following a similar argument as
+outlined in Section \ref{sec:oned-deterministic-local-stiffness} we obtain the
+following form of the local stiffness matrix $A_{s,s}^{(k)}$:
 
 \begin{equation}\label{eq:oned-stochasic-local-stifness-diag}
-    A_{s,s}^{(k)} = \frac{\mu\expect{\chi_s^2}}{h_k}\left[\begin{array}{c c}
+    A_{s,s}^{(k)} = \frac{(1 + \epsilon\mu)\expect{\chi_s^2}}{h_k}
+              \left[\begin{array}{c c}
                 1 & -1 \\ -1 & 1
               \end{array}\right]
 \end{equation}
@@ -488,9 +506,9 @@ Now if we consider the case where $s \neq t$ in
 \myref{eq:oned-stochastic-discrete} we obtain:
 
 \begin{equation}\label{eq:oned-stochastic-off-diagonal-stiffness}
-    A_{s,t} = \sum_{j=1}^{N - 1}\left(\mu\expect{\chi_s\chi_t}
+    A_{s,t} = \sum_{j=1}^{N - 1}\left((1 + \epsilon)\mu\expect{\chi_s\chi_t}
         \int_{-1}^1 \phi_j'(x)\phi_i'(x)\, dx
-       + \sum_{l=1}^d\sqrt{\lambda_n}\expect{\xi_l\chi_s\chi_t}
+       + \epsilon\sum_{l=1}^d\sqrt{\lambda_n}\expect{\xi_l\chi_s\chi_t}
        \int_{-1}^1 \beta_l(x)\phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
 
@@ -500,7 +518,7 @@ and we are left with:
 
 \begin{equation}
     A_{s,t} = \sum_{j=1}^{N - 1}\left(
-        \sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
+        \epsilon\sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
             \int_{-1}^1\beta_l(x)\phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
 
@@ -511,15 +529,15 @@ matrices are comprised of $d$ matrices which are summed together. Let's for a
 moment just consider one of these:
 
 \begin{equation}
-    \sum_{j=1}^{N - 1}\left(\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
+    \sum_{j=1}^{N - 1}\epsilon\left(\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
         \int_{-1}^1\beta_l(x)\phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
 
-The quantity $\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}$ is deterministic and
-a scalar which we can easily evaluate, so focusing on the integral, we know
-from Section \ref{sec:oned-deterministic-global-construct} that we can rewrite
-each of the global basis functions $\phi_i,\phi_j$ locally in each subinterval
-in terms of \myref{eq:oned-deterministic-psi-1} and
+The quantity $\epsilon\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}$ is
+deterministic and a scalar which we can easily evaluate, so focusing on the
+integral, we know from Section \ref{sec:oned-deterministic-global-construct}
+that we can rewrite each of the global basis functions $\phi_i,\phi_j$ locally
+in each subinterval in terms of \myref{eq:oned-deterministic-psi-1} and
 \myref{eq:oned-deterministic-psi-2}, so for the off diagonal matrices the local
 stiffness matrix is given by:
 
@@ -581,8 +599,8 @@ over the probability space:
 \begin{align}
   \begin{split}
     \mathbb{E}\left[u^{h,P}\right] = \expect{u^{h,P}} &=
-    \int_\Omega\sum_{j=0}^N\sum_{s=0}^Pu_{j,s}\phi_j(x)\chi_s(\omega)\, d\Omega \\
-    &= \sum_{j=0}^Nu_{j,s}\phi_j(x)\sum_{s=0}^P\int_\Omega\chi_s(\omega)\, d\Omega \\
+    \int_\Omega\sum_{j=0}^N\sum_{s=1}^Pu_{j,s}\phi_j(x)\chi_s(\omega)\, d\Omega \\
+    &= \sum_{j=0}^Nu_{j,s}\phi_j(x)\sum_{s=1}^P\int_\Omega\chi_s(\omega)\, d\Omega \\
     &= \sum_{j=0}^Nu_{j,0}\phi_j(x)
   \end{split}
 \end{align}
@@ -604,12 +622,12 @@ The variance of our approximation to the solution process is given by:
   \begin{split}
     Var(u^{h,P}) &= \mathbb{E}\left[\left(u^{h,P}\right)^2\right]
                     - \left(\mathbb{E}\left[u^{h,P}\right]\right)^2 \\
-      &= \int_\Omega\left(\sum_{j=1}^{N - 1}\sum_{s=0}^Pu_{j,s}\phi_j(x)\chi_s(\omega)\right)^2\, d\Omega
+      &= \int_\Omega\left(\sum_{j=1}^{N - 1}\sum_{s=1}^Pu_{j,s}\phi_j(x)\chi_s(\omega)\right)^2\, d\Omega
         - \left(\sum_{j=1}^{N - 1}u_{j,0}\phi_j(x)\right)^2 \\
-      &= \int_\Omega\left(\sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=0}^P\sum_{s=0}^P
+      &= \int_\Omega\left(\sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=1}^P\sum_{s=1}^P
            u_{j,s}u_{i,t}\phi_j(x)\phi_i(x)\chi_s(\omega)\chi_t(\omega)
          \right)\, d\Omega - \left(\sum_{j=1}^{N - 1}u_{j,0}\phi_j(x)\right)^2 \\
-      &= \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=0}^P\sum_{t=0}^Pu_{j,s}u_{i,t}
+      &= \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=1}^P\sum_{t=0}^Pu_{j,s}u_{i,t}
             \phi_j(x)\phi_i(x)\int_\Omega\chi_s(\omega)\chi_t(\omega)\, d\Omega
             - \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}u_{i,0}u_{j,0}\phi_j(x)\phi_i(x)
   \end{split}
@@ -620,7 +638,7 @@ $\chi_s$ the above reduces to:
 
 \begin{align}
   \begin{split}
-    Var(u^{h,P}) &= \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=0}^P
+    Var(u^{h,P}) &= \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=1}^P
       u_{j,s}u_{i,s}\phi_j(x)\phi_i(x)\expect{\chi_s^2}
             - \sum_{i=1}^{N - 1}\sum_{j=1}^{N-1}u_{i,0}u_{j,0}\phi_j(x)\phi_i(x) \\
       &= \sum_{i=1}^{N-1}\sum_{j=1}^{N-1}\sum_{s=1}^P
