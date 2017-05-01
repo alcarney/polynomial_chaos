@@ -118,10 +118,8 @@ process $u^h$ as follows:
     u^h(x;\omega) = \sum_{j=0}^Nu_j(\omega)\phi_j(x)
 \end{equation}
 
-We now have a discrete representation for $u^h$ in the physical space but now
-we need to turn our attention to approximating the diffusion coefficient
-$\kappa(x;\omega)$ and the stochastic parts of the solution process
-$u_j(\omega)$
+We now have a discrete representation for $u^h$ in the physical space but we
+also need a discrete representation of $u$ in the probability space.
 
 \subsection{Polynomial Chaos}
 
@@ -240,7 +238,7 @@ project we assume that $a(x;\omega)$ can be written as:
     a(x;\omega) = 1 + \epsilon\kappa(x;\omega)
 \end{equation}
 
-where $\epsilon < 1$ is a small parameter and  $\kappa(x;\omega)$ is
+where $\epsilon \leq 1$ is a parameter and  $\kappa(x;\omega)$ is
 uniformly distributed taking values between $a$ and $b$ with mean $\mu$,
 variance $\sigma^2$ with correlation function given by:
 
@@ -584,16 +582,53 @@ side with a global block mass matrix with non zero entries down the diagonal.
 
 \section{Example Problems and Results}
 
+As outlined in Section \ref{sec:oned-stochastic-kl-expansion} we assume that
+the diffusivity coefficient takes the form $a(x;\omega) = 1 +
+\epsilon\kappa(x;\omega)$. By taking the mean $\mu$ in our approximation of
+$\kappa$ to be $1$ and the right hand side to be $f(x) = 2\pi^2\sin{(\pi x)}$
+we considered the perturbed version of the diffusion problem we considered back
+in Chapter \ref{chap:oned-deterministic} with combinations of the following
+values of $\epsilon, d, p$:
+
+\begin{equation*}
+  \begin{array}{c c c}
+    \epsilon \in \{1, 0.1, 0.01\} &
+    d \in \{1, 2, 3\} &
+    p \in \{1, 2, 3\}
+  \end{array}
+\end{equation*}
+
+The code which solves these problems can be found in Appendix
+\ref{app:oned-stochastic-code},in Listing \ref{code:oned-stochastic-setup} also
+see Figure \ref{fig:oned-stochastic-realisations} for a few example
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.55\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\includegraphics{img/oned-stochastic-realisations-1-1.pdf}}
+        \captionof{figure}{Realisations of the solution process with $\epsilon
+        = 10^{-1}$, $d=1$ and $p=1$}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.55\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\includegraphics{img/oned-stochastic-realisations-1-3.pdf}}
+        \captionof{figure}{Realisations of the solution process with $\epsilon
+        = 10^{-1}$, $d=1$ and $p=3$}
+    \end{subfigure}
+    \caption{Realisations of the solution process for various values of $p$}
+    \label{fig:oned-stochastic-realisations}
+\end{figure}
 
 \subsection{Post Processing the Solution}
 
-Now that we have our approximation to the solution solution process
+Once we have our approximation to the solution solution process
 $u^{h,P}(x,\omega)$ we can ask questions such as what is the mean of varience
 of the process on the interval.
 
 \subsubsection{Calculating the Mean}
 
-Given the solution process $u^{h,P}$ we can calculate the mean by integrate it
+Given the solution process $u^{h,P}$ we can calculate the mean by integrating it
 over the probability space:
 
 \begin{align}
@@ -601,7 +636,7 @@ over the probability space:
     \mathbb{E}\left[u^{h,P}\right] = \expect{u^{h,P}} &=
     \int_\Omega\sum_{j=0}^N\sum_{s=1}^Pu_{j,s}\phi_j(x)\chi_s(\omega)\, d\Omega \\
     &= \sum_{j=0}^Nu_{j,s}\phi_j(x)\sum_{s=1}^P\int_\Omega\chi_s(\omega)\, d\Omega \\
-    &= \sum_{j=0}^Nu_{j,0}\phi_j(x)
+    &= \sum_{j=0}^Nu_{j,1}\phi_j(x)
   \end{split}
 \end{align}
 
@@ -609,10 +644,21 @@ This is due to the fact we can write the integral from above as follows:
 
 \begin{equation}
     \int_\Omega\chi_s(\omega)\cdot 1\, d\Omega =
-    \int_\Omega\chi_s(\omega)\chi_0(\omega)\, d\Omega = \delta_{s,0}
+    \int_\Omega\chi_s(\omega)\chi_1(\omega)\, d\Omega = \delta_{s,1}
 \end{equation}
 
-by the orthogonality of the Legendre Polynomials.
+by the orthogonality of the Legendre Polynomials. See Figure
+\ref{fig:oned-stochastic-expected-value-plots} for a few examples of the
+expected value for various cases. The code that was used to produce these
+results can be found in Listing \ref{code:oned-stochastic-setup}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.55\textwidth]{img/oned-stochastic-mean-soln-process.pdf}
+    \caption{Plot of the expected value of the solution process for various
+    values of $\epsilon$}
+    \label{fig:oned-stochastic-expected-value-plots}
+\end{figure}
 
 \subsubsection{Calculating the Variance}
 
@@ -623,13 +669,13 @@ The variance of our approximation to the solution process is given by:
     Var(u^{h,P}) &= \mathbb{E}\left[\left(u^{h,P}\right)^2\right]
                     - \left(\mathbb{E}\left[u^{h,P}\right]\right)^2 \\
       &= \int_\Omega\left(\sum_{j=1}^{N - 1}\sum_{s=1}^Pu_{j,s}\phi_j(x)\chi_s(\omega)\right)^2\, d\Omega
-        - \left(\sum_{j=1}^{N - 1}u_{j,0}\phi_j(x)\right)^2 \\
-      &= \int_\Omega\left(\sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=1}^P\sum_{s=1}^P
+        - \left(\sum_{j=1}^{N - 1}u_{j,1}\phi_j(x)\right)^2 \\
+      &= \int_\Omega\left(\sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=1}^P\sum_{t=1}^P
            u_{j,s}u_{i,t}\phi_j(x)\phi_i(x)\chi_s(\omega)\chi_t(\omega)
-         \right)\, d\Omega - \left(\sum_{j=1}^{N - 1}u_{j,0}\phi_j(x)\right)^2 \\
-      &= \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=1}^P\sum_{t=0}^Pu_{j,s}u_{i,t}
+         \right)\, d\Omega - \left(\sum_{j=1}^{N - 1}u_{j,1}\phi_j(x)\right)^2 \\
+      &= \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=1}^P\sum_{t=1}^Pu_{j,s}u_{i,t}
             \phi_j(x)\phi_i(x)\int_\Omega\chi_s(\omega)\chi_t(\omega)\, d\Omega
-            - \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}u_{i,0}u_{j,0}\phi_j(x)\phi_i(x)
+            - \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}u_{i,1}u_{j,1}\phi_j(x)\phi_i(x)
   \end{split}
 \end{align}
 
@@ -640,8 +686,8 @@ $\chi_s$ the above reduces to:
   \begin{split}
     Var(u^{h,P}) &= \sum_{i=1}^{N - 1}\sum_{j=1}^{N - 1}\sum_{s=1}^P
       u_{j,s}u_{i,s}\phi_j(x)\phi_i(x)\expect{\chi_s^2}
-            - \sum_{i=1}^{N - 1}\sum_{j=1}^{N-1}u_{i,0}u_{j,0}\phi_j(x)\phi_i(x) \\
-      &= \sum_{i=1}^{N-1}\sum_{j=1}^{N-1}\sum_{s=1}^P
+            - \sum_{i=1}^{N - 1}\sum_{j=1}^{N-1}u_{i,1}u_{j,1}\phi_j(x)\phi_i(x) \\
+      &= \sum_{i=1}^{N-1}\sum_{j=1}^{N-1}\sum_{s=2}^P
             u_{j,s}u_{i,s}\phi_j(x)\phi_i(x)\expect{\chi_s^2}
   \end{split}
 \end{align}
@@ -654,3 +700,26 @@ when $|j - i| \leq 1$ so the variance is given by:
     Var(u^{h,P})= \sum_{j=1}^{N-1}\sum_{i=-1}^1\sum_{s=1}^P
       u_{j,s}u_{(j+i),s}\phi_j(x)\phi_{j+i}(x)\expect{\chi_s^2}
 \end{equation}
+
+A few example variances for different values of $p$ and $d$ can be found in
+Figure \ref{fig:oned-stochastic-expected-value-plots} and the code which
+produced them can be found in Listing \ref{code:oned-stochastic-setup}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.55\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\includegraphics{img/oned-stochastic-variance-plots.pdf}}
+        \captionof{figure}{The variance of the solution process in various
+        values of $p$ with $d=1$}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.55\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\includegraphics{img/oned-stochastic-variance-plots-d.pdf}}
+        \captionof{figure}{The variance of the solution process in various
+        values of $d$, with $p=2$}
+    \end{subfigure}
+    \caption{Plots of the variance in the case where $\mu=1$, $\epsilon = 1$ in
+    different values of $d$ and $p$}
+\end{figure}
+

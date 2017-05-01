@@ -1,10 +1,13 @@
 import csv
+import numpy as np
 import scipy.integrate as integrate
 
 from itertools import product
 from functools import reduce
 from scipy.interpolate import BarycentricInterpolator
 from scipy.special import legendre
+
+from fem.oned_deterministic import hat_basis
 
 
 def read_eigendata(filename):
@@ -119,3 +122,41 @@ def eval_xi_chi_st(basis, l, s, t):
     res, _ = integrate.nquad(lambda *args: 0.5**d * args[l] * Ps(args) * Pt(args), ranges)
 
     return res
+
+
+def realise(u, d, p, w):
+    """
+    Given a solution coefficient matrix u, then dimensions used to generate it
+    d, p and a value for omega w. Construct the realisation for the process for
+    that particular value of omega
+    """
+    basis = legendre_chaos(d, p)
+    P, N = u.shape
+
+    us = np.zeros((N,))
+
+    for j in range(N):
+        for s in range(P):
+            us[j] += u[s, j]*basis[s](w)
+
+    return us
+
+def calc_variance(polybasis, u):
+    """
+    Given the stochastic basis, polybasis used to create the solution
+    coefficient matrix u return the variance of the process
+    """
+
+    P, N = u.shape
+    var = np.zeros((N,))
+    spatial_basis = hat_basis(-1, 1, N)
+
+    for s in range(1, P):
+
+        chi_sq = eval_chi_s_squared(polybasis, s)
+
+        for j in range(1, N-1):
+
+            var[j] += (u[s, j] * (u[s, j-1] + u[s, j] + u[s,j+1]))*chi_sq
+
+    return var

@@ -83,14 +83,12 @@ of negative slope. Which we can now use to define the discretisation:
     \mathcal{T}_h = \bigcup_{k=1}^{2N^2}T_k
 \]
 
-Upon which we can define finite dimensional subspaces of V and W:
+Upon which we can define a finite dimensional subspace of $H^1_(D)$:
 
-\begin{align*}
-    V^h &= \{v \in V: v \text{ is linear on } T_k,\ i \in \{0, \ldots, 2N^2\},
-                      v \text{ is continuous on } D\} \\
-    W^h &= \{w \in W: w \text{ is linear on } T_k,\ i \in \{0, \ldots, 2N^2\},
-                      w \text{ is continuous on } D\}
-\end{align*}
+\begin{equation}
+    (H^1_0(D))^h = \{v \in H^1_0(D): v \text{ is linear on } T_k,\ i \in \{0, \ldots, 2N^2\},
+                      v \text{ is continuous on } D\}
+\end{equation}
 
 Just as in the deterministic case we can use the `hat functions' as our basis
 and define each $\phi_i$ associated with a node $\v{x}_i$ in terms of the
@@ -127,11 +125,11 @@ The Legendre Polynomials obey the following orthogonality relation:
     \expect{\chi_s\chi_t} = \expect{\chi_s}^2\delta_{st}
 \end{equation}
 
-With an appropriate basis chosen we can then approximate a random process as
-follows:
+With an appropriate basis chosen we can define a finite dimensional subspace of
+the probability space $L^2(\Omega)$:
 
 \begin{equation}
-    \omega(\theta) = \sum_{s=0}^P\omega_s\chi_s(\theta)
+    (L^2(\Omega))^P = span\{\chi_1,\ldots,\chi_P\}
 \end{equation}
 
 where $P = (d + p)!/d!p!$ and $d$ denotes the dimensionality of the
@@ -142,6 +140,10 @@ can write the solution process as follows:
     u^{h,P}(\v{x};\omega) = \sum_{j=0}^M\sum_{s=0}^Pu_{j,s}
         \chi_s(\xi)\phi_j(\v{x})
 \end{equation}
+
+where $u^{h,P} \in V^{h,P} = (H^1_0(D))^h \otimes (L^2(\Omega))^P$. We can also
+define a similar finite dimensional subspace for the trial space $W$.
+$W^{h,P} = (H^1_0(D))^h \otimes (L^2(\Omega))^P$
 
 
 \subsection{Karhumen Loeve Expansion}
@@ -395,7 +397,7 @@ mass matrix is given by:
     \end{array}\right]
 \end{equation}
 
-and as $\expect{\chi_1^2} = 1$, M1 is exactly the global mass matrix we found
+and as $\expect{\chi_1^2} = 1$, $M_1$ is exactly the global mass matrix we found
 for the previous deterministic problem with non zeros entries given as shown in
 \myref{eq:twod-deterministic-global-mass}
 
@@ -404,7 +406,7 @@ for the previous deterministic problem with non zeros entries given as shown in
 
 As with the previous stochastic case that the shape of the global mass matrix
 is due to the fact that we have considered a fully deterministic $f$ on the
-right hand side of \ref{eq:twod-stochastic}. If we introduced some uncertainty
+right hand side of \myref{eq:twod-stochastic}. If we introduced some uncertainty
 on the right hand side then we would be in a similar situation to the sitffness
 matrix where we would have a square block matrix with non zero entries down the
 diagonal.
@@ -413,4 +415,52 @@ diagonal.
 
 \subsection{Post Processing the Solution}
 
-Now that we have our approximation to the solution process
+Now that we have our approximation to the solution process $u^{h,P}$ we can ask
+questions such as what is the mean and variance of the process in the domain.
+
+\subsubsection{Calculating the Mean}
+
+The mean is simply the expected value of the solution process:
+
+\begin{align}
+  \begin{split}
+    \mathbb{E}\left[u^{h,P}\right] = \expect{u^{h,P}}
+      &= \int_\Omega\sum_{j=0}^M\sum_{s=1}^Pu_{j,s}\phi_j(\v{x})\chi_s(\omega)\, d\Omega \\
+      &= \sum_{j=0}^Mu_{j,s}\phi_j(\v{x})\sum_{s=1}^P\int_\Omega\chi_s(\omega)\, d\Omega \\
+      &= \sum_{j=0}^Mu_{j,1}\phi_j(\v{x})
+  \end{split}
+\end{align}
+
+where due to the orthogonality relation of the stochastic basis vectors all the
+stochastic terms with $s \in \{2, \ldots, P\}$ vanish.
+
+\subsubsection{Calculating the Variance}
+
+The variance of the solution process is given by:
+
+\begin{align}
+  \begin{split}
+      Var(u^{h,P}) &= \mathbb{E}\left[(u^{h,P})^2\right] - (\mathbb{E}[u^{h,P}])^2 \\
+        &= \int_\Omega\left(
+              \sum_{j=0}^M\sum_{s=1}^Pu_{j,s}\phi_j(\v{x})\chi_s(\omega)
+          \right)^2\, d\Omega - \left(\sum_{j=0}^Mu_{j,1}\phi_j(\v{x})\right)^2 \\
+          &= \int_\Omega\left(\sum_{i=0}^M\sum_{j=0}^M\sum_{s=1}^P\sum_{t=1}^P
+          u_{j,s}u_{i,t}\phi_j(\v{x}\phi_i(\v{x})\chi_s(\omega)\chi_t(\omega)
+      \right)\, d\Omega - \left(\sum_{j=0}^Mu_{j,1}\phi_j(\v{x})\right)^2 \\
+      &= \sum_{i=0}^M\sum_{j=0}^M\sum_{s=1}^P\sum_{t=1}^Pu_{j,s}u_{i,t}
+         \phi_j(\v{x})\phi_i(\v{x})\int_D\chi_s(\omega)\chi_t(\omega)\, d\Omega
+         - \sum_{j=0}^M\sum_{i=0}^Mu_{j,1}u_{i,1}\phi_j(\v{x})\phi_i(\v{x})
+  \end{split}
+\end{align}
+
+By the orthogonality of the stochastic basis vectors this reduces to:
+
+\begin{align}
+  \begin{split}
+    Var(u^{h,P}) &= \sum_{i=0}^M\sum_{j=0}^M\sum_{s=1}^P
+        u_{j,s}u_{i,s}\phi_i(\v{x})\phi_j(\v{x})\expect{\chi_s^2} -
+        \sum_{i=0}^M\sum_{j=0}u_{j,1}u_{i,1}\phi_j(\v{x})\phi_i(\v{x}) \\
+      &= \sum_{i=0}^M\sum_{j=0}^M\sum_{s=2}^P
+        u_{j,s}u_{i,s}\phi_j(\v{x})\phi_i(\v{x})\expect{\chi_s^2}
+  \end{split}
+\end{align}
