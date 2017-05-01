@@ -480,7 +480,7 @@ over a symmetric domain, this quantity vanishes. Hence the above reduces to:
                 \phi_j'(x)\phi_i'(x)\, dx\right)
 \end{equation}
 
-for each $i \in \{1,\ldots,N-1\}$. As the quantity $\mu\expect{\chi_s^2}$ is
+for each $i \in \{1,\ldots,N-1\}$. As $(1 + \epsilon\mu)\expect{\chi_s^2}$ is
 fully deterministic and scalar we can treat this in a similar manner to the
 deterministic case in  Chapter \ref{chap:oned-deterministic}. By setting $a =
 (1 +\epsilon\mu)\expect{\chi_s^2}, b = 0, c = 0$ in
@@ -555,7 +555,7 @@ determined we can assemble the off diagonal matrix as seen in
 
 \subsection{The Global Mass Matrix}
 
-As show in \ref{eq:oned-stochastic-discrete} the $t$-th block matrix in the
+As shown in \myref{eq:oned-stochastic-discrete} the $t$-th block matrix in the
 global mass matrix is given by:
 \begin{equation}
     M_t = \expect{\chi_t}\sum_{j=0}^Nf_j\left(
@@ -563,16 +563,16 @@ global mass matrix is given by:
 \end{equation}
 
 for each $i \in \{1,\ldots,N-1\}$. Since $\expect{\chi_t} =
-\expect{\chi_t\chi_0} = \expect{\chi_0^2}\delta_{t, 0}$ by the orthogonality of
+\expect{\chi_t\chi_1} = \expect{\chi_1^2}\delta_{t, 1}$ by the orthogonality of
 the stochastic basis vectors, the global mass matrix is given by:
 
 \begin{equation}
     M = \left[\begin{array}{c}
-        M_0 \\ \v{0} \\ \vdots \\ \v{0}
+        M_1 \\ \v{0} \\ \vdots \\ \v{0}
     \end{array}\right]
 \end{equation}
 
-and since $\expect{\chi_0^2} = 1$, $M_0$ is exactly the global mass matrix we
+and since $\expect{\chi_0^2} = 1$, $M_1$ is exactly the global mass matrix we
 found in the deterministic problem \myref{eq:oned-deterministic-global-mass}.
 
 \paragraph{Note:}

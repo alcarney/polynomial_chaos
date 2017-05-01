@@ -239,7 +239,7 @@ write this as:
       \left(\int_D\nabla\phi_j(\v{x})\cdot\nabla\phi_i(\v{x})\, d\v{x}\right) +
       \epsilon\sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
       \left(\int_D\beta_l(\v{x})\nabla\phi_j(\v{x})\cdot\nabla\phi_i(\v{x})\, d\v{x}\right)\right] \\
-      \expect{\chi_t}\sum_{j=0}^Mf_j\left(\int_D\phi_j(\v{x}x)\phi_i(\v{x})\right)
+      \expect{\chi_t}\sum_{j=0}^Mf_j\left(\int_D\phi_j(\v{x})\phi_i(\v{x})\, d\v{x}\right)
   \end{split}
 \end{align}
 
@@ -278,3 +278,139 @@ mass matrix $M$ takes the block form:
 \end{equation}
 
 where $M_t$ are $(N+1)^2 \times (N-1)^2$ matrices.
+
+\section{Constructing the Global System}
+
+In order to construct the global system of equations we need to determine the
+form of each of the $A_{s,t}$ and $M_t$ matrices.
+
+\subsubsection{The Global Stiffness Matrix}
+
+\subsubsection{Matrices on the Diagonal}
+
+Setting $s = t$ in \myref{eq:twod-stochastic-discrete} we obtain the following:
+
+\begin{equation}
+    A_{s,s} = \sum_{j=1}^{(N-1)^2}\left(
+(1 + \epsilon\mu)\expect{\chi_s^2}
+      \int_D\nabla\phi_j(\v{x})\cdot\nabla\phi_i(\v{x})\, d\v{x} +
+      \epsilon\sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s^2}
+      \int_D\beta_l(\v{x})\nabla\phi_j(\v{x})\cdot\nabla\phi_i(\v{x})\, d\v{x}
+      \right)
+\end{equation}
+
+for each $i \in \{1,\ldots,(N-1)^2\}$. Considering the term
+$\expect{\xi_l\chi_s^2}$, specifically the fact that the product of the
+functions $\chi^2$ and $\xi_l$ is odd and that by taking the expectation we
+integrate over a symmetric domain the term vanishes. Hence the diagonal block
+stiffness matrices reduce to:
+
+\begin{equation}
+    A_{s,s} = (1 + \epsilon\mu)\expect{\chi_s^2}
+    \sum_{j=1}^{(N-1)^2}\left(\int_D\nabla\phi_j(\v{x})\cdot\nabla\phi_i(\v{x})\right)
+\end{equation}
+
+for each $i \in \{1,\ldots,(N-1)^2\}$. Now as the term $(1 +
+\epsilon\mu)\expect{\chi_s^2}$ is deterministic and scalar, we are in the same
+situation as in Chapter \myref{chap:twod-deterministic} and by setting
+$a = (1 + \epsilon\mu)\expect{\chi_s^2}, \v{b} = \v{0}, c = 0$ in
+\myref{eq:twod-deterministic-discrete-local} and if we follow a similar argument
+outlined in Section \ref{sec:twod-deterministic-local-stiffness} we obtain the
+following for for the local stiffness matrix $A^{(k)}_{s,s}$:
+
+\begin{equation}
+    A^{(k)}_{s,s} = \frac{(1 + \epsilon\mu)\expect{\chi_s^2}}{2}
+    \left[\begin{array}{c c c}
+        2  & -1 & -1 \\
+        -1 & 1  & 0 \\
+        -1 & 0  & 1
+    \end{array}\right]
+\end{equation}
+
+Then by proceeding with an argument similar to Section
+\ref{sec:twod-global-stiffnes-assembly} we find that the non zero entries of
+matrix $A^{(k)}_{s,s}$ are as shown in \myref{eq:twod-deterministic-global-stiffness}
+
+\subsubsection{The Off Diagonal Matrices}
+
+Now considering the case where $s \neq t$ in \myref{eq:twod-stochastic-discrete}
+we obtain:
+
+\begin{equation}
+    A_{s,t} = \sum_{j=1}^{(N-1)^2}\left(
+(1 + \epsilon\mu)\expect{\chi_s\chi_t}
+      \int_D\nabla\phi_j(\v{x})\cdot\nabla\phi_i(\v{x})\, d\v{x} +
+      \epsilon\sigma^2\sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
+      \int_D\beta_l(\v{x})\nabla\phi_j(\v{x})\cdot\nabla\phi_i(\v{x})\, d\v{x}
+      \right)
+\end{equation}
+
+for each $i \in \{1,\ldots,(N-1)^2\}$. Note that by the orthogonality
+relation for the stochastic basis vectors $\expect{\chi_s\chi_t} =
+\expect{\chi_s^2}\delta_{st}$ the first term vanishes and we have:
+
+\begin{equation}
+    A_{s,t} = \sum_{j=1}^{(N-1)^2}\left(\epsilon\sigma^2
+    \sum_{l=1}^d\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}
+    \int_D\beta_l(\v{x})\nabla\phi_j(\v{x})\cdot\nabla\phi_i(\v{x})\right)
+\end{equation}
+
+Now some care must be taken in this case as we now longer have a simple
+coefficient as the form of the integral has changed from the deterministic
+case. From Section \ref{sec:twod-deterministic-global-system} we know that we
+can map each triangle in the discretised domain onto a reference triangle and
+evaluate the integral in terms of \myref{eq:twod-local-basis}. So for the off
+diagonal matrices the local stiffness matrix is given by:
+
+\begin{equation}
+    A^{(k)}_{m,n} =
+    \int_T\beta_l(\v{x})\nabla\psi_m(\v{x})\cdot\nabla\psi_n(\v{x})\, d\v{x}
+\end{equation}
+
+for each $m, n \in \{1, 2, 3\}$ and each $l \in \{1, \ldots, d\}$. Once we have
+evaluated the integrals and obtained the form of the local stiffness matrices
+for each value of $l$ and multiplied through by the corresponding coefficients
+$\epsilon\sigma^2\sqrt{\lambda_l}\expect{\xi_l\chi_s\chi_t}$ we can assemble
+the off diagonal matrix just as before in Section
+\ref{sec:twod-global-stiffnes-assembly}
+
+\subsection{The Global Mass Matrix}
+
+As we saw in \ref{eq:twod-stochastic-discrete} the $t$-th block matrix from the
+global mass matrix is given by:
+
+\begin{equation}
+    M_t = \expect{\chi_t}\sum_{j=0}^Mf_j
+    \left(\int_D\phi_j(\v{x})\phi_i(\v{x})\, d\v{x}\right)
+\end{equation}
+
+for each $i \in \{1, \ldots, (N-1)^2\}$. As $\expect{\chi_t} =
+\expect{\chi_t\chi_1}$ which by the orthogonality relation of the stochastics basis
+vectors can be written as $\expect{\chi_1^2}\delta_{t,1}$. Hence the global
+mass matrix is given by:
+
+\begin{equation}
+    M = \left[\begin{array}{c}
+            M_1 \\ \v{0} \\ \vdots \\ \v{0}
+    \end{array}\right]
+\end{equation}
+
+and as $\expect{\chi_1^2} = 1$, M1 is exactly the global mass matrix we found
+for the previous deterministic problem with non zeros entries given as shown in
+\myref{eq:twod-deterministic-global-mass}
+
+
+\paragraph{Note:}
+
+As with the previous stochastic case that the shape of the global mass matrix
+is due to the fact that we have considered a fully deterministic $f$ on the
+right hand side of \ref{eq:twod-stochastic}. If we introduced some uncertainty
+on the right hand side then we would be in a similar situation to the sitffness
+matrix where we would have a square block matrix with non zero entries down the
+diagonal.
+
+\section{Example Problems and Results}
+
+\subsection{Post Processing the Solution}
+
+Now that we have our approximation to the solution process

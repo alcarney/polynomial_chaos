@@ -217,7 +217,7 @@ which allows us to rewrite \myref{eq:twod-deterministic-discrete} as follows:
         = \sum_{j = 0}^Mf_j\int_D\phi_i(\v{x})\phi_j(\v{x})\, dD
 \end{equation}
 
-\section{Constructing the Global System}
+\section{Constructing the Global System}\label{sec:twod-deterministic-global-system}
 
 The last thing we need to do in order to implement the finite element method
 for this problem is to determine the entries of the global mass and stiffness
@@ -540,7 +540,7 @@ then the local stiffness matrix as given in
 hence the non zero $i$-th entries of the $k$-th row will of the global
 stiffness matrix are given by:
 
-\begin{align}
+\begin{align}\label{eq:twod-deterministic-global-stiffness}
   \begin{split}
     A_{k,k} &= \frac{2}{2}(2 + 1 + 1) = 4 \\
     A_{k,k+1} &= \frac{1}{2}(-1 -1) = -1 \\
@@ -603,7 +603,7 @@ $a = 1, \v{b} = 0, c = 0$ then the local mass matrix as defined in
 
 hence the non zero $i$-th entries of the $k$-th row are given by:
 
-\begin{align}
+\begin{align}\label{eq:twod-deterministic-global-mass}
   \begin{split}
     M_{k,k} &= \frac{2}{384}(2 + 2 + 2) = \frac{12}{384}\\
     M_{k,k+1} &= \frac{1}{384}(1 + 1) = \frac{2}{384} \\
