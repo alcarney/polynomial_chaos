@@ -77,6 +77,24 @@ ax.legend(loc=0, fontsize=18)
 
 fig.savefig('oned-stochastic-variance.pdf')
 
+fig, ax = plt.subplots(1)
+
+for d in range(1,4):
+
+    basis = legendre_chaos(d, 2)
+    u = solve_system(N, d, 2, 10e-1, mu, f)
+    ax.plot(xs, calc_variance(basis, u), label=r'$d = %i$' % p)
+
+ax.set_xlabel(r'$x$', fontsize=18)
+ax.set_ylabel(r'$Var(u^{h,P})(x)$', fontsize=18)
+ax.legend(loc=0, fontsize=18)
+
+fig.savefig('oned-stochastic-variance-d.pdf')
 \end{lstlisting}
+
+The above code depends on quite a few important functions including
+\incode{solve\_system} which is detailed below, others including
+\incode{legendre\_chaos}, \incode{realise} and \incode{calc\_variance} are
+detailed in Appendix \ref{app:poly-chaos-code}.
 
 \lstinputlisting[language=Python]{src/fem/oned_stochastic.py}
