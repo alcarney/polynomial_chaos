@@ -1,0 +1,66 @@
+\chapter{Conclusion}
+
+In summary, we considered numerous cases of \textit{Laplace's Equation}, first
+in Chapters \ref{chap:oned-deterministic} and \ref{chap:twod-deterministic} we
+tackled the deterministic problem in one and two dimensions respectively. By
+recasting the problem in terms of Sobolev spaces and weak solutions we were
+able to to derive the \textit{Finite Element Method} construction using an
+appropriate finite dimensional subspace in order to approximate the solution.
+The resulting set of linear equations could easily be solved using Python code
+and we were able to demonstrate convergence of these approximations against the
+known analytic solution.
+
+The results from the deterministic cases formed a starting point from which we
+were able to build from when it came to tackling the stochastic cases of the
+equation. Following similar ideas as those used when discretising the physical
+domain of the problem, the \textit{Generalised Polynomial Chaos} provided
+results which allowed us to determine an appropriate basis with which we could
+define a finite dimensional subspace of the probability space.
+
+In Chapters \ref{chap:oned-stochastic} and \ref{chap:twod-stochastic} we put
+these ideas to use and were able to reduce the stochastic problems to much
+larger, but still deterministic systems of equations which again we could solve
+using Python code. We were also able to calculate a few basic properties of the
+resulting solution process, namely the mean and variance.
+
+\subsection*{Further Work}
+
+This project merely scratched the surface of what is a very rich subject and
+there is plenty of scope for the ideas presented here to be explored further.
+Even if we ignore the application of these methods to different equations there
+are many directions in which one could explore.
+
+The \textit{Generalised Polynomial Chaos} being a very flexible method means we
+could consider cases where not only coefficients in the equation have a degree
+of uncertainty but terms on the right hand side or even the boundary conditions
+themselves could all be modelled with some uncertainty. Furthermore we only
+considered the \textit{Legendre Chaos} where we assumed that random processes
+were uniformly distributed but many other chaoses exist which can be used to
+model Gaussian, Gamma and even discrete distributions such as the Binomial
+distribution.
+
+This project focused on very simple domains, namely interval and square domains
+but the flexibility of both the \textit{Finite Element Method} and the
+\textit{Generalised Polynomail Chaos} mean that the work could be extended to
+handle arbitrary domains. Finally if it wasn't for time constraints a more
+detailed analysis on the results could have been conducted, for example a good
+question might have been ``which is more important for good convergence: the
+degree of the polynomials $p$ or the dimensionality of the subspace $d$?'' It
+also would have been good to have made some comparisons with other popular
+methods such as \textit{Monte Carlo Simulations} to assess the performance of
+this method relative to existing practices
+
+Aside from the mathematical considerations there are a few more practical
+concerns worth considering. During the course of running the Python code I
+found a bottleneck to be in the construction of the linear systems themselves,
+improving both the efficiency of the construction code and the solution code
+through the use of methods such as \textit{Gauss Sidel Interation} would make
+this work much more useful.
+
+Of course without the code to implement the mathematics discussed above any
+further considerations are purely academic so the code must also be extended to
+handle cases such as arbitrary domains or stochastic boundary conditions.
+
+Finally the code presented here also required the use of \textit{MATLAB}
+to compute the K-L Expansion, it would be worth developing a method applicable
+from within Python to help improve the portability and ease of use of the code.
