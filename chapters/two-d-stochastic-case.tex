@@ -146,7 +146,7 @@ define a similar finite dimensional subspace for the trial space $W$.
 $W^{h,P} = (H^1_0(D))^h \otimes (L^2(\Omega))^P$
 
 
-\subsection{Karhumen Loeve Expansion}
+\subsection{Karhumen Loeve Expansion}\label{sec:twod-stochastic-kl-expand}
 
 The KL Expansion allows us to write a second order random process as follows:
 
@@ -413,6 +413,25 @@ diagonal.
 
 \section{Example Problems and Results}
 
+As stated in Section \ref{sec:twod-stochastic-kl-expand} we assume that the
+diffusion coefficient can be written as $a(\v{x};\omega) = 1 +
+\epsilon\kappa(\v{x};\omega)$. Taking $\mu = 1$ and the right hand side of the
+equation to be $f(\v{x}) = 2\pi^2\sin{(\pi x)}\sin{(\pi y)}$ as in the
+deterministic case we now consider a perturbed version of the problem. We solve
+the system with combinations of the following values of $\epsilon$, $d$ and
+$p$:
+
+\begin{equation*}
+    \begin{array}{c c c}
+        \epsilon \in \{1, 0.1, 0.01\} &
+        d \in \{1, 2\} &
+        p \in \{1, 2, 3\}
+    \end{array}
+\end{equation*}
+
+The code which solves these problems is detailed in Listing
+\ref{code:twod-stocastic-setup}.
+
 \subsection{Post Processing the Solution}
 
 Now that we have our approximation to the solution process $u^{h,P}$ we can ask
@@ -432,7 +451,24 @@ The mean is simply the expected value of the solution process:
 \end{align}
 
 where due to the orthogonality relation of the stochastic basis vectors all the
-stochastic terms with $s \in \{2, \ldots, P\}$ vanish.
+stochastic terms with $s \in \{2, \ldots, P\}$ vanish. An example plot of the
+expected value of one of the solution processes can be seen in Figure
+\ref{fig:twod-stochastic-mean-plots}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.65\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\includegraphics{img/twod-stochastic-mean-surface.pdf}}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.55\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\includegraphics{img/twod-stochastic-mean-heat.pdf}}
+    \end{subfigure}
+    \caption{Example plot of the mean of the solution process in the case where
+    $d = 1$, $p = 3$, $\epsilon = 1$, $\mu = 1$}
+    \label{fig:twod-stochastic-mean-plots}
+\end{figure}
 
 \subsubsection{Calculating the Variance}
 
@@ -459,8 +495,38 @@ By the orthogonality of the stochastic basis vectors this reduces to:
   \begin{split}
     Var(u^{h,P}) &= \sum_{i=0}^M\sum_{j=0}^M\sum_{s=1}^P
         u_{j,s}u_{i,s}\phi_i(\v{x})\phi_j(\v{x})\expect{\chi_s^2} -
-        \sum_{i=0}^M\sum_{j=0}u_{j,1}u_{i,1}\phi_j(\v{x})\phi_i(\v{x}) \\
+        \sum_{i=0}^M\sum_{j=0}^Mu_{j,1}u_{i,1}\phi_j(\v{x})\phi_i(\v{x}) \\
       &= \sum_{i=0}^M\sum_{j=0}^M\sum_{s=2}^P
         u_{j,s}u_{i,s}\phi_j(\v{x})\phi_i(\v{x})\expect{\chi_s^2}
   \end{split}
 \end{align}
+
+Then by considering the support of the spatial basis functions $\phi_k$ just as
+we did when constructing the mass and stiffness matrices in Sections
+\ref{sec:twod-global-stiffnes-assembly} and \ref{sec:twod-mass-assembly} we can
+reduce the sum in $i$ over all $M$ to a sum over $S(k)$:
+
+\begin{equation}
+    Var(u^{h,P}) = \sum_{j=0}^M\sum_{i \in S(k)}\sum_{s=2}^Pu_{j,s}u_{i,s}
+        \phi_j(\v{x})\phi_i(\v{x})\expect{\chi_s^2}
+\end{equation}
+
+where $S(k) = \{k, k+1, k-1, k+N, k-N, (k+1)-N, (k-1)+N\}$ which represents the
+indices of the basis functions which share some support with $\phi_k$. An
+example plot of the variance can be seen in Figure
+\ref{fig:twod-stochastic-variance-plots}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.65\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\includegraphics{img/twod-stochastic-variance-surface.pdf}}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.55\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\includegraphics{img/twod-stochastic-variance-heat.pdf}}
+    \end{subfigure}
+    \caption{Example plot of the variance of the solution process in the case where
+    $d = 1$, $p = 3$, $\epsilon = 1$, $\mu = 1$}
+    \label{fig:twod-stochastic-variance-plots}
+\end{figure}

@@ -1,7 +1,73 @@
 \chapter{Two Dimensional Stochastic Code}\label{app:twod-stochastic-code}
 
-Here is the code that implements the Finite Element Method as described in
-Chapter \ref{chap:twod-stochastic}
+Here is the setup code which produced the results seen in Chapter
+\ref{chap:twod-stochastic}
+
+\begin{lstlisting}[language=Python,
+                   caption={Setup code for the problems detailed in
+                   Chapter \ref{chap:twod-stochastic}},
+                   label={code:twod-stochastic-setup}]
+import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_style('whitegrid')
+
+from math import sin, pi
+
+from fem.twod_stochastic import solve_system, calc_variance
+from fem.polynomial_chaos import legendre_chaos
+
+# Define the right hand side
+def f(x, y):
+    return 2*pi**2 * sin(pi*x) * sin(pi*y)
+
+# Set some of the parameters
+N, eps, mu = 64, 10e-1, 1,
+d, p = 1, 3
+
+# -------------------------- EXPECTATION PLOTS --------------
+xs, ys, U = solve_system(N, d, p, eps, mu, f)
+
+# Surface plot of the mean
+X, Y = np.meshgrid(xs, ys)
+
+fig = plt.figure(figsize=(12,8))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(X, Y, U[0], cmap='viridis', rstride=1, cstride=1)
+ax.view_init(elev=25)
+fig.savefig('twod-stochastic-mean-surface.pdf')
+
+# Heatmap plot of the mean
+fig, ax = plt.subplots(1)
+p = ax.pcolor(xs, ys, U[0], cmap='viridis')
+plt.colorbar(p)
+ax.set_xlabel(r'$x$', fontsize=18)
+ax.set_ylabel(r'$y$', fontsize=18)
+fig.savefig('twod-stochastic-mean-heat.pdf')
+
+# --------------------------- VARIANCE PLOTS --------------------
+
+basis = legendre_chaos(d, p)
+V = calc_variance(basis, U)
+
+fig = plt.figure(figsize=(12,8))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(X, Y, V, cmap='viridis', rstride=1, cstride=1)
+ax.view_init(elev=25)
+fig.savefig('twod-stochastic-variance-surface.pdf')
+
+fig, ax = plt.subplots(1)
+p = ax.pcolor(xs, ys, V, cmap='viridis')
+plt.colorbar(p)
+ax.set_xlabel(r'$x$', fontsize=18)
+ax.set_ylabel(r'$y$', fontsize=18)
+fig.savefig('twod-stochastic-variance-heat.pdf')
+\end{lstlisting}
+
+The above depends on a few important functions including \incode{solve\_system}
+which is detailed below but also \incode{legendre\_chaos} and
+\incode{calc\_variance} which are detailed in Appendix \ref{app:poly-chaos-code}
 
 \lstinputlisting[language=Python]{src/fem/twod_stochastic.py}
 

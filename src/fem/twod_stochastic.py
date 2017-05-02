@@ -269,3 +269,37 @@ def solve_system(N, d, p, eps, mu, f):
     return xs, ys, U
 
 
+def calc_variance(basis, U):
+    """
+    Given the stochastic basis and the solution proces U, calcluate the
+    variance
+    """
+    P, N, _ = U.shape
+    var = np.zeros((P, N, N))
+
+    for s in range(1,P):
+
+        chi_sq = eval_chi_s_squared(basis, s)
+
+        # Loop over each point in space, now normally we would have to check to
+        # make sure that we didn't consider points outside the boundary but as
+        # the problems we consider are all zero on the boundary we can get away with
+        # looping over the interior nodes as they are the ony non zero values anyway
+        for i in range(1, N-1):
+            for j in range(1, N-1):
+
+                # Add all the contributions to the variance
+                var[s][i,j]  += U[s, i, j] * U[s, i, j]
+                var[s][i, j] += U[s, i, j] * U[s, i, j+1]
+                var[s][i, j] += U[s, i, j] * U[s, i, j-1]
+                var[s][i, j] += U[s, i, j] * U[s, i+1, j]
+                var[s][i, j] += U[s, i, j] * U[s, i-1, j]
+                var[s][i, j] += U[s, i, j] * U[s, i+1, j-1]
+                var[s][i, j] += U[s, i, j] * U[s, i-1, j+1]
+
+                # Don't forget to include <<chi_s^2>>
+                var[s][i, j] *= chi_sq
+
+    # Finally sum up along the probability axis
+    return np.sum(var, axis=0)
+

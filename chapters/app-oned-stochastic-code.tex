@@ -12,8 +12,8 @@ import seaborn as sns
 sns.set_style('whitegrid')
 
 from math import sin, cos, pi
-from fem.oned_stochastic import solve_system
-from fem.polynomial_chaos import legendre_chaos, realise, calc_variance
+from fem.oned_stochastic import solve_system realise, calc_variance
+from fem.polynomial_chaos import legendre_chaos,
 
 # Define the right hand side
 def f(x):
@@ -93,8 +93,8 @@ fig.savefig('oned-stochastic-variance-d.pdf')
 \end{lstlisting}
 
 The above code depends on quite a few important functions including
-\incode{solve\_system} which is detailed below, others including
-\incode{legendre\_chaos}, \incode{realise} and \incode{calc\_variance} are
+\incode{solve\_system} \incode{realise} and \incode{calc\_variance} which are
+detailed below but also \incode{legendre\_chaos} which is
 detailed in Appendix \ref{app:poly-chaos-code}.
 
 \lstinputlisting[language=Python]{src/fem/oned_stochastic.py}
