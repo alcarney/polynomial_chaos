@@ -25,6 +25,38 @@ def local_diagonal_stiffness_matrix(eps, mu, basis, s):
     return (((1 + eps*mu) * chi) / 2) * A
 
 
+def local_off_diagonal_stiffness_matrix(h, beta):
+    """
+    Given the eigenfunction beta, and h representing the scale
+    of the element construct the correspinding local
+    stiffness matrix
+    """
+
+    # Define grad of the basis functions for the reference triangle
+    grad_phi_1 = 1/h * np.array([-1, -1])
+    grad_phi_2 = 1/h * np.array([1, 0])
+    grad_phi_3 = 1/h * np.array([0, 1])
+
+    basis = [grad_phi_1, grad_phi_2, grad_phi_3]
+
+    # Define the grad . grad part of the integrand
+    def grad_dot_grad(pm, pn):
+        return (pm[0] * pn[0]) + (pm[1] * pn[1])
+
+    # The matrix is 3x3
+    Ak = np.zeros((3,3))
+
+    for i in range(3):
+        for j in range(3):
+
+            # Do the integration
+            Ak[i, j] = h**2 * integrate.dblquad(lambda y, x: beta(x, y) * grad_dot_grad(basis[i], basis[j]),
+                                                0, 1, lambda x: 0, lambda x: 1 - x)[0]
+
+    return Ak
+
+
+
 def assemble_stiffness_matrix(N, Ak):
     """
     Given N, representing the density of the mesh, and Ak, representing the
@@ -85,6 +117,28 @@ def construct_diagonal_stiffness_matrix(N, eps, mu, basis, s):
     return A
 
 
+def construct_off_diagonal_stiffness_matrix(N, basis, l, s, t, eps, lmda, beta):
+    """
+    Given N representing the density of the mesh, the stochasic basis, s and t
+    indices into the basis, l reprenting thel-th stochastick variable, epsilon and
+    eigenvalue/function lmda, beta construct the off diagonal matrix
+    """
+
+    # Calculate h
+    h = 1/N
+
+    # Get the local matrix for the given beta
+    Ak = local_off_diagonal_stiffness_matrix(h, beta)
+
+    # Construct the matrix
+    A = assemble_stiffness_matrix(N, Ak)
+
+    # Compute <<xi_lchi_schi_t>>
+    xi_chi = eval_xi_chi_st(basis, l, s, t)
+
+    return (3 * eps * sqrt(lmda) * xi_chi) * A
+
+
 def construct_mass_matrix(N, basis):
     """
     Given N representing the density of the mesh and the stochastic construct the
@@ -128,3 +182,90 @@ def construct_mass_matrix(N, basis):
 
     return bmat(M).tocsc()
     return M1
+
+
+def construct_system(N, basis, d, p, eps, mu):
+    """
+    Given N representing the density of the mesh, d, p reprsenting the dimensions
+    of the stochastic space and parameters eps, mu, construct and return the
+    global stiffness and mass matrices for the system
+    """
+
+    P = len(basis)
+
+    # Read the eigendata
+    eigendata = read_eigendata('expansion-data.csv')
+    ls = [val['lambda'] for val in eigendata]
+    bs = [val['beta'] for val in eigendata]
+
+    # Don't forget! Now that we are in 2D the eigen values/functions are given by pairs
+    # of the 1D results!
+    idx = [(i, j) for i in range(len(ls)) for j in range(len(ls))]
+
+    # But the above would give (0, 0), (0,1), (0,2) ... etc. so we'll sort these by their
+    # sum so the sequence becomes (0,0), (0,1) (1,0) (1,1) ...
+    indices = [(i,j) for i, j in sorted(idx, key=sum)]
+
+    # Now assemble the pairs
+    lambdas = [ls[i] * ls[j] for i, j in indices]
+    betas = [lambda x, y: bs[i](x) * bs[j](y) for i, j in indices]
+
+    # Construct the block form of A
+    Ast = [[None for s in range(P)] for t in range(P)]
+
+    for s in range(P):
+        for t in range(P):
+
+            # Diagonals
+            if s == t:
+                mat = construct_diagonal_stiffness_matrix(N, eps, mu, basis, s)
+                Ast[s][t] = mat
+            else:
+                mat = sum([construct_off_diagonal_stiffness_matrix
+                            (N, basis, l, s, t, eps, lambdas[l], betas[l]) for l in range(d)])
+                Ast[s][t] = mat
+
+    A = bmat(Ast).tocsc()
+    M = construct_mass_matrix(N, basis)
+
+
+    return A, M
+
+
+def solve_system(N, d, p, eps, mu, f):
+    """
+    Given N representing the density of the mesh, d, p representing the
+    dimension of the stochastic space, parameters eps, mu  and right hand side f
+    construct and solve the stochastic system
+    """
+
+    basis = legendre_chaos(d, p)
+    P = len(basis)
+
+    # Construct the matrices
+    A, M = construct_system(N, basis, d, p, eps, mu)
+
+    # Approximate f
+    xs = np.linspace(-1, 1, N+1)
+    ys = np.linspace(-1, 1, N+1)
+    fs = np.array([f(x, y) for x in xs for y in ys])
+
+    # Construct the RHS
+    Mf = M * fs
+
+    # Solve
+    us = spsolve(A, Mf)
+
+    # us is now an array of matrices, each matrix represents the contributions
+    # from each of the stochastic basis vectors
+    us = us.reshape((P, N - 1, N - 1))
+
+    # Add the boundary nodes (all zero)
+    U = np.zeros((P, N + 1, N + 1))
+
+    for s in range(P):
+        U[s][slice(1, -1), slice(1,-1)] = us[s]
+
+    return xs, ys, U
+
+
