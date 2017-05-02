@@ -4,6 +4,7 @@ import scipy.integrate as integrate
 from math import sqrt
 from scipy.sparse import bmat, csr_matrix
 from scipy.sparse.linalg import spsolve
+
 from fem.oned_deterministic import local_mass_matrix
 from fem.polynomial_chaos import legendre_chaos, eval_chi_s_squared,\
                                 eval_xi_chi_st, read_eigendata
