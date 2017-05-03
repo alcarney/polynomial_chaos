@@ -1,23 +1,24 @@
 \chapter{One Dimensional Stochastic Case}\label{chap:oned-stochastic}
 
-Here we return to the one dimensional version of this equation, but this time
-we introduce some form of uncertainty in the coefficients of the equation:
+Now we turn our attention to the first of the stochastic cases, in one
+dimension with uncertainty in the coefficients we consider the follwing form
+of Laplace's Equation:
 
 \begin{equation}\label{eq:oned-stochastic}
-  \begin{aligned}
-      -\frac{d}{dx}\left[a(x;\omega)\frac{d}{dx}u(x;\omega)\right] &= f(x)\,
-                              &x \in  D = [-1,1]\, \omega \in \Omega \\
-    u(x;\omega) &= 0 &x \in \partial D = \{-1,1\}\, \omega \in \Omega
-  \end{aligned}
+      -\frac{d}{dx}\left[a(x;\omega)\frac{d}{dx}u(x;\omega)\right] = f(x)\,
+                              x \in  D \, \omega \in \Omega
 \end{equation}
 
-where $\Omega$ is a probability space. In order to handle this case, we follow
-a similar method to that we used in Chapter \ref{chap:oned-deterministic}
-however with the introduction of the random parameter $\omega$ there is an
-additional layer of complexity to deal with, as well as discretising the
-physical domain we also need to be able to discretise the probability space
-using a finite dimensional approximation.  This is where the generalised
-polynomial chaos comes in.
+where $D \subset \mathbb{R}$ and $\Omega$ is a probability space. As with the
+previous deterministic cases we will impose homogeneous Dirichlet conditions at
+the endpoints of the domain which we will now take to be $[-1, 1]$.
+
+In order to handle this case, we follow a similar method to that we used in
+Chapter \ref{chap:oned-deterministic} however with the introduction of the
+random parameter $\omega$ there is an additional layer of complexity to deal
+with, as well as discretising the physical domain we also need to be able to
+approximate elements of the probability space using some finite dimensional
+approach.  This is where the \textit{Generalised Polynomial Chaos} comes in.
 
 Using the methodology outlined in \cite{general-poly-chaos} we can use various
 polynomials in the \textit{Askey Scheme} to construct a finite dimensional
@@ -65,8 +66,8 @@ Proceeding with integration by parts
     \right)\, d\Omega = \int_{\Omega}\int_{-1}^1 f(x)w(x;\omega)\, dx\, d\Omega
 \end{equation}
 
-where the underbraced term is zero as the elements of $W$ are zero at the
-endpoints of the domain. Hence the weak form of this equation is given by:
+where the underbraced term is zero as $w(-1;\omega) = 0 = w(1;\omega)$. Hence
+the weak form of this equation is given by:
 
 \begin{equation}\label{eq:wk-one-d-stochastic}
     \int_{\Omega}\int_{-1}^1a(x;\omega)
@@ -83,7 +84,7 @@ Constructing a finite dimensional approximation to
 \myref{eq:wk-one-d-stochastic} requires us to discretise both physical and
 probability spaces. For the physical space we can proceed in a similar fashion
 to Chapter \ref{chap:oned-deterministic} taking into account that the domain
-now extends to include the interval $[-1, 0]$
+is now the interval $[-1, 1]$
 
 Given a parameter $N \in \mathbb{N}$ we place $N+1$ equally spaced nodes
 $x_i, i \in \{0,\ldots,N\}$ in the interval $[-1,1]$ such that $x_0= -1$,
@@ -269,14 +270,14 @@ as follows:
 
 Unfortunately I was unable to find an existing method to numerically solve
 \myref{eq:oned-stochastic-kle-eigenvalue-problem} using Python. Fortunately
-this is a relatively easy problem to solve in Matlab with the use of the
-\textit{Chebfun} numerical computation library \cite{chebfun}. The Matlab code
+this is a relatively easy problem to solve in MATLAB with the use of the
+\textit{Chebfun} numerical computation library \cite{chebfun}. The MATLAB code
 which solves this problem can be found in Listing \ref{code:matlab-eigen}.
 
-\begin{lstlisting}[caption={Matlab code which finds the first 5 eigenvalues and
+\begin{lstlisting}[caption={MATLAB code which finds the first 5 eigenvalues and
                             associated eigenfunctions},
                    label={code:matlab-eigen},
-                   language=Matlab]
+                   language=MATLAB]
 function KLEigs(k)
     K = @(x, y) exp(-abs(x-y));
     L = chebop(@(u) fred(K,u));
@@ -295,7 +296,7 @@ end
 The results from running the above code with $k = 5$ can be found as part of
 Appendix \ref{app:poly-chaos-code} in Table \ref{tab:eigenvalue-data}
 
-In order to use these results from Matlab with our Python
+In order to use these results from MATLAB with our Python
 code, we require a brief discussion of how the \textit{Chebfun} library
 represents mathematical functions. As stated in \cite{chebfun-data}, the
 fundamental data structure \incode{chebfun} is a numerical representation of a
@@ -305,7 +306,7 @@ called Chebyshev points. The $f_j$ are then used with an interpolation method
 called \textit{barycentric interpolation} which achieves a good, fast and stable
 approximation to $f$.
 
-Therefore in order to import the  Matlab results we simply need to
+Therefore in order to import the  MATLAB results we simply need to
 export the $f_j$, $x_j$ of each of the eigenfunctions we find. Then by using
 the \incode{BarycentricInterpolator} which is part of the \textit{scipy} library
 \cite{scipy} we can reconstruct the functions in our Python code. The code
@@ -313,7 +314,7 @@ which performs this reconstruction can be found in Listing
 \ref{code:python-reconstruct-eigen}.
 
 \begin{lstlisting}[caption={Python code which reconstructs the eigenfunctions
-                            we found using Matlab},
+                            we found using MATLAB},
                    label={code:python-reconstruct-eigen},
                    language=Python]
 import csv
@@ -323,7 +324,7 @@ import scipy.interpolate import BarycentricInterpolator
 def reconstruct_eigenfunctions(filename):
     """
     Given a filename, read the CSV data and reconstruct the eigenfunctions
-    as they are represented by the Matlab code
+    as they are represented by the MATLAB code
     """
 
     # Read and parse the CSV data
@@ -585,14 +586,14 @@ side with a global block mass matrix with non zero entries down the diagonal.
 As outlined in Section \ref{sec:oned-stochastic-kl-expansion} we assume that
 the diffusivity coefficient takes the form $a(x;\omega) = 1 +
 \epsilon\kappa(x;\omega)$. By taking the mean $\mu$ in our approximation of
-$\kappa$ to be $1$ and the right hand side to be $f(x) = \pi^2\sin{(\pi x)}$
+$\kappa$ to be $1$ and the right hand side to be $f(x) = 4\pi^2\sin{(\pi x)}$
 we considered the perturbed version of the diffusion problem we considered back
 in Chapter \ref{chap:oned-deterministic} with combinations of the following
 values of $\epsilon, d, p$:
 
 \begin{equation*}
   \begin{array}{c c c}
-    \epsilon \in \{1, 0.1, 0.01\} &
+    \epsilon \in \{1, 0.1, 0.01, 0.001\} &
     d \in \{1, 2\} &
     p \in \{1, 2, 3\}
   \end{array}
@@ -650,8 +651,10 @@ This is due to the fact we can write the integral from above as follows:
 
 by the orthogonality of the Legendre Polynomials. See Figure
 \ref{fig:oned-stochastic-expected-value-plots} for a few examples of the
-expected value for various cases. The code that was used to produce these
-results can be found in Listing \ref{code:oned-stochastic-setup}
+expected value for various cases. You can see that as we reduce the parameter
+$\epsilon$ the expected value of the solution tends towards the solution in the
+deterministic case. The code that was used to produce these results can be
+found in Listing \ref{code:oned-stochastic-setup}
 
 \begin{figure}
     \centering
@@ -703,8 +706,13 @@ when $|j - i| \leq 1$ so the variance is given by:
 \end{equation}
 
 A few example variances for different values of $p$ and $d$ can be found in
-Figure \ref{fig:oned-stochastic-expected-value-plots} and the code which
-produced them can be found in Listing \ref{code:oned-stochastic-setup}
+Figure \ref{fig:oned-stochastic-expected-value-plots}. In the case where we
+vary the parameter $p$ the variance of the solution process converges towards a
+given distribution. Unfortunately when the same thing was tried with the
+parameter $d$ I encountered a bottleneck in the code which assembles the global
+matrices which made it computationally too expensive to take the parameter $d$
+any higher. The code which produced these plots can be found in Listing
+\ref{code:oned-stochastic-setup}
 
 \begin{figure}
     \centering

@@ -112,7 +112,7 @@ def assemble_off_diagonal_stiffness_matrix(N, basis, l, s, t, eps, lmda, beta):
     xs = np.linspace(-1, 1, N + 1)
 
     # Evaluate n<<\xi_l\chi_s\chi_t>>
-    coef = 3 * eps * sqrt(lmda) * eval_xi_chi_st(basis, l, s, t)
+    coef = 2 * eps * sqrt(lmda) * eval_xi_chi_st(basis, l, s, t)
 
     # Construct the 'global' matrix
     A = np.zeros((N - 1, N - 1))

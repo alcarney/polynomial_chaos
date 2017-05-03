@@ -1,21 +1,20 @@
 \chapter{Two Dimensional Stochastic Case}\label{chap:twod-stochastic}
 
-Returning to two dimensions we consider the following stochastic version of
-this equation:
+With uncertainty in the coefficients the stochastic version of Laplace's
+Equation in two dimensions we will consider is:
 
 \begin{equation}\label{eq:twod-stochastic}
-  \begin{aligned}
       -\nabla\cdot\left[a(\v{x};\omega)\cdot\nabla u(\v{x};\omega) \right]
-      &= f(\v{x})\, &\v{x} \in D = [-1,1] \times [-1,1]\, \omega \in \Omega \\
-      u(\v{x};\omega) &= 0\, &\v{x} \in \partial D = \Gamma\, \omega \in \Omega
-  \end{aligned}
+      = f(\v{x})\, \v{x} \in D \, \omega \in \Omega
 \end{equation}
 
-where $\Gamma = (\{-1,1\} \times [-1,1]) \cup ([-1,1] \times \{-1, 1\})$.  As
-with the previous stochastic case we will be following a similar process to the
-original two dimensional case in order to discretise the physical space. Then
-following methods outlined in \cite{general-poly-chaos} to construct a finite
-dimensional approximation to elements in the probability space.
+where we take $D = [-1, 1] \times [-1, 1]$, $\Omega$ is a probability space and
+we impose a homogeneous Dirichlet condition on the boundary which we will
+denote $\Gamma$. As with the previous stochastic case we will be following a
+similar process to the original two dimensional case in order to discretise the
+physical space. Then following methods outlined in \cite{general-poly-chaos} to
+construct a finite dimensional approximation to elements in the probability
+space.
 
 \section{Weak Formulation}
 
@@ -33,7 +32,7 @@ W$. As with the previous case, our test and trial spaces are given by:
 \end{equation}
 
 where $H^1_0(D)$ is as defined as the closure of $C_0^\infty(D)$ with respect
-to the Sobolev space norm \ref{eq:twod-H1-D-norm} and $L^2(\Omega)$ as defined
+to the Sobolev space norm \myref{eq:twod-H1-D-norm} and $L^2(\Omega)$ as defined
 in Definition \ref{eq:L2-Omega}. So multiplying through by $w \in W$ we obtain:
 
 \begin{equation}
@@ -53,8 +52,8 @@ If we apply Green's first integral identity we obtain:
   \right)\, d\Omega
 \end{equation}
 
-where the integral on $\Gamma$ is zero as elements in $W$ are zero on the
-boundary. Therefore the weak form of the problem is given by:
+where the integral on $\Gamma$ is zero as $w(x;\omega)|_\Gamma = 0$. Therefore
+the weak form of the problem is given by:
 
 \begin{equation}\label{eq:twod-stochastic-wk}
     \int_{\Omega}\int_Da(x;\omega)\nabla u(x;\omega)\cdot\nabla
@@ -83,7 +82,7 @@ of negative slope. Which we can now use to define the discretisation:
     \mathcal{T}_h = \bigcup_{k=1}^{2N^2}T_k
 \]
 
-Upon which we can define a finite dimensional subspace of $H^1_(D)$:
+Upon which we can define a finite dimensional subspace of $H^1_0(D)$:
 
 \begin{equation}
     (H^1_0(D))^h = \{v \in H^1_0(D): v \text{ is linear on } T_k,\ i \in \{0, \ldots, 2N^2\},
@@ -430,7 +429,7 @@ $p$:
 \end{equation*}
 
 The code which solves these problems is detailed in Listing
-\ref{code:twod-stocastic-setup}.
+\ref{code:twod-stochastic-setup}.
 
 \subsection{Post Processing the Solution}
 
