@@ -13,43 +13,63 @@ domain $D$ as described by the Partial Differential Equation (PDE) commonly
 known as \textit{Laplace's Equation}.
 
 There are many approaches one can take to model uncertainty, perhaps one of the
-most striaghtforward methods would be to use \textit{Monte Carlo Methods} to
+more striaghtforward methods would be to use \textit{Monte Carlo Methods} to
 generate a large number of samples for the uncertain values and use them in
 solving a large number of systems where you can then aggregate the results.
-While effective the large number of sytems involved can lead to analyses being
+While effective one must usually solve thousands of such systems to get good
+approximations to the behavior meaning that analyses are usually
 computationally expensive.
 
 Instead we will look at using the \textit{Generalised Polynomial Chaos}, a
-recent method building on various results including the fact that members from
+recent method utilising various results including the fact that members from
 the \textit{Askey Scheme} of orthogonal polynomials can be used as a basis to
-span various probability spaces. This then allows us to approximate various
-stochastic processes using truncated expansions in terms of these polynomials
-and when coupled with the \textit{Finite Element Method} construct a large,
-deterministic linear system of equations which we can easily solve.
-Specifically we will be following the process outlined in
-\cite{general-poly-chaos}
+span certain probability spaces. This then allows us to approximate various
+stochastic processes using truncated expansions in these polynomials which,
+when coupled with the \textit{Finite Element Method} allow us to construct a
+large, deterministic linear system of equations which we can solve using
+standard numerical methods.  Specifically we will be following the process
+outlined in \cite{general-poly-chaos}
 
-First in Section \ref{sec:definitions} we state some definitions for the function
+In Section \ref{sec:definitions} we state some definitions for the function
 spaces which will be commonly used throughout the project. Then in Chapters
 \ref{chap:oned-deterministic} and \ref{chap:twod-deterministic} we explore the
-deterministic cases of this equation in both one and two spatial dimensions
+deterministic case of this equation in both one and two spatial dimensions
 with simple domains. We employ the Finite Element Method to construct a linear
 system of equations which we can use to obtain a numerical approximation to the
 solution.
 
-Then we consider the stochastic cases of this problem, first in one spatial
+Then we consider the stochastic case of the equation, first in one spatial
 dimension (Chapter \ref{chap:oned-stochastic}) and then in two spatial
 dimensions (Chapter \ref{chap:twod-stochastic}). Using the Generalised
-Polynomail Chaos we extend the linear systems constructed in the previous
-chapters to model the effects of the random processes with a fully
-deterministic set of equations which we solve numerically.
+Polynomail Chaos coupled with methods from the previous chapters we model the
+effects of random perturbations to original deterministic equations with a
+large but fully deterministic set of linear equations.
+
+Lastly in Chapter \ref{chap:conclusion} we conclude and provide a brief
+discussion on where this work could be taken in the future.
+
+\paragraph{Computer Use}
+
+The methods detailed in this project were implemented mostly from scratch using
+the \textit{Python} programming language. However the \textit{Numpy} and
+\textit{Scipy} scientific computing libraries were used for more mundane tasks
+such as evaluating integrals, performing interpolation and solving linear
+systems. Results were visualised using the \textit{Matplotlib} library.
+
+It is worth noting however that one particular step involved
+the use of \textit{MATLAB} and the \textit{Chebfun} library, why this was
+necessary and how the results were brought back to Python are discussed when
+relevant.
+
+All relevant code has been included in the Appendices and was run on a fairly
+standard laptop with a quad core processor and 16GB of RAM
 
 \section{Function Spaces}\label{sec:definitions}
 
 \begin{definition}\label{def:L2-D}
     $L^2(D)$ Space
 
-    Let $D$ be an open subset of $\mathbb{R}^n$ the vector space $L^2(D)$ is
+    Let $D$ be an open subset of $\mathbb{R}^n$ then the vector space $L^2(D)$ is
     given by:
 
     \begin{equation}\label{eq:L2-D}
@@ -57,9 +77,9 @@ deterministic set of equations which we solve numerically.
                     \int_D|f|^2\, d\v{x} < \infty\}
     \end{equation}
 
-    Any two elements $f,g$ of $L^2(D)$ are still considered equal if they
-    differ only in a set $A \subset D$ which has measure zero w.r.t the
-    Lebesque measure i.e. $f = g$ `almost everywhere'. This notion of equality
+    We consider two elements $f,g \in L^2(D)$ to be equal if they
+    differ only in a set $A \subset D$ which has zero measure (w.r.t Lebesque
+    measure) i.e. $f = g$ `almost everywhere'. This notion of equality
     defines an equivalence class $f \sim g$ of functions where each class has a
     unique continuous representative.
 
@@ -70,7 +90,7 @@ deterministic set of equations which we solve numerically.
         \langle f,g \rangle = \int_Df(\v{x})g(\v{x})\, d\v{x}
     \end{equation}
 
-    which induces the following norm:
+    which induces the norm:
 
     \begin{equation}\label{eq:L2-D-norm}
         ||f||_2 := \langle f, f\rangle^{\frac{1}{2}}
@@ -82,9 +102,9 @@ deterministic set of equations which we solve numerically.
 \begin{definition}\label{def:L2-Omega}
     $L^2(\Omega)$ Space
 
-    Given a probability space $(\Omega, \Sigma, P)$ we define $L^2(\Omega)$ in
-    a similar manner to Definition \ref{def:L2-D} but this time with respect to
-    the probability measure $P$:
+    Given a probability space $(\Omega, \Sigma, P)$ we define $L^2(\Omega)$
+    similarly to Definition \ref{def:L2-D} but with respect to
+    the probability measure for the space, denoted $P$:
 
     \begin{equation}\label{eq:L2-Omega}
         L^2(\Omega) = \{f: \Omega \rightarrow \mathbb{R}\ |\
@@ -105,7 +125,7 @@ deterministic set of equations which we solve numerically.
         \langle f, g \rangle = \int_\Omega f(\omega)g(\omega)\, dP
     \end{equation}
 
-    which induces the following norm:
+    which induces the norm:
 
     \begin{equation}\label{eq:L2-Omega-norm}
         ||f||_2 := \langle f, f\rangle^{\frac{1}{2}}
@@ -139,7 +159,7 @@ deterministic set of equations which we solve numerically.
         \langle f, g\rangle = \langle f', g' \rangle_{L^2(D)}
     \end{equation}
 
-    which induces the following norm:
+    which induces the norm:
 
     \begin{equation}\label{eq:oned-H1-D-norm}
         ||f||_{H^1(D)} := ||f'||_{L^2(D)}
@@ -173,8 +193,7 @@ deterministic set of equations which we solve numerically.
             \sum_{|\alpha| \leq 1}\langle D^\alpha f, D^\alpha g \rangle_{L^2(D)}
     \end{equation}
 
-    $H^1(D)$ can be made into a \textit{Hilbert Space} with the following
-    induced norm:
+    $H^1(D)$ can be made into a \textit{Hilbert Space} with the norm:
 
     \begin{equation}\label{eq:twod-H1-D-norm}
         ||f||_{H^1(D)} =

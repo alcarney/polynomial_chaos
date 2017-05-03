@@ -1,26 +1,24 @@
 \chapter{One Dimensional Deterministic Case}\label{chap:oned-deterministic}
 
-The simplest form of Laplace's Equation we can consider is the one dimensional
-case where the coefficients are deterministic in which case the equation is
+In the deterministic case with one spatial dimension Laplace's Equation is
 given by:
 
 \begin{equation}\label{eq:oned-deterministic}
-\begin{aligned}
-    -au''(x) + bu'(x) + cu(x) &= f(x) &\text{ in } D = [0, 1] \\
-                         u(x) &= 0 &\text{ on } \delta D = \{0, 1\}
-\end{aligned}
+    -au''(x) + bu'(x) + cu(x) = f(x) \text{ in } D = [a, b]
 \end{equation}
 
-We consider the equation in the interval $[0,1]$ and prescribe a zero Dirichlet
-condition at the endpoints $x = 0$ and $x = 1$.
+for the purposes of this project we will take $D$ to be the unit interval
+$[0,1]$ and impose homogeneous Dirichlet boundary conditions at the endpoints
+i.e. $u(0) = 0 = u(1)$
 
 \section{Weak Formulation}
 
-In order to obtain the weak formulation of the problem we need to take the
-inner product of \myref{eq:oned-deterministic} with a function $v$ from a
-\textit{test space} of functions $W$. Then in this weak sense finding a
-solution means finding a function $u$ from some \textit{trial space} $V$ which
-satisfies the equation $\forall v\in W$
+The first step in implementing the \textit{Finite Element Method} is to obtain
+the weak formulation of this problem. This is achieved by taking the inner
+product of \myref{eq:oned-deterministic} with a function $v$ from a
+\textit{test space} of functions $W$ where a solution is attained when some
+function $u$ from a \textit{trial space} $V$ satisfies the equation $\forall
+v\in W$
 
 In the case of this problem, the test and trial spaces actually coincide and we
 define them as follows:
@@ -33,7 +31,7 @@ define them as follows:
 
 where $H^1_0(D)$ is a subspace of the one dimensional Sobolev Space $H^1(D)$ as
 defined in Definition \ref{def:oned-H1-D} where all elements vanish at the
-boundary. It is worth noting that the boundary in this case is a measure zero
+boundary. It is worth noting that the boundary in this case is a zero measure
 set hence it's impossible to define an unique solution in this way! Therefore
 we have to define $H^1_0(D)$ slightly differently, consider
 $C^\infty_0(\mathbb{R})$ the space of infinitely smooth functions defined on
@@ -67,9 +65,16 @@ Hence the continuous weak form of \myref{eq:oned-deterministic} is to find $u
     + c\int_0^1{u(x)v(x)\ dx} = \int_0^1{f(x)v(x)\ dx}
 \end{equation}
 
-is satisfied $\forall w \in W$.
+is satisfied $\forall v \in W$.
 
 \section{Discrete Formulation}
+
+Now that we have the weak form of \myref{eq:oned-deterministic} we can derive a
+discrete approximation to \myref{eq:wk-oned-deterministic} by considering
+finite dimensional subspaces of $V$ and $W$ and utilising ideas from linear
+algebra to construct a linear system of equations whose solution approaches
+that of \myref{eq:wk-oned-deterministic} when sufficient numbers of dimensions
+are considered.
 
 \begin{figure}
 \centering
@@ -82,7 +87,7 @@ For a given parameter $N \in \mathbb{N}$ we define $N+1$ equally spaced nodes
 $x_i$ $i \in \{0, \ldots, N\}$ in the interval $[0,1]$ where
 $x_0 = 0, x_N = 1$. Then we can divide the domain into $N$ subintervals
 $ I_i = [x_i, x_{i+1}]$, $i \in \{0,\ldots,N - 1\}$ of length $h = \frac{1}{N}$.
-We can then define our discretisation to be:
+Which we use to define the discretisation:
 
 \[
     D^h = \bigcup_{i=0}^{N - 1} I_i
@@ -188,7 +193,7 @@ approximation to the actual solution $u$.
     \sum_{j=0}^NA_{i,j}u_i = \sum_{j=0}^NM_{i,j}f_i,\ i \in \{1,\ldots,N-1\}
 \end{equation}
 
-However due to the Dirichlet condition we have in \myref{eq:oned-deterministic}
+However due to the Dirichlet conditions we imposed on \myref{eq:oned-deterministic}
 we already know the value of $u$ at the nodes $x_0$ and $x_N$ so in the cases
 where $j = 0$ and $j = N$ the associated terms on the left hand side can be
 removed from the system of equations. Furthermore as we know the value of our
@@ -200,8 +205,9 @@ hand side:
         \sum_{j=1}^{N}M_{i,j}f_j - A_{i,0}u(0) - A_{i,N}u(1)
 \end{equation}
 
-In our particular problem we have a zero Dirichlet condition so the linear
-system when written in matrix-vector form is given by:
+In our particular problem we have homogeneous Dirichlet conditions so these
+terms vanish and the linear system when written in matrix-vector form is given
+by:
 
 \begin{equation}\label{eq:oned-deterministic-fem}
     A\v{u} = M\v{f}
@@ -350,10 +356,9 @@ equation \myref{eq:oned-deterministic} we are considering.
 
 In an identical manner we can construct the entries for the local mass matrix,
 as we can see in \myref{eq:oned-deterministic-local-discrete} it has the much
-simpler form where each entry is given by a single integral. This integral
-happens to be the same as the third integral in the local stiffness matrix not
-including the value $c$. Therefore as we have already evaluated these integrals
-we can write the local mass matrix directly as:
+simpler form where each entry is given by a single integral. As this integral
+happens to be the same as the third integral in the local stiffness matrix
+we can directly write the local mass matrix as:
 
 \begin{equation}\label{eq:oned-deterministic-local-mass}
     M^{(k)} = \frac{h_k}{6}\left[\begin{array}{c c}
@@ -363,14 +368,14 @@ we can write the local mass matrix directly as:
 
 \subsection{Assembling the Global Stiffness Matrix}\label{sec:oned-deterministic-global-stiffness-assembly}
 
-When assembling the Global stiffness matrix we need to take into account the
+When assembling the global stiffness matrix we need to take into account the
 fact that the value at each node $x_k$ is dependent on the contributions from
 the subintervals surrounding it. Looking again at Figure
-\myref{fig:oned-local-basis} we can see intuitively a node $x_k$ receives a
+\ref{fig:oned-local-basis} we can see intuitively a node $x_k$ receives a
 contribution from the local basis functions $\psi_{k,1}(x)$ and
 $\psi_{{k-1},2}(x)$. In fact, if we consider our definitions of the global
-basis functions \myref{eq:one-d-hat-basis} we can write them in terms of local
-basis functions as follows:
+basis functions \myref{eq:one-d-hat-basis} we can write them in terms of the
+local basis functions as follows:
 
 \begin{equation}\label{eq:oned-deterministic-local-global-basis}
     \phi_k(x) = \left\{\begin{array}{c c}
@@ -482,13 +487,11 @@ zero. Hence the global mass matrix takes the following form:
 
 \section{Example Problems and Results}
 
-Since obtaining numerical approximations that are reasonably accurate requires
-rather large linear systems of equations, it is necessary to use a computer to
-construct and solve these linear systems for us.  I have chosen to make use of
-the Python programming language and used the Numpy linear algebra library
-\cite{numpy-array} in order construct and solve the resulting linear system
-\myref{eq:oned-deterministic-fem} with Matplotlib \cite{matplotlib} used to
-visualise the results.
+As stated in the introduction, the Finite Element Method just outlined has been
+implemented using the Python programming language making use of the Numpy
+linear algebra library \cite{numpy-array} in order to solve the resulting
+linear system \myref{eq:oned-deterministic-fem} with Matplotlib
+\cite{matplotlib} being used to visualise the results.
 
 It is important to verify that any code we write is functioning as we expect it
 to, so for this set of examples we will choose a particular solution to the
@@ -510,7 +513,10 @@ Considering the following cases:
 \end{itemize}
 
 and recording the $L^2$ norm of the error at each value of $N$ we obtain the
-plot seen in Figure \ref{fig:oned-deterministic-error}. In Figure
+plot seen in Figure \ref{fig:oned-deterministic-error}. By calculating the slope
+of the lines it's clear that as we increase the number of subintervals $N$ (and
+therefore the dimensionality of the subspaces) we see that the error reduces by
+$O(N^2)$ and that the approximation converges. In Figure
 \ref{fig:oned-deterministic-exact-v-approx} we see the exact solution plotted
 against one of our approximations in the case where $a = 1, b = 0, c = 0$.
 

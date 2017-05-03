@@ -1,26 +1,24 @@
 \chapter{Two Dimensional Deterministic Case}\label{chap:twod-deterministic}
 
-In two dimensions, with deterministic coefficients Laplace's equation takes the
-following form:
+In the deterministic case with two spatial dimensions Laplace's equation has
+the form:
 
 \begin{equation}\label{eq:two-d-deterministic}
-\begin{aligned}
-    -\nabla\cdot(a\nabla u(\v{x})) + \v{b} \cdot \nabla u(\v{x}) + c u(\v{x}) &= f(\v{x})
-                               &\text{ in } D = [0,1] \times [0,1] \\
-    u(\v{x}) &= g(\v{x}) &\text{ on } \partial D = \Gamma
-\end{aligned}
+    -\nabla\cdot(a\nabla u(\v{x})) + \v{b} \cdot \nabla u(\v{x}) + c u(\v{x})
+        = f(\v{x}) \text{ in } D \subset \mathbb{R}^2 \\
 \end{equation}
 
-where $a,\v{b} , c$ and $f, g \in L^2(D)$ are given. In our case we will choose
-$g(\v{x}) = 0$ to impose a Dirichlet boundary condition on the problem
+for our purposes we will take $D$ to be the unit square, and impose a
+homogeneous Dirichlet condition on the boundary, which we will denote by
+$\Gamma$
 
 \section{Weak Formulation}
 
-Similarly to the one dimensional case, the weak formulation is obtained by
-taking the inner product of \myref{eq:two-d-deterministic} with a function $v$
-from a \textit{test space} of functions $W$. The the weak solution is obtained
-when we find a function $u$ from a \textit{trial space} $V$ which satisfies the
-equation $\forall v \in W$
+As with the one dimensional case the first step in implementing a Finite
+Element Method is to obtain the weak formulation. This is achieved by taking
+the inner product of \myref{eq:two-d-deterministic} with a function $v$ from a
+\textit{test space} of functions $W$ where the weak solution is a function $u$
+from a \textit{trial space} $V$ which satisfies the equation $\forall v \in W$
 
 Again as in the one dimensional case the test and trial spaces will coincide
 and are defined as follows:
@@ -31,18 +29,18 @@ and are defined as follows:
     \end{array}
 \end{equation}
 
-but in this case $H^1_0(D)$ is a subset of the the two dimensional Sobolev
-space $H^1(D)$ as defined in Definition \ref{def:twod-H1-D} where all elements
-vanish at the boundary. Again in this case the boundary is a measure zero set
-so we need to define $H^1_0(D)$ as the closure of $C_0^\infty(D)$ with respect
-to the norm \myref{eq:twod-H1-D-norm}.
+where $H^1_0(D)$ is a subset of the two dimensional Sobolev space $H^1(D)$ as
+defined in Definition \ref{def:twod-H1-D} where all elements vanish at the
+boundary. As the boundary is a zero measure set we define $H^1_0(D)$
+as the closure of $C_0^\infty(D)$ with respect to the norm
+\myref{eq:twod-H1-D-norm}.
 
-So by multiplying through with some $v \in W$ and integrating over the domain
+Multiplying through with some $v \in W$ and integrating over the domain
 we obtain:
 
 \begin{equation}
     -\int_{D}{v(\nabla\cdot(a\nabla{u}))}\,dD +
-    -\int_{D}\v{b}\cdot v\nabla{u}\,dD +
+    -\v{b}\cdot \int_{D}v\nabla{u}\,dD +
     c\int_{D}uv\,dD = \int_{D}fv\,dD
 \end{equation}
 
@@ -54,12 +52,12 @@ Applying Green's first integral identity to the first term we get:
     + a\int_{D}\nabla{v}\cdot\nabla{u}\,dD
 \end{equation}
 
-where the underbraced integrand is zero on the boundary as $v \in W$ it
-vanishes on the boundary. Thus the continuous weak formulation is given by:
+where the underbraced integrand vanishes as $v|_\Gamma = 0$ thus the continuous
+weak formulation is given by:
 
 \begin{equation}\label{eq:wk-twod-deterministic}
     a\int_{D}\nabla{v}\cdot\nabla{u}\,dD +
-    \int_{D}\v{b}\cdot v\nabla{u}\,dD + c\int_{D}uv\,dD =
+    \v{b}\cdot \int_{D}v\nabla{u}\,dD + c\int_{D}uv\,dD =
     \int_{D}fv\,dD
 \end{equation}
 
@@ -68,20 +66,23 @@ holds $\forall v \in W$
 
 \section{Discrete Formulation}
 
-Moving from the one dimensional case to two dimensions suddenly adds a number
-of considerations since, unlike the one dimensional interval any two
-dimensional domain can come in a wide array of shapes. Therefore the method of
-discretisation must be chosen with the shape of the domain in mind, as what may
-be suitable for one domain would fail to capture certain features of
-another. However as the focus of this project is not on finding a discretisation
-for arbitrary domains, we have chosen the unit square since a simple uniform
-triangulation will be sufficient.
+Moving from the one dimensional case to the two dimensional case adds a number
+of considerations since in two spatial dimensions there are many different
+geometries one can consider. This implies that the method of discretisation must be
+chosen based on the geometry, as schemes such as uniform
+triangulation work well for regular domains like the unit square. However
+they fail to capture many features of more arbitrary domains such as a
+mesh representing some natural feature where a more adaptive
+approach would be required.  But as the focus of this project is not on
+the adaptive refinement of meshes we have chosen  the unit square since a simple
+uniform triangulation is sufficient, though the inclusion of adaptive methods
+could be a nice consideration to have in the future.
 
 Given a parameter $N \in \mathbb{N}$ we start with square grid with spacing $h
-= 1/N$ then at each of the $M: = (N+1)^2$ intersections we place a node $x_i$,
-$i \in \{0,\ldots,M\}$. Then we split each grid square into 2 triangles
-using the diagonal of negative slope, dividing the domain into triangular
-elements $T_k$ which we can then use to define the discretisation:
+= 1/N$ then at each of the $M: = (N+1)^2$ intersections we place a node
+$\v{x_i}$, $i \in \{0,\ldots,M\}$. Then we split each grid square into 2
+triangles using the diagonal of negative slope, dividing the domain into
+triangular elements $T_k$ which we can then use to define the discretisation:
 
 \[
     \mathcal{T}_h = \bigcup_{k=1}^{2N^2} T_k
@@ -152,7 +153,7 @@ discretised domain as $\phi_i(\v{x}) = \Phi(\v{x} - \v{x_i})$
 \end{figure}
 
 Since the weak formulation \myref{eq:wk-twod-deterministic} has to hold forall
-$v \in V$, in particular it has to hold for the basis functions
+$v \in W$, in particular it has to hold for the basis functions
 $\phi_i(\v{x})$, $i \in \{0,\ldots,M\}$ so by taking $v = \phi_i(\v{x})$ for
 each $i \in \{0, \ldots, M\}$ and substituting our expansions for $u$ and $f$
 we obtain:
@@ -161,7 +162,7 @@ we obtain:
 \begin{split}
     &a\int_{D}\nabla\phi_i(\v{x}) \cdot
                   \nabla\left(\sum_{j = 0}^Mu_j\phi_j(\v{x})\right)\, dD
-    +\int_{D}\v{b}\cdot\phi_i(\v{x})\cdot
+    +\v{b}\cdot\int_{D}\phi_i(\v{x})
                   \nabla\left(\sum_{j = 0}^Mu_j\phi_j(\v{x})\right)\, dD \\
     &+c\int_{D}\phi_i(\v{x})
                     \left(\sum_{j = 0}^Mu_j\phi_j(\v{x})\right)\, dD =
@@ -178,7 +179,7 @@ gradient operator this can be written as:
     \sum_{j=0}^Mu_j
       \underbrace{\left(
          a\int_{D}\nabla\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, dD
-         + \v{b}\cdot\int_{D}\phi_i(\v{x})\cdot\nabla\phi_j(\v{x})\, dD
+         + \v{b}\cdot\int_{D}\phi_i(\v{x})\nabla\phi_j(\v{x})\, dD
          +c\int_{D}\phi_i(\v{x})\phi_j(\v{x})\, dD
       \right)}_{:= A_{i,j}} = \\
     \sum_{j=0}^Mf_j
@@ -186,7 +187,7 @@ gradient operator this can be written as:
   \end{split}
 \end{align}
 
-for $i \in \{1,\ldots,M\}$. This reduces the weak formulation
+for $i \in \{0,\ldots,M\}$. This reduces the weak formulation
 \myref{eq:wk-twod-deterministic} to a linear system $Au^h = Mf$ where as in the
 one dimensional case $A$ is known as the stiffness matrix and $M$ is known as
 the mass matrix. But due to the homogeneous Dirichlet condition in
@@ -291,7 +292,7 @@ triangle $T$:
     \sum_{r=1}^3\underbrace{
       \left(
         ah^2\int_{T}\nabla\psi_r(\xi, \eta)\cdot\nabla\psi_s(\xi, \eta)\ d\xi d\eta
-        + h^2\v{b} \cdot \int_{T}\psi_r(\xi,\eta)\cdot\nabla\psi_s(\xi,\eta)\ d\xi d\eta
+        + h^2\v{b} \cdot \int_{T}\psi_r(\xi,\eta)\nabla\psi_s(\xi,\eta)\ d\xi d\eta
         + ch^2\int_{T}\psi_r(\xi,\eta)\psi_s(\xi,\eta)\ d\xi d\eta
       \right)}_{A^{(k)}_{r,s}}u_s = \\
     \sum_{r=1}^3\underbrace{\left(
@@ -397,37 +398,7 @@ correspond to the parameters which define the original equation
 Following the same procedure, we can also compute the entries of the local mass
 matrix as defined in \myref{eq:twod-deterministic-discrete-local}, in fact the
 entries of the mass matrix are the same as those in those in the third term of
-the local stiffness matrix so we have already seen the case $r = 3, s = 2$ and
-by the fact that the matrix is symmetric the case $r = 2, s = 3$. So let's
-consider the case where $r = 1, s = 2$:
-
-\begin{align*}
-    h^2\int_T\psi_1(\xi,\eta)\psi_2(\xi,\eta)\ d\xi d\eta
-    &=  h^2\int_0^1\int_0^{1-\eta}(1 - \xi -\eta)\xi\ d\xi d\eta \\
-    &= h^2\int_0^1\left[\frac{\xi^2}{2} -\frac{\xi^3}{3}
-                        -\frac{\xi^2\eta}{2}\right]_0^{1-\eta}\  d\eta \\
-    &= h^2\int_0^1\frac{(1-\eta)^2}{2} - \frac{(1-\eta)^3}{3}- \frac{(1-\eta)^2\eta}{2}\ d\eta \\
-    &= \frac{h^2}{6}\int_0^1(1- \eta)^3\ d\eta \\
-    &= \frac{h^2}{6}\left[\eta -\frac{3\eta}{2} + \eta^3 - \frac{\eta^4}{4}\right]_0^1 \\
-    &= \frac{h^2}{24}
-\end{align*}
-
-and by symmetry this is the same as the case $r = 2, s = 1$. Finally we can consider the case
-$r = 1, s = 3$
-
-\begin{align*}
-    h_2\int_T\psi_1(\xi, \eta)\psi_3(\xi, \eta)\ d\xi d\eta
-    &= h^2\int_0^1\int_0^{1-\eta}(1 - \xi - \eta)\eta\ d\xi d\eta \\
-    &= h^2\int_0^1\left[\xi\eta - \frac{\xi^2\eta}{2} - \eta^2\xi\right]_0^{1-\eta}\ d\eta \\
-    &= h^2\int_0^1(1-\eta)\eta - \frac{(1 - \eta)^2\eta}{2} - \eta^2(1 - \eta)\ d\eta \\
-    &= \frac{h^2}{2}\int_0^1(1 - \eta)^2\eta \ d\eta \\
-    &= \frac{h^2}{2}\left[\frac{\eta^2}{2} - \frac{2\eta^3}{2} + \frac{\eta^4}{4}\right]_0^1 \\
-    &= \frac{h^2}{24}
-\end{align*}
-
-which again by symmetry will also give us the case where $r = 3, s = 1$. If we
-follow the same procedure for the remaining diagonal elements we obtain the
-following form for the local mass matrix:
+the local stiffness matrix so we can write the local mass matrix directly:
 
 \begin{equation}\label{eq:twod-local-mass}
     M^{(k)} =
@@ -455,19 +426,20 @@ consider the $k$-th row of the global stiffness matrix:
 \begin{align}
   \begin{split}
     A_{k,i} &= a\int_D\nabla\phi_k\cdot\nabla\phi_i\, dD
-            + \v{b} \cdot \int_D\phi_k\cdot\nabla\phi_i\, dD
+            + \v{b} \cdot \int_D\phi_k\nabla\phi_i\, dD
             + c\int_D\phi_k\phi_i\, dD \\
             &= \int_D\alpha(\phi_k,\phi_i)\, dD
   \end{split}
 \end{align}
 
-for each $i \in \{1,\ldots,(N-1)^2)\}$ and where we used the \textit{bilinear
-form} we defined in \myref{eq:twod-deterministic-bilinear}. Looking at Figure
+for each $i \in \{1,\ldots,(N-1)^2)\}$. Note for ease of notation we are using
+the \textit{bilinear form} we defined in
+\myref{eq:twod-deterministic-bilinear}. Looking at Figure
 \ref{fig:twod-global-basis-contrib} we can see each of the values of $i$ where
 the corresponding basis function $\phi_i$ has support in at least a subset of
-the support of $\phi_k$. (Assuming that the node $X_k$ is on the interior of
-the interior part of the domain).  This means the non zero entries in the
-$k$-th row of $A$ are given by:
+the support of $\phi_k$. (Assuming that the node $X_k$ is in an interior region
+of the domain).  Then non zero entries in the $k$-th row of $A$ are
+given by:
 
 \begin{align}
   \begin{split}
@@ -489,13 +461,13 @@ $k$-th row of $A$ are given by:
   \end{split}
 \end{align}
 
-where again referring to Figure \ref{fig:twod-global-basis-contrib} you can see
-where these basis functions share support and how they are rewritten locally in
-that region with respect to the reference triangle $T$. Furthermore looking at
-the definition of the local stiffness matrix \myref{eq:twod-local-stiffness}
-and noting the fact that in the case of this problem and chosen discretisation
-the local stiffness matrix takes the same form in each triangular element
-$T_k$. Hence the non-zero elements of the $k$-th row of $A$ are given by:
+referring again to Figure \ref{fig:twod-global-basis-contrib} you can see how
+these basis functions are rewritten locally with respect to the reference
+triangle $T$ and by looking at the definition of the local stiffness
+matrix \myref{eq:twod-local-stiffness} and noting the fact that in the case of
+this problem and chosen discretisation the local stiffness matrix takes the
+same form in each triangular element $T_k$ then the non-zero elements of the
+$k$-th row of $A$ are given by:
 
 \begin{align}
   \begin{split}
@@ -519,16 +491,16 @@ $T_k$. Hence the non-zero elements of the $k$-th row of $A$ are given by:
 
 \paragraph{Note:}
 
-The above only applies to nodes in an interior region - that
-is nodes that are surrounded by other interior nodes. In the case of nodes on
-the edge of this region their support intersects the support of nodes that are
-known. In the case of these nodes the corresponding entry of the stiffness
+The above only applies to nodes in an interior region - that is nodes that are
+surrounded by other interior nodes. In the case of nodes on the edge of this
+region their support intersects the support of nodes that are prescribed by the
+boundary conditions, when this occurs the corresponding entry of the stiffness
 matrix is set to zero and the value of the boundary node is taken to the right
 hand side of the equation.
 
 Let's consider an example, in the case where $N = 4$ - like in Figure
 \ref{fig:two-d-discretisation} and take $a = 1, \v{b} = \v{0}, c = 0$
-then the local stiffness matrix as given in
+then the local stiffness matrix as determined in
 \myref{eq:twod-local-stiffness} will be given by:
 
 \begin{equation}
@@ -588,8 +560,8 @@ $i$-th entries of the $k$-th row are given by:
 \end{align}
 
 So continuing the example we had in Section
-\ref{sec:twod-global-stiffnes-assembly} with $N = 4 \rightarrow h = 1/4$ and
-$a = 1, \v{b} = 0, c = 0$ then the local mass matrix as defined in
+\ref{sec:twod-global-stiffnes-assembly} with $N = 4 \Rightarrow h = 1/4$ and
+$a = 1, \v{b} = 0, c = 0$ then the local mass matrix as derived in
 \myref{eq:twod-local-mass} is given by:
 
 \begin{equation}\label{eq:twod-local-mass}
@@ -635,28 +607,27 @@ the following form:
 
 \section{Example Problems and Results}
 
-Just as in Chapter \ref{chap:oned-deterministic} to construct and solve these
-linear systems we will have to make use of a computer. However in this case the
+In the case of two spatial dimensions the
 linear systems as discussed above \myref{eq:twod-deterministic-discrete} grow
 on the order of $O(N^4)$ as opposed to $O(N^2)$ in the one dimensional case. In
-order to handle the much greater computational complexity of these systems the
-use of the Numpy linear algebra library has been replaced with the very similar
-sparse section of the Scipy library \cite{scipy}.
+order to cope with these larger systems and noting the fact that they are
+mostly sparse we make use of sparse matrix representations that are provided
+by the \textit{Scipy} library \cite{scipy}.
 
-The use of sparse matrices means memory usage and CPU time can be greatly
-reduced allowing the us to handle these larger systems with relative ease. All
-problems in this section have been solved using the code in Listing
-\ref{code:twod-deterministic}. As with the one dimensional case the results
-have been visualised with the Matplotlib library \cite{matplotlib}. For full
-details on the implementation of the Finite Element Method as described see
-Appendix \ref{app:twod-deterministic-code}
+The use of sparse matrix representations means memory usage and CPU time can be
+greatly reduced as zeros are no longer explicitly stored. This allows the us to
+handle these larger systems with relative ease. All problems in this section
+have been solved using the code in Listing \ref{code:twod-deterministic}. As
+with the one dimensional case the results have been visualised with the
+Matplotlib library \cite{matplotlib}. For full details on the implementation of
+the Finite Element Method as described see Appendix
+\ref{app:twod-deterministic-code}
 
-Just as with the one dimensional case it's important that we verify the code
-works as we intended so we in this case choose our solution to be
-$u(\v{x}) = \sin{(\pi x)}\sin{(\pi y)}$ where $\v{x} = (x, y)$. By choosing
-various values for $a, \v{b}$ and $c$ we can easily construct the right hand
-side of the equation and having the solution in hand we can easily see the rate
-of convergence of the finite element method.
+It's important that we verify the code works as we intended so we in this case
+choose our solution to be $u(\v{x}) = \sin{(\pi x)}\sin{(\pi y)}$ where $\v{x}
+= (x, y)$. By choosing various values for $a, \v{b}$ and $c$ we can easily
+construct the right hand side of the equation and having the solution in hand
+we can easily see the rate of convergence of the finite element method.
 
 Considering the following cases:
 \begin{itemize}
@@ -671,11 +642,31 @@ Considering the following cases:
 \end{itemize}
 
 and recording the $L^2$ norm of the error at each value of $N$ we obtain the
-plot seen in Figure \ref{fig:twod-deterministic-error}.
+plot seen in Figure \ref{fig:twod-deterministic-error}. Calculating the slopes
+of the lines in the plot we find that just as in Chapter
+\ref{chap:oned-deterministic} the error decreases at a rate $O(N^2)$ and the
+approximation converges. Also see Figure \ref{fig:twod-deterministic-approx-soln}
+for a visualisation of the approximate solution in the case $a = 1, \v{b} =
+\v{0}, c = 0$
 
 \begin{figure}
     \centering
     \includegraphics[width=0.75\linewidth]{figures/twod-deterministic-errors.pdf}
     \caption{Plot of $|| u - u^h ||_2$ for various values of  $N$}
     \label{fig:twod-deterministic-error}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.65\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\includegraphics{img/twod-deterministic-approx-surface.pdf}}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.55\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\includegraphics{img/twod-deterministic-approx.pdf}}
+    \end{subfigure}
+    \caption{Approximate solution in the case $a = 1, \v{b} = \v{0}, c = 0$ and
+    $N = 64$}
+    \label{fig:twod-deterministic-approx-soln}
 \end{figure}
